@@ -15,6 +15,7 @@ class dalecModel():
         self.dC = dataClass
         self.x = timestep
         self.lenrun = self.dC.lenrun
+        self.xb = self.dC.pvalburnpert
 
  
 #------------------------------------------------------------------------------   
@@ -52,8 +53,8 @@ class dalecModel():
         """
         L = cf / clma
         q = self.dC.a3 - self.dC.a4
-        gc = (abs(self.dC.phi_d))**(self.dC.a10) / (0.5*self.dC.t_range[self.x]\
-             + self.dC.a6*self.dC.R_tot)
+        gc = (abs(self.dC.phi_d))**(self.dC.a10) / \
+             (0.5*self.dC.t_range[self.x] + self.dC.a6*self.dC.R_tot)
         p = ((ceff*L) / gc)*np.exp(self.dC.a8*self.dC.t_max[self.x])
         ci = 0.5*(self.dC.ca + q - p + np.sqrt((self.dC.ca + q - p)**2 \
              -4*(self.dC.ca*q - p*self.dC.a3)))
@@ -79,8 +80,8 @@ class dalecModel():
         releasecoeff = np.sqrt(2.)*cronset / 2.
         magcoeff = (np.log(1.+1e-3) - np.log(1e-3)) / 2.
         offset = self.fitpolynomial(1+1e-3, releasecoeff)
-        phi_onset = (2. / np.sqrt(np.pi))*(magcoeff / releasecoeff)*np.exp(-( \
-                    np.sin((self.dC.D[self.x] - d_onset + offset) / \
+        phi_onset = (2. / np.sqrt(np.pi))*(magcoeff / releasecoeff)*\
+                    np.exp(-(np.sin((self.dC.D[self.x] - d_onset + offset) / \
                     self.dC.radconv)*(self.dC.radconv / releasecoeff))**2)
         return phi_onset
  
@@ -93,9 +94,9 @@ class dalecModel():
         releasecoeff = np.sqrt(2.)*crfall / 2.
         magcoeff = (np.log(clspan) - np.log(clspan -1.)) / 2.
         offset = self.fitpolynomial(clspan, releasecoeff)
-        phi_fall = (2. / np.sqrt(np.pi))*(magcoeff / releasecoeff)*np.exp(-( \
-                    np.sin((self.dC.D[self.x] - d_fall + offset) / \
-                     self.dC.radconv)*self.dC.radconv / releasecoeff)**2)
+        phi_fall = (2. / np.sqrt(np.pi))*(magcoeff / releasecoeff)*\
+                   np.exp(-(np.sin((self.dC.D[self.x] - d_fall + offset) / \
+                   self.dC.radconv)*self.dC.radconv / releasecoeff)**2)
         return phi_fall        
 
         
@@ -386,11 +387,11 @@ class dalecModel():
         hx = self.hxcost(pvallist)
         obcost = np.dot(np.dot((yoblist-hx),\
                         np.linalg.inv(rmatrix)),(yoblist-hx).T)
-        #modcost =  np.dot(np.dot((pvals-dC.pvals),np.linalg.inv(dC.B)),\
-        #                  (pvals-dC.pvals).T)
-        cost = 0.5*obcost #+ 0.5*modcost #Currently not using backg terms
+        modcost =  np.dot(np.dot((pvals-self.xb),np.linalg.inv(self.dC.B)),\
+                          (pvals-self.xb).T)
+        cost = 0.5*obcost + 0.5*modcost #Currently not using backg terms
         return cost
-    
+
     
     def gradcost(self, pvals, yoblist, yerrlist, rmatrix):
         """Gradient of 4DVAR cost fn to be passed to optimization routine. 
@@ -401,12 +402,12 @@ class dalecModel():
         hx, hmatrix = self.hmat(pvallist, matlist)
         obcost = np.dot(hmatrix.T, np.dot(np.linalg.inv(rmatrix),\
                                           (yoblist-hx).T))
-        #modcost =  np.dot(np.linalg.inv(dC.B),(pvals-dC.pvals).T)
-        gradcost =  - obcost #+ modcost #Currently not using backg terms
+        modcost =  np.dot(np.linalg.inv(self.dC.B),(pvals-self.xb).T)
+        gradcost =  - obcost + modcost #Currently not using backg terms
         return gradcost
         
         
-    def findmin(self, pvals, meth='L-BFGS-B', bnds='strict'):
+    def findmin(self, pvals, meth='L-BFGS-B', bnds='strict', FACTR=1e7):
         """Function which minimizes 4DVAR cost fn. Takes an initial state
         (pvals).
         """
@@ -419,6 +420,24 @@ class dalecModel():
         findmin = spop.minimize(self.cost, pvals,\
                               args=(yoblist, yerrlist, rmatrix),\
                               method=meth, jac=self.gradcost, bounds=bnds,\
-                              options={'gtol': 1e-1, 'disp': True, 'iprint':2})
+                              options={'gtol': 1e-1, 'disp': True, 'iprint':2,
+                                       'factr':FACTR})
         return findmin
 
+    def findminglob(self, pvals, meth='L-BFGS-B', bnds='strict', it=100,\
+                    stpsize=0.5, temp=1.):
+        """Function which minimizes 4DVAR cost fn. Takes an initial state (pvals),
+        an obs dictionary, an obs error dictionary, a dataClass and a start and 
+        finish time step.
+        """
+        if bnds == 'strict':
+            bnds = self.dC.bnds
+        else:
+            bnds = bnds
+        yoblist, yerrlist = self.obscost()
+        rmatrix = self.rmat(yerrlist)
+        findmin = spop.basinhopping(cost, pvals, niter=it, \
+                  minimizer_kwargs={'method': meth, 'args':(yoblist, yerrlist,\
+                  rmatrix), 'bounds':bnds, 'jac':self.gradcost},\
+                  stepsize=stpsize, T=temp)
+        return findmin

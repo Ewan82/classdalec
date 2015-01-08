@@ -9,16 +9,18 @@ import collections as col
 
 class dalecData( ): 
 
-    def __init__(self, lenrun, obs_str, startrun=0, k=1):
-        
+    def __init__(self, lenrun, obs_str=None, startrun=0, k=1):
+ 
+        self.obs_str = obs_str
+        self.lenrun = lenrun
+        self.startrun = startrun
+        self.timestep = np.arange(startrun, startrun+lenrun)
+       
         #Extract the data
         self.homepath = os.path.expanduser("~")
         self.f = open(self.homepath+"/dalecv2/oregondata/dalec_drivers.txt",\
                       "r")
         self.allLines = self.f.readlines()
-        self.lenrun = lenrun
-        self.startrun = startrun
-        self.timestep = np.arange(startrun, startrun+lenrun)
         self.data = np.array([[-9999.]*9 for i in range(self.lenrun)])
         n = -1
         for x in xrange(self.startrun, self.lenrun+self.startrun):
@@ -141,29 +143,36 @@ class dalecData( ):
                         'cw':self.sigo_cw,'cl':self.sigo_cl,'cr':self.sigo_cr,\
                         'cs':self.sigo_cs, 'nee':self.sigo_nee,\
                         'lf':self.sigo_lf, 'lw':self.sigo_lw, 'gpp':0.2}
+                        
+        if self.obs_str!=None:
+            self.obdict, self.oberrdict = self.assimilation_obs(self.obs_str)
+        else:
+            self.obdict, self.oberrdict = None, None
 
 
-
-        self.possibleobs = ['gpp', 'lf', 'lw', 'rt', 'nee', 'cf', 'cl', \
+    def assimilation_obs(self, obs_str):
+        possibleobs = ['gpp', 'lf', 'lw', 'rt', 'nee', 'cf', 'cl', \
                        'cr', 'cw', 'cs', 'lai', 'clab']
-        self.Obslist = re.findall(r'[^,;\s]+', obs_str)
+        Obslist = re.findall(r'[^,;\s]+', obs_str)
     
-        for ob in self.Obslist:
-            if ob not in self.possibleobs:
+        for ob in Obslist:
+            if ob not in possibleobs:
                 raise Exception('Invalid observations entered, please check \
                                  function input')
 
-        self.obdict = {ob:np.ones(self.lenrun)*float('NaN') for ob\
-                         in self.Obslist}
-        self.oberrdict = {ob+'_err':np.ones(self.lenrun)*float('NaN') \
-                        for ob in self.Obslist}
+        Obs_dict = {ob:np.ones(self.lenrun)*float('NaN') for ob in Obslist}
+        Obs_err_dict = {ob+'_err':np.ones(self.lenrun)*float('NaN') \
+                        for ob in Obslist}
   
         n = -1
         for x in xrange(self.startrun, self.lenrun+self.startrun):
             n = n + 1
             allVars = self.allLines[x].split()
             for i in xrange(9, len(allVars)):
-                for ob in self.Obslist:
+                for ob in Obslist:
                     if allVars[i] == ob:
-                        self.obdict[ob][n] = float(allVars[i+1])
-                        self.oberrdict[ob+'_err'][n] = self.errdict[ob]
+                        Obs_dict[ob][n] = float(allVars[i+1])
+                        Obs_err_dict[ob+'_err'][n] = self.errdict[ob]
+                        
+        return Obs_dict, Obs_err_dict
+        

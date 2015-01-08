@@ -9,7 +9,8 @@ import copy as cp
     
 def plotgpp(cf, dC, start, fin):
     """Plots gpp using acm equations given a cf value, a dataClass and a start
-    and finish point. NOTE cf is treated as constant in this plot (unrealistic).
+    and finish point. NOTE cf is treated as constant in this plot 
+    (unrealistic).
     """
     xlist = np.arange(start, fin, 1)
     gpp = np.ones(fin - start)*-9999.
@@ -53,7 +54,7 @@ def plotobs(ob, pvals, dC, start, fin, lab=0):
     plt.plot(xlist, oblist, label=lab)
     
 
-def plot4dvarrun(ob, xb, xa, dC, start, fin):
+def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1):
     """Plots a model predicted observation value for two initial states (xb,xa)
     and also the actual observations taken of the physical quantity. Takes a ob
     string, two initial states (xb,xa), a dataClass and a start and finish 
@@ -64,11 +65,31 @@ def plot4dvarrun(ob, xb, xa, dC, start, fin):
     plotobs(ob, xa, dC, start, fin, ob+'_a')
     obdict = dC.obdict
     oberrdict = dC.oberrdict
-    plt.errorbar(xlist, obdict[ob], yerr=oberrdict[ob+'_err'], fmt='o',\
-                 label=ob+'_o')
+    if ob in obdict.keys():
+        if erbars==True:
+            plt.errorbar(xlist, obdict[ob], yerr=oberrdict[ob+'_err'], \
+                         fmt='o', label=ob+'_o')
+        else:
+            plt.plot(xlist, obdict[ob], 'o', label=ob+'_o')
     plt.legend()
     plt.show()
     
+    
+def plottwin(ob, truth, xb, xa, dC, start, fin, erbars=1):
+    xlist = np.arange(start, fin)
+    plotobs(ob, truth, dC, start, fin, ob+'_truth')
+    plotobs(ob, xb, dC, start, fin, ob+'_b')
+    plotobs(ob, xa, dC, start, fin, ob+'_a')
+    obdict = dC.obdict
+    oberrdict = dC.oberrdict
+    if ob in obdict.keys():
+        if erbars==True:
+            plt.errorbar(xlist, obdict[ob], yerr=oberrdict[ob+'_err'], \
+                         fmt='o', label=ob+'_o')
+        else:
+            plt.plot(xlist, obdict[ob], 'o', label=ob+'_o')
+    plt.legend()
+    plt.show() 
     
 def plotlinmoderr(cpool, dC, start, fin):
     """Plots the error for the linearized estimate to the evolution of a carbon
