@@ -16,7 +16,14 @@ class dalecModel():
         self.x = timestep
         self.lenrun = self.dC.lenrun
         self.xb = self.dC.pvalburnpert
-
+        self.yoblist, self.yerroblist = self.obscost()
+        self.rmatrix = self.rmat(self.yerroblist)
+        self.modcoston = 1
+        self.modobdict = {'gpp': self.gpp, 'nee': self.nee, 'rt': self.rec, 
+                          'cf': self.cf, 'clab': self.clab, 'cr': self.cr, 
+                          'cw': self.cw, 'cl': self.cl, 'cs': self.cs, 
+                          'lf': self.lf, 'lw': self.lw, 'lai': self.lai,
+                          'litresp': self.litresp, 'soilresp': self.soilresp}
  
 #------------------------------------------------------------------------------   
 #Model functions
@@ -224,6 +231,20 @@ class dalecModel():
         return nee
         
         
+    def litresp(self, p):
+        """Function calculates litter respiration (litresp).
+        """
+        litresp = p[7]*p[21]*self.temp_term(p[9])
+        return litresp
+        
+        
+    def soilresp(self, p):
+        """Function calculates soil respiration (soilresp).
+        """
+        soilresp = p[8]*p[22]*self.temp_term(p[9])
+        return soilresp
+        
+                
     def lai(self, p):
         """Fn calculates leaf area index (cf/clma).
         """
@@ -292,12 +313,8 @@ class dalecModel():
         parameter list. Takes an obs string, a parameters list, a dataClass 
         and a time step x.
         """
-        modobdict = {'gpp': self.gpp, 'nee': self.nee, 'rt': self.rec, 
-                     'cf': self.cf, 'clab': self.clab, 'cr': self.cr, 
-                     'cw': self.cw, 'cl': self.cl, 'cs': self.cs, 
-                     'lf': self.lf, 'lw': self.lw, 'lai': self.lai}
         dpvals = algopy.UTPM.init_jacobian(pvals)
-        return algopy.UTPM.extract_jacobian(modobdict[ob](dpvals)) 
+        return algopy.UTPM.extract_jacobian(self.modobdict[ob](dpvals)) 
         
         
 #------------------------------------------------------------------------------   
@@ -325,15 +342,11 @@ class dalecModel():
         DALEC model. Takes a list of model values (pvallist), an observation 
         dictionary and a dataClass (dC).
         """
-        modobdict = {'gpp': self.gpp, 'nee': self.nee, 'rt': self.rec, 
-                     'cf': self.cf, 'clab': self.clab, 'cr': self.cr, 
-                     'cw': self.cw, 'cl': self.cl, 'cs': self.cs, 
-                     'lf': self.lf, 'lw': self.lw, 'lai': self.lai}
         hx = np.array([])
         for t in xrange(self.lenrun):
             for ob in self.dC.obdict.iterkeys():
                 if np.isnan(self.dC.obdict[ob][t])!=True:
-                    hx = np.append(hx, modobdict[ob](pvallist[t]))
+                    hx = np.append(hx, self.modobdict[ob](pvallist[t]))
             self.x += 1
         
         self.x -= self.lenrun
@@ -354,17 +367,13 @@ class dalecModel():
         of model values (pvallist), a observation dictionary, a list of
         linearized models (matlist) and a dataClass (dC).
         """
-        modobdict = {'gpp': self.gpp, 'nee': self.nee, 'rt': self.rec, 
-                     'cf': self.cf, 'clab': self.clab, 'cr': self.cr, 
-                     'cw': self.cw, 'cl': self.cl, 'cs': self.cs, 
-                     'lf': self.lf, 'lw': self.lw, 'lai': self.lai}
         hx = np.array([])
         hmat = np.array([])
         for t in xrange(self.lenrun):
             temp = []
             for ob in self.dC.obdict.iterkeys():
                 if np.isnan(self.dC.obdict[ob][t])!=True:
-                    hx = np.append(hx, modobdict[ob](pvallist[t]))
+                    hx = np.append(hx, self.modobdict[ob](pvallist[t]))
                     temp.append([self.linob(ob, pvallist[t])])
             self.x +=1
             if len(temp) != 0.:
@@ -378,32 +387,38 @@ class dalecModel():
         return hx, hmat 
         
         
-    def cost(self, pvals, yoblist, yerrlist, rmatrix):
+    def cost(self, pvals):
         """4DVAR cost function to be minimized. Takes an initial state (pvals), 
         an observation dictionary, observation error dictionary, a dataClass 
         and a start and finish time step.
         """
         pvallist = self.mod_list(pvals)
         hx = self.hxcost(pvallist)
-        obcost = np.dot(np.dot((yoblist-hx),\
-                        np.linalg.inv(rmatrix)),(yoblist-hx).T)
-        modcost =  np.dot(np.dot((pvals-self.xb),np.linalg.inv(self.dC.B)),\
-                          (pvals-self.xb).T)
-        cost = 0.5*obcost + 0.5*modcost #Currently not using backg terms
+        obcost = np.dot(np.dot((self.yoblist-hx),\
+                        np.linalg.inv(self.rmatrix)),(self.yoblist-hx).T)
+        if self.modcoston == True: 
+            modcost =  np.dot(np.dot((pvals-self.xb),\
+                                  np.linalg.inv(self.dC.B)), (pvals-self.xb).T)
+        else:
+            modcost = 0
+        cost = 0.5*obcost + 0.5*modcost
         return cost
 
     
-    def gradcost(self, pvals, yoblist, yerrlist, rmatrix):
+    def gradcost(self, pvals):
         """Gradient of 4DVAR cost fn to be passed to optimization routine. 
         Takes an initial state (pvals), an obs dictionary, an obs error 
         dictionary, a dataClass and a start and finish time step.
         """
         pvallist, matlist = self.linmod_list(pvals)
         hx, hmatrix = self.hmat(pvallist, matlist)
-        obcost = np.dot(hmatrix.T, np.dot(np.linalg.inv(rmatrix),\
-                                          (yoblist-hx).T))
-        modcost =  np.dot(np.linalg.inv(self.dC.B),(pvals-self.xb).T)
-        gradcost =  - obcost + modcost #Currently not using backg terms
+        obcost = np.dot(hmatrix.T, np.dot(np.linalg.inv(self.rmatrix),\
+                                          (self.yoblist-hx).T))
+        if self.modcoston == True:            
+            modcost =  np.dot(np.linalg.inv(self.dC.B),(pvals-self.xb).T)
+        else:
+            modcost = 0
+        gradcost =  - obcost + modcost
         return gradcost
         
         
@@ -415,14 +430,40 @@ class dalecModel():
             bnds=self.dC.bnds
         else:
             bnds=bnds
-        yoblist, yerrlist = self.obscost()
-        rmatrix = self.rmat(yerrlist)
-        findmin = spop.minimize(self.cost, pvals,\
-                              args=(yoblist, yerrlist, rmatrix),\
-                              method=meth, jac=self.gradcost, bounds=bnds,\
-                              options={'gtol': 1e-1, 'disp': True, 'iprint':2,
-                                       'factr':FACTR})
+        findmin = spop.minimize(self.cost, pvals, method=meth, \
+                               jac=self.gradcost, bounds=bnds,\
+                               options={'gtol': 1e-1, 'disp': True, 'iprint':2,
+                                        'ftol':FACTR})
         return findmin
+        
+        
+    def findminlbfgsb(self, pvals, bnds='strict', FACTR=1e7, prnt=-1):
+        """Function which minimizes 4DVAR cost fn. Takes an initial state
+        (pvals).
+        """
+        if bnds == 'strict':
+            bnds=self.dC.bnds
+        else:
+            bnds=bnds
+        findmin = spop.fmin_l_bfgs_b(self.cost, pvals,\
+                                     fprime=self.gradcost, bounds=bnds,\
+                                     iprint=prnt, factr=FACTR)
+        return findmin             
+ 
+
+    def findmintnc(self, pvals, bnds='strict', dispp=None, maxits=230, mini=0):
+        """Function which minimizes 4DVAR cost fn. Takes an initial state
+        (pvals).
+        """
+        if bnds == 'strict':
+            bnds=self.dC.bnds
+        else:
+            bnds=bnds
+        findmin = spop.fmin_tnc(self.cost, pvals,\
+                                     fprime=self.gradcost, bounds=bnds,\
+                                     disp=dispp, fmin=mini, maxfun=maxits)
+        return findmin        
+       
 
     def findminglob(self, pvals, meth='L-BFGS-B', bnds='strict', it=100,\
                     stpsize=0.5, temp=1.):
@@ -434,10 +475,7 @@ class dalecModel():
             bnds = self.dC.bnds
         else:
             bnds = bnds
-        yoblist, yerrlist = self.obscost()
-        rmatrix = self.rmat(yerrlist)
         findmin = spop.basinhopping(cost, pvals, niter=it, \
-                  minimizer_kwargs={'method': meth, 'args':(yoblist, yerrlist,\
-                  rmatrix), 'bounds':bnds, 'jac':self.gradcost},\
-                  stepsize=stpsize, T=temp)
+                  minimizer_kwargs={'method': meth, 'bounds':bnds,\
+                  'jac':self.gradcost}, stepsize=stpsize, T=temp)
         return findmin

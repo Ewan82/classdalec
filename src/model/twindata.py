@@ -3,6 +3,7 @@ required to run dalecv2 model forwards. As a class function will also extract
 observations used in assimilation.
 """
 import numpy as np
+import random
 import os
 import re
 import collections as col
@@ -12,9 +13,9 @@ import observations as obs
 
 class dalecData( ): 
 
-    def __init__(self, lenrun, obs_str=None, freq_obs=1, startrun=0, k=1):
+    def __init__(self, lenrun, obs_str=None, no_obs=0, startrun=0, k=1):
         
-        self.freq_obs = freq_obs
+        self.no_obs = no_obs
         self.obs_str = obs_str
         self.lenrun = lenrun
         self.startrun = startrun
@@ -108,16 +109,14 @@ class dalecData( ):
 
         self.pvalburnpert = np.array([6.46878858e-05, 3.97543192e-01,
                                2.99653443e-01, 1.86748822e-01, 2.22597454e+00,  
-                               1.97032746e-05, 2.01510400e-03, 3.32548355e-03,   
-                               1.43790387e-06, 8.28409608e-02, 2.19469644e+01,  
+                               2.67032746e-05, 2.01510400e-03, 3.32548355e-03,   
+                               1.43790387e-06, 7.28409608e-02, 2.19469644e+01,  
                                4.39860970e+01, 3.24564986e-02, 4.48153570e+01,  
-                               2.31502677e+02, 1.32789998e+02, 3.76239946e+01,  
+                               2.31502677e+02, 9.32789998e+01, 3.76239946e+01,  
                                4.32147084e+01, 4.76802246e+02, 2.34676150e+02,  
                                4.87619657e+03, 2.93150254e+02, 1.03952316e+04])
 
-
-
-        
+       
         self.bnds=((1e-5,1e-2),(0.3,0.7),(0.01,0.5),(0.01,0.5),(1.0001,10.),\
               (2.5e-5,1e-3),(1e-4,1e-2),(1e-4,1e-2),(1e-7,1e-3),(0.018,0.08),\
               (10,100),(1,365),(0.01,0.5),(10,100),(1,365),(10,100),(10,400),\
@@ -187,7 +186,7 @@ class dalecData( ):
         self.vars = np.array([(self.clab*0.1)**2, (self.cf*0.1)**2, 
                               (self.cw*0.1)**2, (self.cr*0.1)**2, 
                               (self.cl*0.1)**2, (self.cs*0.1)**2, 0.5, 0.2**2, 
-                              0.2**2, 0.2, 0.4, 0.12])
+                              0.2**2, 0.2, 0.4, 0.12, 0.05, 0.05])
         self.smallvars = self.vars*1e-3
         self.er = self.smallvars
         
@@ -195,15 +194,18 @@ class dalecData( ):
                         'cw': self.er[2],'cl': self.er[3],'cr': self.er[4],\
                         'cs': self.er[5], 'nee': self.er[6],\
                         'lf': self.er[7], 'lw': self.er[8], 'gpp': self.er[9],
-                        'rt': self.er[10], 'lai': self.er[11]}
+                        'rt': self.er[10], 'lai': self.er[11],
+                        'soilresp': self.er[12], 'litresp': self.er[13]}
                         
         self.modobdict = {'gpp': obs.gpp, 'nee': obs.nee, 'rt': obs.rec, 
                           'cf': obs.cf, 'clab': obs.clab, 'cr': obs.cr, 
                           'cw': obs.cw, 'cl': obs.cl, 'cs': obs.cs, 
-                          'lf': obs.lf, 'lw': obs.lw, 'lai': obs.lai}
+                          'lf': obs.lf, 'lw': obs.lw, 'lai': obs.lai,
+                          'soilresp': obs.soilresp, 'litresp': obs.litresp}
 
         if self.obs_str!=None:
-            self.obdict, self.oberrdict = self.assimilation_obs(self.obs_str)
+            self.obdict, self.oberrdict = self.rand_assim_obs(self.obs_str,
+                                                              self.no_obs)
         else:
             self.obdict, self.oberrdict = None, None
 
@@ -212,7 +214,7 @@ class dalecData( ):
         """Creates dictionary of synthetic obs given a string of observations.
         """
         possibleobs = ['gpp', 'lf', 'lw', 'rt', 'nee', 'cf', 'cl', \
-                       'cr', 'cw', 'cs', 'lai', 'clab']
+                       'cr', 'cw', 'cs', 'lai', 'clab', 'soilresp', 'litresp']
         Obslist = re.findall(r'[^,;\s]+', obs_str)
     
         for ob in Obslist:
@@ -232,8 +234,42 @@ class dalecData( ):
                 Obs_err_dict[ob+'_err'][x] = self.errdict[ob]
                         
         return Obs_dict, Obs_err_dict
-
         
+        
+        
+    def rand_assim_obs(self, obs_str, freq_list):
+        """Creates dictionary of synthetic obs given a string of observations
+        and a list of number of obs.
+        """
+        possibleobs = ['gpp', 'lf', 'lw', 'rt', 'nee', 'cf', 'cl', \
+                       'cr', 'cw', 'cs', 'lai', 'clab', 'soilresp', 'litresp']
+        Obslist = re.findall(r'[^,;\s]+', obs_str)
+        
+        for ob in Obslist:
+            if ob not in possibleobs:
+                raise Exception('Invalid observations entered, please check \
+                                 function input')
+                                 
+        Obs_dict = {ob:np.ones(self.lenrun)*float('NaN') for ob in Obslist}
+        Obs_err_dict = {ob+'_err':np.ones(self.lenrun)*float('NaN') \
+                        for ob in Obslist}
+        Obs_freq_dict = {Obslist[x]+'_freq': \
+                         random.sample(range(self.lenrun), freq_list[x]) \
+                         for x in xrange(len(Obslist))}
+                         
+        n= -1
+        for x in xrange(self.lenrun):
+            for ob in Obslist:
+                if x in Obs_freq_dict[ob+'_freq']:
+                    Obs_dict[ob][x] = self.modobdict[ob](self.pvallist[x], 
+                                                         self.d, x)
+                    Obs_err_dict[ob+'_err'][x] = self.errdict[ob]  
+                else:
+                    continue
+                         
+        return Obs_dict, Obs_err_dict
+    
+    
     def randompvals(self):
         """Creates a random list of parameter values for dalec using dataClass
         bounds.
@@ -258,4 +294,16 @@ class dalecData( ):
             
         return pvalapprox
         
+        
+    def tstpvals(self, pvals):
+        """Tests pvals to see if they are within the correct bnds.
+        """
+        x=0
+        for bnd in self.bnds:
+            if bnd[0]<pvals[x]<bnd[1]:
+                print 'p%x in bnds' %x
+            else:
+                print 'p%x not in bnds' %x
+            x += 1
+        return pvals
         

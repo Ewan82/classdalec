@@ -30,6 +30,20 @@ def nee(pvals, dC, x):
     return nee
     
     
+def litresp(pvals, dC, x):
+    """Function calculates litter respiration (litresp).
+    """
+    litresp = pvals[7]*pvals[21]*m.temp_term(pvals[9], dC, x)
+    return litresp
+    
+    
+def soilresp(pvals, dC, x):
+    """Function calculates soil respiration (soilresp).
+    """
+    soilresp = pvals[8]*pvals[22]*m.temp_term(pvals[9], dC, x)
+    return soilresp
+    
+    
 def lai(pvals, dC, x):
     """Fn calculates leaf area index (cf/clma).
     """
@@ -101,7 +115,7 @@ def linob(ob, pvals, dC, x):
     """
     modobdict = {'gpp': gpp, 'nee': nee, 'rt': rec, 'cf': cf, 'clab': clab, 
                  'cr': cr, 'cw': cw, 'cl': cl, 'cs': cs, 'lf': lf, 'lw': lw, 
-                 'lai':lai}
+                 'lai':lai, 'soilresp': soilresp, 'litresp': litresp}
     dpvals = ad.adnumber(pvals)
     output = modobdict[ob](dpvals, dC, x)
     return np.array(ad.jacobian(output, dpvals))
