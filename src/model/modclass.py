@@ -465,8 +465,8 @@ class dalecModel():
         return findmin        
        
 
-    def findminglob(self, pvals, meth='L-BFGS-B', bnds='strict', it=100,\
-                    stpsize=0.5, temp=1.):
+    def findminglob(self, pvals, meth='TNC', bnds='strict', it=300,\
+                    stpsize=0.5, temp=1., maxits=3000):
         """Function which minimizes 4DVAR cost fn. Takes an initial state (pvals),
         an obs dictionary, an obs error dictionary, a dataClass and a start and 
         finish time step.
@@ -475,7 +475,8 @@ class dalecModel():
             bnds = self.dC.bnds
         else:
             bnds = bnds
-        findmin = spop.basinhopping(cost, pvals, niter=it, \
+        findmin = spop.basinhopping(self.cost, pvals, niter=it, \
                   minimizer_kwargs={'method': meth, 'bounds':bnds,\
-                  'jac':self.gradcost}, stepsize=stpsize, T=temp)
+                  'jac':self.gradcost, 'options':{'maxfun':maxits}},
+                  stepsize=stpsize, T=temp)
         return findmin
