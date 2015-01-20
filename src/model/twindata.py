@@ -13,7 +13,8 @@ import observations as obs
 
 class dalecData( ): 
 
-    def __init__(self, lenrun, obs_str=None, no_obs=0, startrun=0, k=1):
+    def __init__(self, lenrun, obs_str=None, no_obs=0, startrun=0, k=1,
+                 erron=1, errs='normal'):
         
         self.no_obs = no_obs
         self.obs_str = obs_str
@@ -21,6 +22,7 @@ class dalecData( ):
         self.startrun = startrun
         self.timestep = np.arange(startrun, startrun+lenrun)
         self.d = ogd.dalecData(self.lenrun)
+        self.erron = erron        
         
         #Extract the data
         self.homepath = os.path.expanduser("~")
@@ -37,15 +39,15 @@ class dalecData( ):
 
         
         #'I.C. for carbon pools gCm-2'
-        self.clab = 41.8
-        self.cf = 58.0
-        self.cr = 102.0
-        self.cw = 770.0
-        self.cl = 40.0
-        self.cs = 9897.0
+        self.clab = 4.78766535e+01
+        self.cf = 3.27899589e+02
+        self.cr = 1.69977954e+02
+        self.cw = 6.40102687e+03
+        self.cl = 3.63058972e+02
+        self.cs = 1.01814051e+04
         self.clist = np.array([[self.clab,self.cf,self.cr,self.cw,self.cl,\
                                 self.cs]])
-        
+
         #'Parameters for optimization'                     range
         self.p1 = 0.0000441 #theta_min, cl to cs decomp  (1e-2 - 1e-5)day^-1
         self.p2 = 0.47 #f_auto, fraction of GPP respired  (0.3 - 0.7)
@@ -178,17 +180,21 @@ class dalecData( ):
         self.sigb_cr = 154.**2 #(self.cr*0.2)**2 #20%
         self.sigb_cl = 8.**2 #(self.cl*0.2)**2 #20%
         self.sigb_cs = 1979.4**2 #(self.cs*0.2)**2 #20% 
-        self.B = (0.5*np.array([self.pvalburn]))**2*np.eye(23)
+        self.B = (0.8*np.array([self.pvalburn]))**2*np.eye(23)
         #MAKE NEW B, THIS IS WRONG!
   
       
         #'Observartion variances for carbon pools and NEE'
-        self.vars = np.array([(self.clab*0.1)**2, (self.cf*0.1)**2, 
-                              (self.cw*0.1)**2, (self.cr*0.1)**2, 
-                              (self.cl*0.1)**2, (self.cs*0.1)**2, 0.5, 0.2**2, 
-                              0.2**2, 0.2, 0.4, 0.12, 0.05, 0.05])
+        self.vars = np.array([self.clab*0.1, self.cf*0.1, 
+                              self.cw*0.1, self.cr*0.1, 
+                              self.cl*0.1, self.cs*0.1, 0.5, 0.2, 
+                              0.2, 0.2, 0.4, 0.12, 0.05, 0.05])
         self.smallvars = self.vars*1e-3
-        self.er = self.smallvars
+        
+        if errs=='normal':
+            self.er = self.vars
+        else:
+            self.er = self.smallvars
         
         self.errdict = {'clab': self.er[0], 'cf': self.er[1],\
                         'cw': self.er[2],'cl': self.er[3],'cr': self.er[4],\
@@ -204,7 +210,7 @@ class dalecData( ):
                           'soilresp': obs.soilresp, 'litresp': obs.litresp}
 
         if self.obs_str!=None:
-            self.obdict, self.oberrdict = self.rand_assim_obs(self.obs_str,
+            self.obdict, self.oberrdict = self.rand_err_assim_obs(self.obs_str,
                                                               self.no_obs)
         else:
             self.obdict, self.oberrdict = None, None
@@ -236,8 +242,7 @@ class dalecData( ):
         return Obs_dict, Obs_err_dict
         
         
-        
-    def rand_assim_obs(self, obs_str, freq_list):
+    def rand_err_assim_obs(self, obs_str, freq_list):
         """Creates dictionary of synthetic obs given a string of observations
         and a list of number of obs.
         """
@@ -253,15 +258,26 @@ class dalecData( ):
         Obs_dict = {ob:np.ones(self.lenrun)*float('NaN') for ob in Obslist}
         Obs_err_dict = {ob+'_err':np.ones(self.lenrun)*float('NaN') \
                         for ob in Obslist}
-        Obs_freq_dict = {Obslist[x]+'_freq': \
+        if type(freq_list[0])==int:
+            Obs_freq_dict = {Obslist[x]+'_freq': \
                          random.sample(range(self.lenrun), freq_list[x]) \
                          for x in xrange(len(Obslist))}
+        else:
+            Obs_freq_dict = {Obslist[x]+'_freq': \
+                           random.sample(range(freq_list[x][0],freq_list[x][1]), 
+                                       freq_list[x][2]) for x in \
+                           xrange(len(Obslist))}       
                          
         n= -1
         for x in xrange(self.lenrun):
             for ob in Obslist:
                 if x in Obs_freq_dict[ob+'_freq']:
-                    Obs_dict[ob][x] = self.modobdict[ob](self.pvallist[x], 
+                    if self.erron==1:
+                        Obs_dict[ob][x] = self.modobdict[ob](self.pvallist[x], 
+                                                         self.d, x) + \
+                                      random.gauss(0, self.errdict[ob])
+                    else:
+                        Obs_dict[ob][x] = self.modobdict[ob](self.pvallist[x], 
                                                          self.d, x)
                     Obs_err_dict[ob+'_err'][x] = self.errdict[ob]  
                 else:
@@ -289,9 +305,12 @@ class dalecData( ):
         pvalapprox = np.ones(23)*-9999.
         x=0
         for p in pvals:
-            pvalapprox[x] = p + np.random.uniform(-p*0.5,p*0.5)
+            pvalapprox[x] = p + random.gauss(0, p*0.8)
+            if self.bnds[x][1]<pvalapprox[x] or self.bnds[x][0]>pvalapprox[x]:
+                pvalapprox[x] = np.random.uniform(self.bnds[x][0],\
+                                                   self.bnds[x][1])                
             x += 1
-            
+                 
         return pvalapprox
         
         

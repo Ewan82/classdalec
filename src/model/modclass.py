@@ -357,7 +357,7 @@ class dalecModel():
         """Returns observation error covariance matrix given a list of 
         observation error values.
         """
-        r = yerr*np.eye(len(yerr))
+        r = (yerr**2)*np.eye(len(yerr))
         return r
         
         
@@ -451,7 +451,8 @@ class dalecModel():
         return findmin             
  
 
-    def findmintnc(self, pvals, bnds='strict', dispp=None, maxits=230, mini=0):
+    def findmintnc(self, pvals, bnds='strict', dispp=None, maxits=2000, 
+                   mini=0):
         """Function which minimizes 4DVAR cost fn. Takes an initial state
         (pvals).
         """
@@ -467,9 +468,9 @@ class dalecModel():
 
     def findminglob(self, pvals, meth='TNC', bnds='strict', it=300,\
                     stpsize=0.5, temp=1., displ=True, maxits=3000):
-        """Function which minimizes 4DVAR cost fn. Takes an initial state (pvals),
-        an obs dictionary, an obs error dictionary, a dataClass and a start and 
-        finish time step.
+        """Function which minimizes 4DVAR cost fn. Takes an initial state 
+        (pvals), an obs dictionary, an obs error dictionary, a dataClass and 
+        a start and finish time step.
         """
         if bnds == 'strict':
             bnds = self.dC.bnds
@@ -477,6 +478,28 @@ class dalecModel():
             bnds = bnds
         findmin = spop.basinhopping(self.cost, pvals, niter=it, \
                   minimizer_kwargs={'method': meth, 'bounds':bnds,\
-                  'jac':self.gradcost, 'options':{'maxfun':maxits}},
+                  'jac':self.gradcost, 'options':{'maxiter':maxits}},
                   stepsize=stpsize, T=temp, disp=displ)
         return findmin
+        
+        
+    def ensemble(self, pvals):
+        """Ensemble 4DVAR run for twin experiments.
+        """
+        nume = 10
+        ensempvals = np.ones((nume, 23))
+        for x in xrange(nume):
+            ensempvals[x] = self.dC.randompert(pvals)
+            
+        assim_results = [self.findmintnc(ensemp, dispp=False) for ensemp in  
+                         ensempvals]
+        
+        xalist = [assim_results[x][0] for x in xrange(nume)]
+      
+        return ensempvals, xalist, assim_results
+            
+        
+        
+                    
+            
+        

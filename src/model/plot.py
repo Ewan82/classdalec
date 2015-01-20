@@ -35,7 +35,7 @@ def plotphi(onoff, dC, start, fin):
     plt.show()    
     
     
-def plotobs(ob, pvals, dC, start, fin, lab=0, dashed=0):
+def plotobs(ob, pvals, dC, start, fin, lab=0, dashed=0, colour=None):
     """Plots a specified observation using obs eqn in obs module. Takes an
     observation string, a dataClass (dC) and a start and finish point.
     """
@@ -53,9 +53,9 @@ def plotobs(ob, pvals, dC, start, fin, lab=0, dashed=0):
     for x in xrange(start, fin):
         oblist[x-start] = modobdict[ob](pvallist[x-start],dC,x)
     if dashed==True:    
-        plt.plot(xlist, oblist, '--', label=lab)
+        plt.plot(xlist, oblist, '--', label=lab, color=colour)
     else:
-        plt.plot(xlist, oblist, label=lab)
+        plt.plot(xlist, oblist, label=lab, color=colour)
         
 
 def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1):
@@ -88,6 +88,51 @@ def plottwin(ob, truth, xb, xa, dC, start, fin, erbars=1, obdict=None,
     plotobs(ob, truth, dC, start, fin, ob+'_truth')
     plotobs(ob, xb, dC, start, fin, ob+'_b')
     plotobs(ob, xa, dC, start, fin, ob+'_a', 1)
+    
+    if obdict == None:
+        obdict = dC.obdict
+        oberrdict = dC.oberrdict
+    else:
+        obdict = obdict
+        oberrdict = oberrdict
+        
+    if ob in obdict.keys() and len(obdict[ob])==(start-fin) and erbars==True:
+        plt.errorbar(xlist, obdict[ob], yerr=oberrdict[ob+'_err'], \
+                         fmt='o', label=ob+'_o')
+    elif ob in obdict.keys() and len(obdict[ob])!=(start-fin) and erbars==True:
+        apnd = np.ones((fin-start)-len(obdict[ob]))*float('NaN')
+        obdict = np.concatenate((obdict[ob],apnd))                
+        oberrdict = np.concatenate((oberrdict[ob+'_err'],apnd)) 
+        plt.errorbar(xlist, obdict, yerr=oberrdict, \
+                         fmt='o', label=ob+'_o')
+                         
+    elif ob in obdict.keys() and len(obdict[ob])==(start-fin) and erbars==False:       
+        plt.plot(xlist, obdict[ob], 'o', label=ob+'_o')
+    elif ob in obdict.keys() and len(obdict[ob])!=(start-fin) and erbars==False:
+        apnd = np.ones((fin-start)-len(obdict[ob]))*float('NaN')
+        obdict = np.concatenate((obdict[ob],apnd))                
+        plt.plot(xlist, obdict, 'o', label=ob+'_o')
+        
+    plt.xlabel('Day')
+    plt.ylabel(ob)
+    plt.title(ob+' plotted for truth, xb and xa.')
+    plt.legend()
+    plt.show() 
+    
+    
+def plotensemtwin(ob, truth, xb, xa, dC, start, fin, erbars=1, obdict=None,
+             oberrdict=None):
+    """For identical twin experiments plots the truths trajectory and xa's and 
+    xb's to see imporvements.
+    """
+    xlist = np.arange(start, fin)
+    plotobs(ob, truth, dC, start, fin, ob+'_truth', 0, 'red')
+    for pval in xb:
+        plotobs(ob, pval, dC, start, fin, None, 1, 'orange')
+    plotobs(ob, np.mean(xb, axis=0), dC, start, fin, ob+'_b', 0, 'blue')
+    for pval in xa:
+        plotobs(ob, pval, dC, start, fin, None, 1, 'pink')
+    plotobs(ob, np.mean(xa, axis=0), dC, start, fin, ob+'_a', 0, 'green')
     
     if obdict == None:
         obdict = dC.obdict
