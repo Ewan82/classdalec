@@ -117,6 +117,16 @@ class dalecData( ):
                                2.31502677e+02, 9.32789998e+01, 3.76239946e+01,  
                                4.32147084e+01, 4.76802246e+02, 2.34676150e+02,  
                                4.87619657e+03, 2.93150254e+02, 1.03952316e+04])
+                               
+        self.pvalburnpert2= np.array([5.51868034e-05, 4.37632826e-01, 
+                        3.89079269e-01, 1.85104101e-01,   2.24821975e+00,  
+                        6.98021967e-05, 4.57527399e-04,   2.47798868e-03,   
+                        1.96309016e-06, 7.98945410e-02,   1.86092290e+01,   
+                        3.23004477e+01, 1.56323093e-02,   3.26731984e+01,  
+                        1.19856967e+02, 9.99073805e+01,   1.00072803e+01,  
+                        7.17403552e+01, 4.57999477e+02,   1.60424961e+02, 
+                        1.15858201e+04, 5.90675123e+02,   1.24358017e+04])
+
 
        
         self.bnds=((1e-5,1e-2),(0.3,0.7),(0.01,0.5),(0.01,0.5),(1.0001,10.),\
@@ -180,7 +190,7 @@ class dalecData( ):
         self.sigb_cr = 154.**2 #(self.cr*0.2)**2 #20%
         self.sigb_cl = 8.**2 #(self.cl*0.2)**2 #20%
         self.sigb_cs = 1979.4**2 #(self.cs*0.2)**2 #20% 
-        self.B = (0.8*np.array([self.pvalburn]))**2*np.eye(23)
+        self.B = (0.5*np.array([self.pvalburn]))**2*np.eye(23)
         #MAKE NEW B, THIS IS WRONG!
   
       
@@ -305,10 +315,13 @@ class dalecData( ):
         pvalapprox = np.ones(23)*-9999.
         x=0
         for p in pvals:
-            pvalapprox[x] = p + random.gauss(0, p*0.8)
-            if self.bnds[x][1]<pvalapprox[x] or self.bnds[x][0]>pvalapprox[x]:
-                pvalapprox[x] = np.random.uniform(self.bnds[x][0],\
-                                                   self.bnds[x][1])                
+            pvalapprox[x] = p + random.gauss(0, p*0.5)
+            if self.bnds[x][1]<pvalapprox[x]: 
+                pvalapprox[x] = self.bnds[x][1] - abs(random.gauss(0, 
+                                                        self.bnds[x][1]*0.001))  
+            elif self.bnds[x][0]>pvalapprox[x]:
+                pvalapprox[x] = self.bnds[x][0] + abs(random.gauss(0, 
+                                                        self.bnds[x][0]*0.001))                
             x += 1
                  
         return pvalapprox

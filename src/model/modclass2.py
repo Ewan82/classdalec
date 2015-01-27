@@ -4,7 +4,6 @@ dalecv2 model.
 import numpy as np
 import scipy.optimize as spop
 import algopy
-import numdifftools as nd
 
 class dalecModel():
  
@@ -25,16 +24,17 @@ class dalecModel():
                           'lf': self.lf, 'lw': self.lw, 'lai': self.lai,
                           'litresp': self.litresp, 'soilresp': self.soilresp}
         self.nume = 100
-        self.Jdalec = nd.Jacobian(self.dalecv2diff)
+        
+        self.cg = self.trace_dalecv2()
  
 #------------------------------------------------------------------------------   
 #Model functions
 #------------------------------------------------------------------------------
 
     def fitpolynomial(self, ep, multfac):
-        """Polynomial used to find phi_f and phi (offset terms used in 
-        phi_onset and phi_fall), given an evaluation point for the polynomial 
-        and a multiplication term.
+        """Polynomial used to find phi_f and phi (offset terms used in phi_onset 
+        and phi_fall), given an evaluation point for the polynomial and a 
+        multiplication term.
         """
         cf = [2.359978471e-05, 0.000332730053021, 0.000901865258885,
               -0.005437736864888, -0.020836027517787, 0.126972018064287,
@@ -161,48 +161,40 @@ class dalecModel():
         cw2 = (1 - theta_woo)*cw + (1-f_auto)*(1-f_fol)*(1-f_lab)*(1-f_roo)*gpp
         cl2 = (1-(theta_lit+theta_min)*temp)*cl + theta_roo*cr + phi_off*cf
         cs2 = (1 - theta_som*temp)*cs + theta_woo*cw + theta_min*temp*cl
-        """        
-        out = algopy.zeros(6, dtype=p)        
-        
+        """             
         phi_on = self.phi_onset(p[11], p[13])
         phi_off = self.phi_fall(p[14], p[15], p[4])
         gpp = self.acm(p[18], p[16], p[10])
         temp = self.temp_term(p[9])
         
-        out[0] = (1 - phi_on)*p[17] + (1-p[1])*(1-p[2])*p[12]*gpp
-        out[1] = (1 - phi_off)*p[18] + phi_on*p[17] + (1-p[1])*p[2]*gpp
-        out[2] = (1 - p[6])*p[19] + (1-p[1])*(1-p[2])*(1-p[12])*p[3]*gpp
-        out[3] = (1 - p[5])*p[20] + (1-p[1])*(1-p[2])*(1-p[12])*(1-p[3])*gpp
-        out[4] = (1-(p[7]+p[0])*temp)*p[21] + p[6]*p[19] + phi_off*p[18]
-        out[5] = (1 - p[8]*temp)*p[22] + p[5]*p[20] + p[0]*temp*p[21]
-        return out
+        return (1 - phi_on)*p[17] + (1-p[1])*(1-p[2])*p[12]*gpp
 
-       
+
+        
     def jac_dalecv2(self, p):
         """Using algopy package calculates the jacobian for dalecv2 given a 
         input vector p.
         """
         p = algopy.UTPM.init_jacobian(p)
-        return algopy.UTPM.extract_jacobian(self.dalecv2(p)) 
+        return algopy.UTPM.extract_jacobian(self.dalecv2diff(p)) 
+        
+        
+    def trace_dalecv2(self):
+        """Using algopy reverse ad to calc jac.
+        """
+        cg = algopy.CGraph()
+        pvals = algopy.Function(np.ones(23))
+        y = self.dalecv2diff(pvals)
+        cg.trace_off()
+        cg.independentFunctionList = [pvals]
+        cg.dependentFunctionList = [y]
+        return cg
         
         
     def jac2_dalecv2(self, p):
         """Use algopy reverse mode ad calc jac of dv2.
         """
-        mat = np.ones((23,23))*-9999.
-        mat[0:17] = np.eye(17,23)
-        p = algopy.UTPM.init_jacobian(p)
-        mat[17:] = algopy.UTPM.extract_jacobian(self.dalecv2diff(p))
-        return mat
-        
-        
-    def jac3_dalecv2(self, p):
-        """Use algopy reverse mode ad calc jac of dv2.
-        """
-        mat = np.ones((23,23))*-9999.
-        mat[0:17] = np.eye(17,23)
-        mat[17:] = self.Jdalec(p)
-        return mat
+        return self.cg.gradient(p.tolist())    
         
    
     def mod_list(self, pvals, lenrun=0):
@@ -236,7 +228,7 @@ class dalecModel():
             
         mod_list = np.concatenate((np.array([pvals]),\
                                    np.ones((lenrun, len(pvals)))*-9999.))
-        matlist = np.ones((lenrun, 23, 23))*-9999.
+        matlist = np.ones((lenrun, 1, 23))*-9999.
         
         for t in xrange(lenrun):
             mod_list[(t+1)] = self.dalecv2(mod_list[t])
@@ -258,7 +250,7 @@ class dalecModel():
             
         mod_list = np.concatenate((np.array([pvals]),\
                                    np.ones((lenrun, len(pvals)))*-9999.))
-        matlist = np.ones((lenrun, 23, 23))*-9999.
+        matlist = np.ones((lenrun, 1, 23))*-9999.
         
         for t in xrange(lenrun):
             mod_list[(t+1)] = self.dalecv2(mod_list[t])
@@ -499,20 +491,6 @@ class dalecModel():
         return gradcost
         
         
-    def acovmat(self, pvals):
-        """Calculates approximation to analysis error covariance matrix
-        A = (B^(-1) + H^(T) * R^(-1) * H)^(-1).
-        """
-        pvallist, matlist = self.linmod_list(pvals)
-        hx, hmatrix = self.hmat(pvallist, matlist)
-        return np.linalg.inv(np.linalg.inv(self.dC.B) + np.dot(np.dot(\
-                             hmatrix.T, np.linalg.inv(self.rmatrix)), hmatrix))
-        
-        
-#------------------------------------------------------------------------------
-#Minimization Routines.        
-#------------------------------------------------------------------------------
-        
     def findmin(self, pvals, meth='L-BFGS-B', bnds='strict', FACTR=1e7):
         """Function which minimizes 4DVAR cost fn. Takes an initial state
         (pvals).
@@ -587,14 +565,3 @@ class dalecModel():
         xalist = [assim_results[x][0] for x in xrange(nume)]
       
         return ensempvals, xalist, assim_results
-        
-
-#------------------------------------------------------------------------------
-#Cycled 4D-Var.        
-#------------------------------------------------------------------------------
-
-        
-        
-                    
-            
-        
