@@ -79,6 +79,28 @@ def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1):
     plt.show()
     
     
+def plotcycled4dvar(ob, conditions, xb, xa, dC, erbars=1):
+    """Plots a cycled 4DVar run given an observation string (obs), a set of
+    conditions from modclass output and a list of xb's and xa's.
+    """
+    fin = conditions['lenrun']
+    xlist = np.arange(fin)
+    for t in xrange(conditions['numbrun']):
+        plotobs(ob, xb[t], conditions['lenwind']*t, fin, ob+'_b%x' %t, 1)
+        plotobs(ob, xa[t], conditions['lenwind']*t, fin, ob+'_a%x' %t)
+        plt.axvline(x=t*conditions['lenwind'],color='k',ls='dashed')
+        
+    obdict = dC.obdict
+    oberrdict = dC.oberrdict
+    if ob in obdict.keys():
+        if erbars==True:
+            plt.errorbar(xlist, obdict[ob][0:fin], yerr=oberrdict[ob+'_err'],\
+                         fmt='o', label=ob+'_o')
+        else:
+            plt.plot(xlist, obdict[ob][0:fin], 'o', label=ob+'_o')
+    plt.legend()
+    plt.show()
+    
 def plottwin(ob, truth, xb, xa, dC, start, fin, erbars=1, obdict=None,
              oberrdict=None):
     """For identical twin experiments plots the truths trajectory and xa's and 
@@ -212,3 +234,5 @@ def plotlinmoderr(cpool, dC, start, fin):
     plt.legend()
     plt.show()
     
+
+

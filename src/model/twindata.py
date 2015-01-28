@@ -13,16 +13,18 @@ import observations as obs
 
 class dalecData( ): 
 
-    def __init__(self, lenrun, obs_str=None, no_obs=0, startrun=0, k=1,
-                 erron=1, errs='normal'):
+    def __init__(self, lenrun, obs_str=None, no_obs=0, freq_obs=0, startrun=0,
+                 k=1, erron=1, errs='normal', errors=1):
         
         self.no_obs = no_obs
         self.obs_str = obs_str
+        self.freq_obs = freq_obs
         self.lenrun = lenrun
         self.startrun = startrun
         self.timestep = np.arange(startrun, startrun+lenrun)
-        self.d = ogd.dalecData(self.lenrun)
-        self.erron = erron        
+        self.d = ogd.dalecData(self.lenrun, k=k)
+        self.erron = erron    
+        self.k = k
         
         #Extract the data
         self.homepath = os.path.expanduser("~")
@@ -180,7 +182,7 @@ class dalecData( ):
         
         
         #Model values
-        self.pvallist = mod.mod_list(self.pvalburn, self.d, 0, self.lenrun-1)
+        self.pvallist = mod.mod_list(self.pvalburn, self.d, 0, k*self.lenrun-1)
   
       
         #'Background variances for carbon pools & B matrix'
@@ -219,9 +221,11 @@ class dalecData( ):
                           'lf': obs.lf, 'lw': obs.lw, 'lai': obs.lai,
                           'soilresp': obs.soilresp, 'litresp': obs.litresp}
 
-        if self.obs_str!=None:
+        if self.obs_str!=None and errors==1:
             self.obdict, self.oberrdict = self.rand_err_assim_obs(self.obs_str,
                                                               self.no_obs)
+        elif self.obs_str!=None and errors==0:
+            self.obdict, self.oberrdict = self.assimilation_obs(self.obs_str)
         else:
             self.obdict, self.oberrdict = None, None
 
@@ -238,12 +242,12 @@ class dalecData( ):
                 raise Exception('Invalid observations entered, please check \
                                  function input')
 
-        Obs_dict = {ob:np.ones(self.lenrun)*float('NaN') for ob in Obslist}
-        Obs_err_dict = {ob+'_err':np.ones(self.lenrun)*float('NaN') \
+        Obs_dict = {ob:np.ones(self.lenrun*self.k)*float('NaN') for ob in \
+                    Obslist}
+        Obs_err_dict = {ob+'_err':np.ones(self.lenrun*self.k)*float('NaN') \
                         for ob in Obslist}
   
-        n = -1
-        for x in xrange(0, self.lenrun, self.freq_obs):
+        for x in xrange(0, self.lenrun*self.k, self.freq_obs):
             for ob in Obslist:
                 Obs_dict[ob][x] = self.modobdict[ob](self.pvallist[x], self.d,
                                                      x)
@@ -265,12 +269,13 @@ class dalecData( ):
                 raise Exception('Invalid observations entered, please check \
                                  function input')
                                  
-        Obs_dict = {ob:np.ones(self.lenrun)*float('NaN') for ob in Obslist}
-        Obs_err_dict = {ob+'_err':np.ones(self.lenrun)*float('NaN') \
+        Obs_dict = {ob:np.ones(self.lenrun*self.k)*float('NaN') for ob in \
+                    Obslist}
+        Obs_err_dict = {ob+'_err':np.ones(self.lenrun*self.k)*float('NaN') \
                         for ob in Obslist}
         if type(freq_list[0])==int:
             Obs_freq_dict = {Obslist[x]+'_freq': \
-                         random.sample(range(self.lenrun), freq_list[x]) \
+                         random.sample(range(self.lenrun*self.k), freq_list[x]) \
                          for x in xrange(len(Obslist))}
         else:
             Obs_freq_dict = {Obslist[x]+'_freq': \
@@ -278,8 +283,7 @@ class dalecData( ):
                                        freq_list[x][2]) for x in \
                            xrange(len(Obslist))}       
                          
-        n= -1
-        for x in xrange(self.lenrun):
+        for x in xrange(self.lenrun*self.k):
             for ob in Obslist:
                 if x in Obs_freq_dict[ob+'_freq']:
                     if self.erron==1:

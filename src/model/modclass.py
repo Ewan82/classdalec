@@ -4,28 +4,28 @@ dalecv2 model.
 import numpy as np
 import scipy.optimize as spop
 import algopy
-import numdifftools as nd
 
 class dalecModel():
  
    
-    def __init__(self, dataClass, timestep=0):
+    def __init__(self, dataClass, timestep=0, strtrun=0, endrun=365):
         """dataClass and timestep at which to run the dalecv2 model.
         """        
         self.dC = dataClass
         self.x = timestep
-        self.lenrun = self.dC.lenrun
+        self.lenrun = self.dC.lenrun*self.dC.k
         self.xb = self.dC.pvalburnpert2
-        self.yoblist, self.yerroblist = self.obscost()
-        self.rmatrix = self.rmat(self.yerroblist)
         self.modcoston = 1
         self.modobdict = {'gpp': self.gpp, 'nee': self.nee, 'rt': self.rec, 
                           'cf': self.cf, 'clab': self.clab, 'cr': self.cr, 
                           'cw': self.cw, 'cl': self.cl, 'cs': self.cs, 
                           'lf': self.lf, 'lw': self.lw, 'lai': self.lai,
                           'litresp': self.litresp, 'soilresp': self.soilresp}
+        self.startrun = strtrun
+        self.endrun = endrun  
+        self.yoblist, self.yerroblist = self.obscost()
+        self.rmatrix = self.rmat(self.yerroblist)
         self.nume = 100
-        self.Jdalec = nd.Jacobian(self.dalecv2diff)
  
 #------------------------------------------------------------------------------   
 #Model functions
@@ -195,77 +195,38 @@ class dalecModel():
         mat[17:] = algopy.UTPM.extract_jacobian(self.dalecv2diff(p))
         return mat
         
-        
-    def jac3_dalecv2(self, p):
-        """Use algopy reverse mode ad calc jac of dv2.
-        """
-        mat = np.ones((23,23))*-9999.
-        mat[0:17] = np.eye(17,23)
-        mat[17:] = self.Jdalec(p)
-        return mat
-        
    
-    def mod_list(self, pvals, lenrun=0):
+    def mod_list(self, pvals):
         """Creates an array of evolving model values using dalecv2 function.
         Takes a list of initial param values.
-        """
-        if lenrun == 0:
-            lenrun = self.lenrun
-        else:
-            lenrun = lenrun
-            
+        """            
         mod_list = np.concatenate((np.array([pvals]),\
-                                   np.ones((lenrun, len(pvals)))*-9999.))       
+                    np.ones((self.endrun-self.startrun, len(pvals)))*-9999.))       
         
-        for t in xrange(lenrun):
+        self.x = self.startrun
+        for t in xrange(self.endrun-self.startrun):
             mod_list[(t+1)] = self.dalecv2(mod_list[t])
             self.x += 1
         
-        self.x -= lenrun
+        self.x -= self.endrun
         return mod_list
 
         
-    def linmod_list(self, pvals, lenrun=0):
+    def linmod_list(self, pvals):
         """Creates an array of linearized models (Mi's) taking a list of 
         initial param values and a run length (lenrun).
-        """
-        if lenrun == 0:
-            lenrun = self.lenrun
-        else:
-            lenrun = lenrun
-            
+        """           
         mod_list = np.concatenate((np.array([pvals]),\
-                                   np.ones((lenrun, len(pvals)))*-9999.))
-        matlist = np.ones((lenrun, 23, 23))*-9999.
+                    np.ones((self.endrun-self.startrun, len(pvals)))*-9999.))
+        matlist = np.ones((self.endrun-self.startrun, 23, 23))*-9999.
         
-        for t in xrange(lenrun):
+        self.x = self.startrun        
+        for t in xrange(self.endrun-self.startrun):
             mod_list[(t+1)] = self.dalecv2(mod_list[t])
             matlist[t] = self.jac2_dalecv2(mod_list[t])
             self.x += 1
             
-        self.x -= lenrun    
-        return mod_list, matlist
-        
-        
-    def linmod_list2(self, pvals, lenrun=0):
-        """Creates an array of linearized models (Mi's) taking a list of 
-        initial param values and a run length (lenrun).
-        """
-        if lenrun == 0:
-            lenrun = self.lenrun
-        else:
-            lenrun = lenrun
-            
-        mod_list = np.concatenate((np.array([pvals]),\
-                                   np.ones((lenrun, len(pvals)))*-9999.))
-        matlist = np.ones((lenrun, 23, 23))*-9999.
-        
-        for t in xrange(lenrun):
-            mod_list[(t+1)] = self.dalecv2(mod_list[t])
-            matlist[t] = self.jac3_dalecv2(mod_list[t])
-            self.x += 1
-            
-        self.x -= lenrun    
+        self.x -= self.endrun    
         return mod_list, matlist
         
         
@@ -405,7 +366,7 @@ class dalecModel():
         """
         yoblist = np.array([])
         yerrlist = np.array([])
-        for t in xrange(self.lenrun):
+        for t in xrange(self.startrun, self.endrun):
             for ob in self.dC.obdict.iterkeys():
                 if np.isnan(self.dC.obdict[ob][t])!=True:
                     yoblist = np.append(yoblist, self.dC.obdict[ob][t])
@@ -420,13 +381,15 @@ class dalecModel():
         dictionary and a dataClass (dC).
         """
         hx = np.array([])
-        for t in xrange(self.lenrun):
+        self.x = self.startrun
+        for t in xrange(self.startrun, self.endrun):
             for ob in self.dC.obdict.iterkeys():
                 if np.isnan(self.dC.obdict[ob][t])!=True:
-                    hx = np.append(hx, self.modobdict[ob](pvallist[t]))
+                    hx = np.append(hx, \
+                                 self.modobdict[ob](pvallist[t-self.startrun]))
             self.x += 1
         
-        self.x -= self.lenrun
+        self.x -= self.endrun
         return hx
 
         
@@ -446,20 +409,22 @@ class dalecModel():
         """
         hx = np.array([])
         hmat = np.array([])
-        for t in xrange(self.lenrun):
+        self.x = self.startrun
+        for t in xrange(self.startrun, self.endrun):
             temp = []
             for ob in self.dC.obdict.iterkeys():
                 if np.isnan(self.dC.obdict[ob][t])!=True:
-                    hx = np.append(hx, self.modobdict[ob](pvallist[t]))
-                    temp.append([self.linob(ob, pvallist[t])])
-            self.x +=1
+                    hx = np.append(hx, \
+                                 self.modobdict[ob](pvallist[t-self.startrun]))
+                    temp.append([self.linob(ob, pvallist[t-self.startrun])])
+            self.x += 1
             if len(temp) != 0.:
                 hmat = np.append(hmat, np.dot(np.vstack(temp),\
-                                 self.mfac(matlist, t-1)))
+                                 self.mfac(matlist, t-self.startrun-1)))
             else:
                 continue
                         
-        self.x -= self.lenrun    
+        self.x -= self.endrun    
         hmat = np.reshape(hmat, (len(hmat)/23,23))
         return hx, hmat 
         
@@ -547,6 +512,7 @@ class dalecModel():
         """Function which minimizes 4DVAR cost fn. Takes an initial state
         (pvals).
         """
+        self.xb = pvals
         if bnds == 'strict':
             bnds=self.dC.bnds
         else:
@@ -584,7 +550,7 @@ class dalecModel():
         assim_results = [self.findmintnc(ensemp, dispp=False) for ensemp in  
                          ensempvals]
         
-        xalist = [assim_results[x][0] for x in xrange(nume)]
+        xalist = [assim_results[x][0] for x in xrange(self.nume)]
       
         return ensempvals, xalist, assim_results
         
@@ -592,9 +558,24 @@ class dalecModel():
 #------------------------------------------------------------------------------
 #Cycled 4D-Var.        
 #------------------------------------------------------------------------------
-
         
+    def cycle4dvar(self, pvals, lenwind, numbwind, lenrun):        
+        """Cycle 4Dvar windows and see their effect on predicting future obs.           
+        """
+        xb=[pvals]
+        xa=[]
+        self.startrun = 0
+        self.endrun = lenwind
+        for x in xrange(numbwind):
+            self.yoblist, self.yerroblist = self.obscost()
+            self.rmatrix = self.rmat(self.yerroblist)
+            xa.append(self.findmintnc(xb[x]))
+            xb.append(self.mod_list(xa[x][0])[self.endrun-self.startrun])
+            self.startrun += lenwind
+            self.endrun += lenwind
         
-                    
-            
-        
+        self.startrun -= lenwind*numbwind
+        self.endrun -= lenwind*numbwind
+        conditions = {'pvals':pvals, 'lenwind':lenwind, 'numbwind':numbwind,
+                      'lenrun': lenrun}
+        return conditions, xb, xa
