@@ -79,12 +79,16 @@ def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1):
     plt.show()
     
     
-def plotcycled4dvar(ob, conditions, xb, xa, dC, erbars=1):
+def plotcycled4dvar(ob, conditions, xb, xa, dC, erbars=1, truth=None):
     """Plots a cycled 4DVar run given an observation string (obs), a set of
     conditions from modclass output and a list of xb's and xa's.
     """
     fin = conditions['lenrun']
     xlist = np.arange(fin)
+
+    if truth!=None:
+        plotobs(ob, truth, dC, 0, fin, ob+'truth')
+
     for t in xrange(conditions['numbrun']):
         plotobs(ob, xb[t], conditions['lenwind']*t, fin, ob+'_b%x' %t, 1)
         plotobs(ob, xa[t], conditions['lenwind']*t, fin, ob+'_a%x' %t)
