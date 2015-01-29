@@ -52,11 +52,17 @@ def plotobs(ob, pvals, dC, start, fin, lab=0, dashed=0, colour=None):
     oblist = np.ones(fin - start)*-9999.
     for x in xrange(start, fin):
         oblist[x-start] = modobdict[ob](pvallist[x-start],dC,x)
-    if dashed==True:    
-        plt.plot(xlist, oblist, '--', label=lab, color=colour)
+    if colour==None:
+        if dashed==True:    
+            plt.plot(xlist, oblist, '--', label=lab)
+        else:
+            plt.plot(xlist, oblist, label=lab)
     else:
-        plt.plot(xlist, oblist, label=lab, color=colour)
-        
+        if dashed==True:    
+            plt.plot(xlist, oblist, '--', label=lab, color=colour)
+        else:
+            plt.plot(xlist, oblist, label=lab, color=colour)        
+
 
 def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1):
     """Plots a model predicted observation value for two initial states (xb,xa)
@@ -89,21 +95,77 @@ def plotcycled4dvar(ob, conditions, xb, xa, dC, erbars=1, truth=None):
     if truth!=None:
         plotobs(ob, truth, dC, 0, fin, ob+'truth')
 
-    for t in xrange(conditions['numbrun']):
-        plotobs(ob, xb[t], conditions['lenwind']*t, fin, ob+'_b%x' %t, 1)
-        plotobs(ob, xa[t], conditions['lenwind']*t, fin, ob+'_a%x' %t)
+    plotobs(ob, xb[0], dC, conditions['lenwind']*0, fin, ob+'_b', 1)
+    for t in xrange(conditions['numbwind']):
+        plotobs(ob, xa[t][0], dC, conditions['lenwind']*t, fin, ob+'_a%x' %t)
         plt.axvline(x=t*conditions['lenwind'],color='k',ls='dashed')
         
     obdict = dC.obdict
     oberrdict = dC.oberrdict
     if ob in obdict.keys():
         if erbars==True:
-            plt.errorbar(xlist, obdict[ob][0:fin], yerr=oberrdict[ob+'_err'],\
-                         fmt='o', label=ob+'_o')
+            plt.errorbar(xlist, obdict[ob][0:fin],\
+                         yerr=oberrdict[ob+'_err'][0:fin], fmt='o',\
+                         label=ob+'_o')
         else:
             plt.plot(xlist, obdict[ob][0:fin], 'o', label=ob+'_o')
+            
+    plt.xlabel('Day')
+    plt.ylabel(ob)
+    plt.title(ob+' for cycled 4DVar run')
     plt.legend()
     plt.show()
+    
+ 
+def plotsumobs(ob, pvals, dC, start, fin):
+    """Plots a specified observation using obs eqn in obs module. Takes an
+    observation string, a dataClass (dC) and a start and finish point.
+    """
+    modobdict = {'gpp': obs.gpp, 'nee': obs.nee, 'rt': obs.rec, 'cf': obs.cf,
+                 'clab': obs.clab, 'cr': obs.cr, 'cw': obs.cw, 'cl': obs.cl,
+                 'cs': obs.cs, 'lf': obs.lf, 'lw': obs.lw, 'lai':obs.lai,
+                 'soilresp': obs.soilresp, 'litresp': obs.litresp}
+
+    pvallist = m.mod_list(pvals, dC, start, fin)
+    xlist = np.arange(start, fin)
+    oblist = np.ones(fin - start)*-9999.
+    for x in xrange(start, fin):
+        oblist[x-start] = modobdict[ob](pvallist[x-start],dC,x)
+    return oblist
+
+   
+def plotsumcycled4dvar(ob, conditions, xb, xa, dC, truth=None):
+    """Plots cumulative sum of modelled observations from pvals taken from
+    cycles 4dvar exps.    
+    """    
+    fin = conditions['lenrun']
+    xlist = np.arange(fin)
+
+    if truth!=None:
+        sumobs=np.cumsum(plotsumobs(ob, truth, dC, 0, fin))
+        plt.plot(np.arange(0, fin),sumobs, label=ob+'_true')
+    else:
+        sumobs=np.cumsum(plotsumobs(ob, xa[0][0], dC, 0, fin))
+
+    plt.plot(np.arange(0,fin),\
+             np.cumsum(plotsumobs(ob, xb[0], dC, conditions['lenwind']*0,\
+             fin,)), label=ob+'_b')
+
+    obs=plotsumobs(ob, xa[0][0], dC, 0, fin)
+    plt.plot(np.arange(0,fin), np.cumsum(obs), label=ob+'_a0')                
+    for t in xrange(1, conditions['numbwind']):
+        obs=plotsumobs(ob, xa[t][0], dC, conditions['lenwind']*t, fin)
+        obs[0]=obs[0]+sumobs[conditions['lenwind']*t-1]
+        plt.plot(np.arange(conditions['lenwind']*t,fin), np.cumsum(obs),\
+                 label=ob+'_a%x' %t)
+        plt.axvline(x=t*conditions['lenwind'],color='k',ls='dashed')
+            
+    plt.xlabel('Day')
+    plt.ylabel(ob+' cumulative sum')
+    plt.title(ob+' for cycled 4DVar run')
+    plt.legend()
+    plt.show()     
+    
     
 def plottwin(ob, truth, xb, xa, dC, start, fin, erbars=1, obdict=None,
              oberrdict=None):
