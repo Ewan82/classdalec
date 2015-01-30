@@ -89,9 +89,9 @@ def plotcycled4dvar(ob, conditions, xb, xa, dC, erbars=1, truth=None):
     if truth!=None:
         plotobs(ob, truth, dC, 0, fin, ob+'truth')
 
-    for t in xrange(conditions['numbrun']):
+    for t in xrange(conditions['numbwind']):
         plotobs(ob, xb[t], conditions['lenwind']*t, fin, ob+'_b%x' %t, 1)
-        plotobs(ob, xa[t], conditions['lenwind']*t, fin, ob+'_a%x' %t)
+        plotobs(ob, xa[t][0], conditions['lenwind']*t, fin, ob+'_a%x' %t)
         plt.axvline(x=t*conditions['lenwind'],color='k',ls='dashed')
         
     obdict = dC.obdict
