@@ -138,7 +138,7 @@ def mod_list(pvals, dC, start, fin):
     time.
     """
     mod_list = np.concatenate((np.array([pvals]),\
-                               np.ones((fin - start, len(pvals)))*-9999.))
+                               np.ones((int(fin) - int(start), len(pvals)))*-9999.))
     for x in xrange(start, fin):
         mod_list[(x+1) - start] = dalecv2_input(mod_list[x-start], dC, x)
     return mod_list

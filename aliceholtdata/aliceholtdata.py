@@ -23,7 +23,7 @@ def data(filename):
         t_mean[x] = np.mean(fluxdata['t'][48*x:48*x+48])
         t_max[x] = np.max(fluxdata['t'][48*x:48*x+48])
         t_min[x] = np.min(fluxdata['t'][48*x:48*x+48])
-        I[x] = 30*60*1e-6*np.sum(fluxdata['rg'][48*x:48*x+48])
+        I[x] = 30*60*1e-6*np.sum(fluxdata['rg'][48*x:48*x+48]) #Wm^-2 to MJm^-2day^-1
         fill = 0
         qcflag = 0
         for qc in xrange(48*x, 48*x+48):
@@ -37,7 +37,7 @@ def data(filename):
             nee[x] = float('NaN')
         else:
             nee[x] = (12.011)*1e-6*30*60*np.sum(fluxdata['nee'][48*x:48*x+48])
-            
+            #micromol/s/m^2 to gC/m^2/day
     return np.array([year, day, t_mean, t_max, t_min, I, nee])
     
 
