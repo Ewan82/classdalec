@@ -14,6 +14,7 @@ class dalecData( ):
                  endyr=None):
         
         #Extract the data
+        self.k = None
         self.obs_str = obstr
         self.homepath = os.path.expanduser("~")
         self.data = ml.csv2rec(self.homepath+\
@@ -80,10 +81,12 @@ class dalecData( ):
              0.015313852599075,0.229473358726997,1.3820788381002,
              2.56606744808776e-05,0.000653099081656547,0.00635847131570823,
              4.32163613374937e-05,0.0627274280370167,66.4118798958804,
-             122.361932206327,0.372217324163812,22.092521668926,
-             280.106881011017,63.6023224321684,201.056970845445,
+             122.361932206327,0.372217324163812,114.092521668926,
+             308.106881011017,63.6023224321684,201.056970845445,
              201.27512854457,98.9874539256948,443.230119619488,
              20293.9092250464,141.405866537237,2487.84616355469])
+             
+        self.xb = self.pvals
         
       
         #Constants for ACM model 
@@ -133,7 +136,7 @@ class dalecData( ):
                                     0.6, 0.5, 0.5, 0.2, 0.5, 0.4, 0.1, 0.4, 
                                     0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
 
-        self.B = (self.backgstnddev*self.pvals)**2*np.eye(23)
+        self.B = (self.backgstnddev*self.xb)**2*np.eye(23)
         #MAKE NEW B, THIS IS WRONG!
 
         #'Observartion variances for carbon pools and NEE' 

@@ -8,13 +8,16 @@ import algopy
 class dalecModel():
  
    
-    def __init__(self, dataClass, timestep=0, strtrun=0, endrun=365):
+    def __init__(self, dataClass, timestep=0, strtrun=0):
         """dataClass and timestep at which to run the dalecv2 model.
         """        
         self.dC = dataClass
         self.x = timestep
-        self.lenrun = self.dC.lenrun*self.dC.k
-        self.xb = self.dC.pvalburnpert2
+        if self.dC.k == None:
+            self.lenrun = self.dC.lenrun
+        else:
+            self.lenrun = self.dC.lenrun*self.dC.k 
+        self.xb = self.dC.xb
         self.modcoston = 1
         self.modobdict = {'gpp': self.gpp, 'nee': self.nee, 'rt': self.rec, 
                           'cf': self.cf, 'clab': self.clab, 'cr': self.cr, 
@@ -22,7 +25,7 @@ class dalecModel():
                           'lf': self.lf, 'lw': self.lw, 'lai': self.lai,
                           'litresp': self.litresp, 'soilresp': self.soilresp}
         self.startrun = strtrun
-        self.endrun = endrun  
+        self.endrun = self.lenrun  
         self.yoblist, self.yerroblist = self.obscost()
         self.rmatrix = self.rmat(self.yerroblist)
         self.nume = 100
