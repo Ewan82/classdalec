@@ -10,21 +10,32 @@ import collections as col
 
 class dalecData( ): 
 
-    def __init__(self, lenrun, startrun=0, k=1,):
+    def __init__(self, lenrun=None, obstr=None, startrun=0, startyr=None, 
+                 endyr=None):
         
         #Extract the data
+        self.obs_str = obstr
         self.homepath = os.path.expanduser("~")
         self.data = ml.csv2rec(self.homepath+\
-                              "/dalecv2/aliceholtdata/ahdata3.csv",\
+                              "/classdalec/aliceholtdata/ahdat9905.csv",\
                               missing='nan')
-        self.lenrun = lenrun
-        self.startrun = startrun
-        self.fluxdata = self.data[startrun:startrun+lenrun]
-        self.timestep = np.arange(startrun, startrun+lenrun)
-        
+        if lenrun!=None:                      
+            self.lenrun = lenrun
+            self.startrun = startrun
+            self.fluxdata = self.data[startrun:startrun+self.lenrun]
+            self.timestep = np.arange(startrun, startrun+self.lenrun)
+        elif startyr!=None:
+            self.fluxdata = self.data[(self.data['year']>=startyr) & \
+                                      (self.data['year']< endyr)]   
+            self.lenrun = len(self.fluxdata)
+            self.startrun = 0   
+            self.timestep = np.arange(startrun, startrun+self.lenrun)
+        else:
+            raise Exception('No input entered, please check function input')
+
         #'I.C. for carbon pools gCm-2'   range
         self.clab = 270.8               # (10,1e3)
-        self.cf = 11.0                  # (10,1e3)
+        self.cf = 24.0                  # (10,1e3)
         self.cr = 102.0                 # (10,1e3)
         self.cw = 8100.0                # (3e3,3e4)
         self.cl = 300.0                 # (10,1e3) 
@@ -49,11 +60,9 @@ class dalecData( ):
         self.p14 = 27. #cronset, clab release period      (10 - 100)
         self.p15 = 308. #d_fall, date of leaf fall        (1 - 365) (242,332)
         self.p16 = 35. #crfall, leaf fall period          (10 - 100)
-        self.p17 = 52. #clma, leaf mass per area          (10 - 400)gCm^-2
+        self.p17 = 52. #clma, leaf mass per area          (10 - 400)gCm^-2 
   
-        self.paramdict = col.OrderedDict([('clab', self.clab), ('cf', self.cf), 
-                       ('cr', self.cr), ('cw', self.cw), ('cl', self.cl),
-                       ('cs', self.cs), ('theta_min', self.p1), 
+        self.paramdict = col.OrderedDict([('theta_min', self.p1), 
                        ('f_auto', self.p2), ('f_fol', self.p3), 
                        ('f_roo', self.p4), ('clspan', self.p5), 
                        ('theta_woo', self.p6), ('theta_roo', self.p7), 
@@ -61,54 +70,54 @@ class dalecData( ):
                        ('Theta', self.p10), ('ceff', self.p11), 
                        ('d_onset', self.p12), ('f_lab', self.p13), 
                        ('cronset', self.p14), ('d_fall', self.p15), 
-                       ('crfall', self.p16), ('clma', self.p17)])
+                       ('crfall', self.p16), ('clma', self.p17),
+                       ('clab', self.clab), ('cf', self.cf), 
+                       ('cr', self.cr), ('cw', self.cw), ('cl', self.cl),
+                       ('cs', self.cs)])
         self.pvals = np.array(self.paramdict.values())  
-
-        self.pvals2 = np.array([3.30274617e+02,1.00000000e+01,8.09207406e+02,
-                                1.67250858e+04,2.55445527e+02,1.88098987e+03,
-                                2.31111358e-03,3.00000000e-01,1.00000000e-02,
-                                1.00000000e-02,1.00783156e+00,4.73986237e-04,
-                                1.00000000e-02,2.48508693e-03,1.01118320e-04,
-                                8.00000000e-02,1.00000000e+01,1.80077364e+02,
-                                3.94271018e-01,3.48365837e+01,3.05352350e+02,
-                                3.51377525e+01,1.86650270e+01])
-
-        self.pvals3 = np.array([2.22394017e+02,1.17768204e+02,8.06078265e+02,
-                                 1.62358857e+04,1.02428779e+02,2.13337793e+03,
-                                 6.09781410e-05,6.51321414e-01,2.55371551e-02,
-                                 2.48688299e-01,1.41790625e+00,2.90985950e-05,
-                                 1.12821258e-04,6.19523727e-03,2.69394620e-05,
-                                 5.27661239e-02,8.86180068e+01,1.19852815e+02,
-                                 4.76801370e-01,2.15339299e+01,2.46736388e+02,
-                                 8.77275756e+01,2.05080979e+02])
-
-
         
+        self.edinburghpvals=np.array([0.000189966332469257,0.565343476756027,
+             0.015313852599075,0.229473358726997,1.3820788381002,
+             2.56606744808776e-05,0.000653099081656547,0.00635847131570823,
+             4.32163613374937e-05,0.0627274280370167,66.4118798958804,
+             122.361932206327,0.372217324163812,22.092521668926,
+             280.106881011017,63.6023224321684,201.056970845445,
+             201.27512854457,98.9874539256948,443.230119619488,
+             20293.9092250464,141.405866537237,2487.84616355469])
+        
+      
         #Constants for ACM model 
-        #(currently using parameters from williams spreadsheet values)
-        self.a2 = 0.0155 #0.0156935
-        self.a3 = 1.526 #4.22273 hashed values from reflex experiment paper
-        self.a4 = 324.1 #208.868
-        self.a5 = 0.2017 #0.0453194
-        self.a6 = 1.315 #0.37836
-        self.a7 = 2.595 #7.19298
-        self.a8 = 0.037 #0.011136
-        self.a9 = 0.2268 #2.1001
-        self.a10 = 0.9576 #0.789798
+        self.acmwilliamsspreadsheet = np.array([0.0155, 1.526, 324.1, 0.2017,
+                                                1.315, 2.595, 0.037, 0.2268,
+                                                0.9576])
+        self.acmreflex = np.array([0.0156935, 4.22273, 208.868, 0.0453194,
+                                   0.37836, 7.19298, 0.011136, 2.1001, 
+                                   0.789798])
+        self.acm = self.acmreflex #(currently using params from REFLEX)
+        self.a2 = self.acm[0]
+        self.a3 = self.acm[1] 
+        self.a4 = self.acm[2] 
+        self.a5 = self.acm[3] 
+        self.a6 = self.acm[4] 
+        self.a7 = self.acm[5] 
+        self.a8 = self.acm[6] 
+        self.a9 = self.acm[7] 
+        self.a10 = self.acm[8] 
         self.phi_d = -2. #max. soil leaf water potential difference
         self.R_tot = 1. #total plant-soil hydrolic resistance
         self.lat = 0.89133965 #latitutde of forest site in radians
+
         
         #'Daily temperatures degC'
-        self.t_mean = self.fluxdata['t_mean'].tolist()*k
-        self.t_max = self.fluxdata['t_max'].tolist()*k
-        self.t_min = self.fluxdata['t_min'].tolist()*k
+        self.t_mean = self.fluxdata['t_mean']
+        self.t_max = self.fluxdata['t_max']
+        self.t_min = self.fluxdata['t_min']
         self.t_range = np.array(self.t_max) - np.array(self.t_min)
         
         #'Driving Data'
-        self.I = self.fluxdata['i'].tolist()*k #incident radiation
+        self.I = self.fluxdata['i'] #incident radiation
         self.ca = 390.0 #atmospheric carbon    
-        self.D = self.fluxdata['day'].tolist()*k #day of year 
+        self.D = self.fluxdata['day'] #day of year 
         
         #misc
         self.radconv = 365.25 / np.pi
@@ -120,9 +129,13 @@ class dalecData( ):
         self.sigb_cr = 154.**2 #(self.cr*0.2)**2 #20%
         self.sigb_cl = 8.**2 #(self.cl*0.2)**2 #20%
         self.sigb_cs = 1979.4**2 #(self.cs*0.2)**2 #20% 
-        self.B = (0.2*np.array([self.pvals]))**2*np.eye(23)
+        self.backgstnddev=np.array([0.6, 0.5, 0.5, 0.5, 0.4, 0.6, 0.6, 0.6,
+                                    0.6, 0.5, 0.5, 0.2, 0.5, 0.4, 0.1, 0.4, 
+                                    0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
+
+        self.B = (self.backgstnddev*self.pvals)**2*np.eye(23)
         #MAKE NEW B, THIS IS WRONG!
-        
+
         #'Observartion variances for carbon pools and NEE' 
         self.sigo_clab = (self.clab*0.1)**2 #10%
         self.sigo_cf = (self.cf*0.1)**2 #10%
@@ -139,7 +152,12 @@ class dalecData( ):
                         'cs':self.sigo_cs, 'nee':self.sigo_nee,\
                         'lf':self.sigo_lf, 'lw':self.sigo_lw}
         
-
+        if self.obs_str!=None:
+            self.obdict, self.oberrdict = self.assimilation_obs(self.obs_str)
+        else:
+            self.obdict, self.oberrdict = None
+            
+            
     def assimilation_obs(self, obs_str):
         possibleobs = ['gpp', 'lf', 'lw', 'rt', 'nee', 'cf', 'cl', \
                        'cr', 'cw', 'cs', 'lai', 'clab']
