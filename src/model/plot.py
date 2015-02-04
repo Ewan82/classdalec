@@ -36,7 +36,7 @@ def plotphi(onoff, dC, start, fin):
     plt.show()    
     
     
-def plotobs(ob, pvals, dC, start, fin, lab=0, xlist=None, dashed=0, 
+def plotobs(ob, pvals, dC, start, fin, lab=0, xax=None, dashed=0, 
             colour=None):
     """Plots a specified observation using obs eqn in obs module. Takes an
     observation string, a dataClass (dC) and a start and finish point.
@@ -50,23 +50,23 @@ def plotobs(ob, pvals, dC, start, fin, lab=0, xlist=None, dashed=0,
     else:
         lab = lab
     pvallist = m.mod_list(pvals, dC, start, fin)
-    if xlist==None:
-        xlist = np.arange(start, fin)
+    if xax==None:
+        xax = np.arange(start, fin)
     else:
-        xlist = xlist
+        xax = xax
     oblist = np.ones(fin - start)*-9999.
     for x in xrange(start, fin):
         oblist[x-start] = modobdict[ob](pvallist[x-start],dC,x)
     if colour==None:
         if dashed==True:    
-            plt.plot(xlist, oblist, '--', label=lab)
+            plt.plot(xax, oblist, '--', label=lab)
         else:
-            plt.plot(xlist, oblist, label=lab)
+            plt.plot(xax, oblist, label=lab)
     else:
         if dashed==True:    
-            plt.plot(xlist, oblist, '--', label=lab, color=colour)
+            plt.plot(xax, oblist, '--', label=lab, color=colour)
         else:
-            plt.plot(xlist, oblist, label=lab, color=colour)        
+            plt.plot(xax, oblist, label=lab, color=colour)        
 
 
 def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1, awindl=None):
@@ -85,35 +85,26 @@ def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1, awindl=None):
     for t in xlist:
         times.append(datum + int(t) * delta)
 
-    plotobs(ob, xb, dC, start, fin, ob+'_b', None, 1)
-    plotobs(ob, xa, dC, start, fin, ob+'_a')
+    plotobs(ob, xb, dC, start, fin, ob+'_b', times, 1)
+    plotobs(ob, xa, dC, start, fin, ob+'_a', times)
     obdict = dC.obdict
     oberrdict = dC.oberrdict
     if ob in obdict.keys():
         if erbars==True:
-            plt.errorbar(xlist, obdict[ob], yerr=oberrdict[ob+'_err'], \
+            plt.errorbar(times, obdict[ob], yerr=oberrdict[ob+'_err'], \
                          fmt='o', label=ob+'_o')
         else:
-            plt.plot(xlist, obdict[ob], 'o', label=ob+'_o')
+            plt.plot(times, obdict[ob], 'o', label=ob+'_o')
     plt.legend()
-    plt.xlabel('Day')
+    plt.xlabel('Year')
     plt.ylabel('NEE (gCm-2)')
     plt.title('NEE for Alice Holt flux site')
     if awindl!=None:
-        plt.axvline(x=awindl,color='k',ls='dashed')
-        plt.text(15, 9, 'Assimilation window')
-        plt.text(awindl+15, 9, 'Forecast')
+        plt.axvline(x=times[awindl],color='k',ls='dashed')
+        plt.text(times[20], 9, 'Assimilation window')
+        plt.text(times[awindl+20], 9, 'Forecast')
 
-    #dayLocator    = mdates.DayLocator()
-    #hourLocator   = mdates.HourLocator()
-    #dateFmt = mdates.DateFormatter('%Y-%m')       
-    #ax = plt.gca()
-    #ax.autofmt_xdate()
-    #ax = plt.gca()
-    #ax.xaxis.set_major_locator(dayLocator)
-    #ax.xaxis.set_major_formatter(dateFmt)
-    #ax.xaxis.set_minor_locator(hourLocator)
-
+    #plt.gcf().autofmt_xdate()
     plt.show()
     
     
