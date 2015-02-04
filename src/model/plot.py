@@ -97,14 +97,24 @@ def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1, awindl=None):
             plt.plot(times, obdict[ob], 'o', label=ob+'_o')
     plt.legend()
     plt.xlabel('Year')
-    plt.ylabel('NEE (gCm-2)')
-    plt.title('NEE for Alice Holt flux site')
+    plt.ylabel(ob+' (gCm-2)')
+    plt.title(ob+' for Alice Holt flux site')
     if awindl!=None:
         plt.axvline(x=times[awindl],color='k',ls='dashed')
         plt.text(times[20], 9, 'Assimilation window')
         plt.text(times[awindl+20], 9, 'Forecast')
 
     #plt.gcf().autofmt_xdate()
+    dayLocator    = mdates.DayLocator()
+    hourLocator   = mdates.HourLocator()
+    dateFmt = mdates.DateFormatter('%Y')       
+    #ax = plt.gca()
+    #ax.autofmt_xdate()
+    ax = plt.gca()
+    ax.xaxis.set_major_locator(dayLocator)
+    ax.xaxis.set_major_formatter(dateFmt)
+    ax.xaxis.set_minor_locator(hourLocator)
+
     plt.show()
     
     
