@@ -7,6 +7,8 @@ import os
 import re
 import matplotlib.mlab as ml
 import collections as col
+import pickle
+
 
 class dalecData( ): 
 
@@ -92,6 +94,9 @@ class dalecData( ):
               (2.5e-5,1e-3),(1e-4,1e-2),(1e-4,1e-2),(1e-7,1e-3),(0.018,0.08),\
               (10,100),(1,365),(0.01,0.5),(10,100),(1,365),(10,100),(10,400),\
               (10,1000),(10,1000),(10,1000),(100,1e5),(10,1000),(100,2e5))
+              
+              
+        self.xa = None
         
       
         #Constants for ACM model 
@@ -182,3 +187,10 @@ class dalecData( ):
                                           *self.errdict[ob]
         
         return Obs_dict, Obs_err_dict
+        
+    def pickle(self, filename):
+            f = open(filename, 'w')
+            pickle.dump(self, f)
+            f.close()
+            
+    
