@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 import model as m
 import observations as obs
 import copy as cp
- 
+import datetime as dt
+import matplotlib.dates as mdates
     
 def plotgpp(cf, dC, start, fin):
     """Plots gpp using acm equations given a cf value, a dataClass and a start
@@ -35,7 +36,8 @@ def plotphi(onoff, dC, start, fin):
     plt.show()    
     
     
-def plotobs(ob, pvals, dC, start, fin, lab=0, dashed=0, colour=None):
+def plotobs(ob, pvals, dC, start, fin, lab=0, xlist=None, dashed=0, 
+            colour=None):
     """Plots a specified observation using obs eqn in obs module. Takes an
     observation string, a dataClass (dC) and a start and finish point.
     """
@@ -48,7 +50,10 @@ def plotobs(ob, pvals, dC, start, fin, lab=0, dashed=0, colour=None):
     else:
         lab = lab
     pvallist = m.mod_list(pvals, dC, start, fin)
-    xlist = np.arange(start, fin)
+    if xlist==None:
+        xlist = np.arange(start, fin)
+    else:
+        xlist = xlist
     oblist = np.ones(fin - start)*-9999.
     for x in xrange(start, fin):
         oblist[x-start] = modobdict[ob](pvallist[x-start],dC,x)
@@ -64,15 +69,24 @@ def plotobs(ob, pvals, dC, start, fin, lab=0, dashed=0, colour=None):
             plt.plot(xlist, oblist, label=lab, color=colour)        
 
 
-def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1):
+def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1, awindl=None):
     """Plots a model predicted observation value for two initial states (xb,xa)
     and also the actual observations taken of the physical quantity. Takes a ob
     string, two initial states (xb,xa), a dataClass and a start and finish 
     time step.
     """
     xlist = np.arange(start, fin)
-    plotobs(ob, xb, dC, start, fin, ob+'_b')
-    plotobs(ob, xa, dC, start, fin, ob+'_a', 1)
+    # We know the datum and delta from reading the file manually
+    datum = dt.datetime(1999, 1, 1)
+    delta = dt.timedelta(hours=24)
+    
+    # Convert the time values to datetime objects
+    times = []
+    for t in xlist:
+        times.append(datum + int(t) * delta)
+
+    plotobs(ob, xb, dC, start, fin, ob+'_b', None, 1)
+    plotobs(ob, xa, dC, start, fin, ob+'_a')
     obdict = dC.obdict
     oberrdict = dC.oberrdict
     if ob in obdict.keys():
@@ -82,6 +96,24 @@ def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1):
         else:
             plt.plot(xlist, obdict[ob], 'o', label=ob+'_o')
     plt.legend()
+    plt.xlabel('Day')
+    plt.ylabel('NEE (gCm-2)')
+    plt.title('NEE for Alice Holt flux site')
+    if awindl!=None:
+        plt.axvline(x=awindl,color='k',ls='dashed')
+        plt.text(10, 7, 'Assimilation window')
+        plt.text(awindl+10, 7, 'Forecast')
+
+    #dayLocator    = mdates.DayLocator()
+    #hourLocator   = mdates.HourLocator()
+    #dateFmt = mdates.DateFormatter('%Y-%m')       
+    #ax = plt.gca()
+    #ax.autofmt_xdate()
+    #ax = plt.gca()
+    #ax.xaxis.set_major_locator(dayLocator)
+    #ax.xaxis.set_major_formatter(dateFmt)
+    #ax.xaxis.set_minor_locator(hourLocator)
+
     plt.show()
     
     
