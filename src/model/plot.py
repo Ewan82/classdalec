@@ -101,8 +101,8 @@ def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1, awindl=None):
     plt.title('NEE for Alice Holt flux site')
     if awindl!=None:
         plt.axvline(x=awindl,color='k',ls='dashed')
-        plt.text(10, 7, 'Assimilation window')
-        plt.text(awindl+10, 7, 'Forecast')
+        plt.text(15, 9, 'Assimilation window')
+        plt.text(awindl+15, 9, 'Forecast')
 
     #dayLocator    = mdates.DayLocator()
     #hourLocator   = mdates.HourLocator()
