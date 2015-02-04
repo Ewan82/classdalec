@@ -75,6 +75,9 @@ def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1, awindl=None):
     string, two initial states (xb,xa), a dataClass and a start and finish 
     time step.
     """
+    dayLocator    = mdates.DayLocator()
+    hourLocator   = mdates.HourLocator()
+    dateFmt = mdates.DateFormatter('%Y')  
     xlist = np.arange(start, fin)
     # We know the datum and delta from reading the file manually
     datum = dt.datetime(1999, 1, 1)
@@ -104,16 +107,13 @@ def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1, awindl=None):
         plt.text(times[20], 9, 'Assimilation window')
         plt.text(times[awindl+20], 9, 'Forecast')
 
-    #plt.gcf().autofmt_xdate()
-    dayLocator    = mdates.DayLocator()
-    hourLocator   = mdates.HourLocator()
-    dateFmt = mdates.DateFormatter('%Y')       
+    #plt.gcf().autofmt_xdate()     
     #ax = plt.gca()
     #ax.autofmt_xdate()
-    ax = plt.gca()
-    ax.xaxis.set_major_locator(dayLocator)
-    ax.xaxis.set_major_formatter(dateFmt)
-    ax.xaxis.set_minor_locator(hourLocator)
+    #ax = plt.gca()
+    #ax.xaxis.set_major_locator(dayLocator)
+    #ax.xaxis.set_major_formatter(dateFmt)
+    #ax.xaxis.set_minor_locator(hourLocator)
 
     plt.show()
     
