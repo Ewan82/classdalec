@@ -75,9 +75,9 @@ def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1, awindl=None):
     string, two initial states (xb,xa), a dataClass and a start and finish 
     time step.
     """
-    dayLocator    = mdates.DayLocator()
-    hourLocator   = mdates.HourLocator()
-    dateFmt = mdates.DateFormatter('%Y')  
+    #dayLocator    = mdates.DayLocator()
+    #hourLocator   = mdates.HourLocator()
+    #dateFmt = mdates.DateFormatter('%Y')  
     xlist = np.arange(start, fin)
     # We know the datum and delta from reading the file manually
     datum = dt.datetime(1999, 1, 1)
