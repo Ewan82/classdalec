@@ -131,6 +131,9 @@ class dalecData( ):
         self.I = self.fluxdata['i'] #incident radiation
         self.ca = 390.0 #atmospheric carbon    
         self.D = self.fluxdata['day'] #day of year 
+        self.year = self.fluxdata['year'] #Year
+        self.month = self.fluxdata['month'] #Month
+        self.date = self.fluxdata['date'] #Date in month
         
         #misc
         self.radconv = 365.25 / np.pi
@@ -187,6 +190,26 @@ class dalecData( ):
                                           *self.errdict[ob]
         
         return Obs_dict, Obs_err_dict
+
+        
+    def time_assimilation_obs(self, obs_str, mnth_lst):
+        possibleobs = ['gpp', 'lf', 'lw', 'rt', 'nee', 'cf', 'cl', \
+                       'cr', 'cw', 'cs', 'lai', 'clab']
+        Obslist = re.findall(r'[^,;\s]+', obs_str)
+        Obs_dict = {}
+        Obs_err_dict = {}
+        for x in xrange(len(Obslist)):
+            if ob not in possibleobs:
+                raise Exception('Invalid observations entered, please check \
+                                 function input')
+            else:
+                Obs_dict[Obslist[x]] = self.fluxdata[Obslist[x]]
+                
+                Obs_err_dict[Obslist[x]+'_err'] = (Obs_dict[Obslist[x]] / \
+                                         Obs_dict[Obslist[x]])*self.errdict[ob]
+        
+        return Obs_dict, Obs_err_dict
+
         
     def pickle(self, filename):
             f = open(filename, 'w')
