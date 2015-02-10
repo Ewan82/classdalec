@@ -209,7 +209,7 @@ def plottwin(ob, truth, xb, xa, dC, start, fin, erbars=1, obdict=None,
     xlist = np.arange(start, fin)
     plotobs(ob, truth, dC, start, fin, ob+'_truth')
     plotobs(ob, xb, dC, start, fin, ob+'_b')
-    plotobs(ob, xa, dC, start, fin, ob+'_a', 1)
+    plotobs(ob, xa, dC, start, fin, ob+'_a', None, 1)
     
     if obdict == None:
         obdict = dC.obdict

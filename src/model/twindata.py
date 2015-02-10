@@ -128,6 +128,8 @@ class dalecData( ):
                         1.19856967e+02, 9.99073805e+01,   1.00072803e+01,  
                         7.17403552e+01, 4.57999477e+02,   1.60424961e+02, 
                         1.15858201e+04, 5.90675123e+02,   1.24358017e+04])
+                        
+        self.xb = self.pvalburnpert
 
 
        
@@ -257,8 +259,13 @@ class dalecData( ):
         
         
     def rand_err_assim_obs(self, obs_str, freq_list):
-        """Creates dictionary of synthetic obs given a string of observations
-        and a list of number of obs.
+        """Creates dictionary of synthetic obs given a string of observations,
+        'obs_str', and a list of number of obs, 'freq_list'.
+        'freq_list' can have two forms:
+        1. a lst of integers corresponding to the number of observations 
+        randomly taken over the window.
+        2. a list of tuples with three values, the beginning and end points 
+        where obs are to be taken and the number of obs in that range.
         """
         possibleobs = ['gpp', 'lf', 'lw', 'rt', 'nee', 'cf', 'cl', \
                        'cr', 'cw', 'cs', 'lai', 'clab', 'soilresp', 'litresp']
