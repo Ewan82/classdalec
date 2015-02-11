@@ -13,7 +13,7 @@ import pickle
 class dalecData( ): 
 
     def __init__(self, lenrun=None, obstr=None, startrun=0, startyr=None, 
-                 endyr=None):
+                 endyr=None, mnth_lst=None):
         
         #Extract the data
         self.k = None
@@ -35,6 +35,8 @@ class dalecData( ):
             self.timestep = np.arange(startrun, startrun+self.lenrun)
         else:
             raise Exception('No input entered, please check function input')
+        
+        self.mnth_lst = mnth_lst
 
         #'I.C. for carbon pools gCm-2'   range
         self.clab = 270.8               # (10,1e3)
@@ -168,8 +170,11 @@ class dalecData( ):
                         'cs':self.sigo_cs, 'nee':self.sigo_nee,\
                         'lf':self.sigo_lf, 'lw':self.sigo_lw}
         
-        if self.obs_str!=None:
+        if self.obs_str!=None and self.mnth_lst==None:
             self.obdict, self.oberrdict = self.assimilation_obs(self.obs_str)
+        elif self.obs_str!=None and self.mnth_lst!=None:
+            self.obdict, self.oberrdict = self.time_assimilation_obs(
+                                                   self.obs_str, self.mnth_lst)
         else:
             self.obdict, self.oberrdict = None
             
@@ -199,14 +204,24 @@ class dalecData( ):
         Obs_dict = {}
         Obs_err_dict = {}
         for x in xrange(len(Obslist)):
-            if ob not in possibleobs:
+            if Obslist[x] not in possibleobs:
                 raise Exception('Invalid observations entered, please check \
                                  function input')
             else:
                 Obs_dict[Obslist[x]] = self.fluxdata[Obslist[x]]
-                
+                indlist=[]
+                for t in mnth_lst:
+                    indlist.append(np.where(self.month==t)[0].tolist()[:])
+                indlist=[item for sublist in indlist for item in sublist]
+                for t in xrange(self.lenrun):
+                    if t in indlist:
+                        continue
+                    else:
+                        Obs_dict[Obslist[x]][t] = float('NaN')
+                    
                 Obs_err_dict[Obslist[x]+'_err'] = (Obs_dict[Obslist[x]] / \
-                                         Obs_dict[Obslist[x]])*self.errdict[ob]
+                                         Obs_dict[Obslist[x]])* \
+                                                      self.errdict[Obslist[x]]
         
         return Obs_dict, Obs_err_dict
 
