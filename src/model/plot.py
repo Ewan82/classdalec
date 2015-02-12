@@ -69,7 +69,8 @@ def plotobs(ob, pvals, dC, start, fin, lab=0, xax=None, dashed=0,
             plt.plot(xax, oblist, label=lab, color=colour)        
 
 
-def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1, awindl=None):
+def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1, awindl=None, 
+                 obdict_a=None):
     """Plots a model predicted observation value for two initial states (xb,xa)
     and also the actual observations taken of the physical quantity. Takes a ob
     string, two initial states (xb,xa), a dataClass and a start and finish 
@@ -98,6 +99,8 @@ def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1, awindl=None):
                          fmt='o', label=ob+'_o')
         else:
             plt.plot(times, obdict[ob], 'o', label=ob+'_o')
+    if obdict_a!=None:
+        plt.plot(times[0:len(obdict_a[ob])], obdict_a[ob], 'o')
     plt.legend()
     plt.xlabel('Year')
     plt.ylabel(ob+' (gCm-2)')
