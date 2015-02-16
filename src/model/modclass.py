@@ -116,7 +116,9 @@ class dalecModel():
         """DALECV2 carbon balance model 
         -------------------------------
         evolves carbon pools to the next time step, taking the 6 carbon pool 
-        values and 17 parameters at time t and evolving them to time t+1. 
+        values and 17 parameters at time t and evolving them to time t+1.
+        Outputs both the 6 evolved C pool values and the 17 constant parameter
+        values.
         
         phi_on = phi_onset(d_onset, cronset)
         phi_off = phi_fall(d_fall, crfall, clspan)
@@ -151,7 +153,8 @@ class dalecModel():
         """DALECV2 carbon balance model 
         -------------------------------
         evolves carbon pools to the next time step, taking the 6 carbon pool 
-        values and 17 parameters at time t and evolving them to time t+1. 
+        values and 17 parameters at time t and evolving them to time t+1.
+        Ouputs an array of just the 6 evolved C pool values.
         
         phi_on = phi_onset(d_onset, cronset)
         phi_off = phi_fall(d_fall, crfall, clspan)
