@@ -3,6 +3,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import model as m
+import fourdvar as fdv
 import observations as obs
 import copy as cp
 import datetime as dt
@@ -81,7 +82,7 @@ def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1, awindl=None,
     #dateFmt = mdates.DateFormatter('%Y')  
     xlist = np.arange(start, fin)
     # We know the datum and delta from reading the file manually
-    datum = dt.datetime(1999, 1, 1)
+    datum = dt.datetime(int(dC.year[0]), 1, 1)
     delta = dt.timedelta(hours=24)
     
     # Convert the time values to datetime objects
@@ -119,6 +120,29 @@ def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1, awindl=None,
     #ax.xaxis.set_minor_locator(hourLocator)
 
     plt.show()
+    
+    
+def plotscatterobs(ob, pvals, dC, awindl, bfa='a'):
+    """Plots scatter plot of obs vs model predicted values. Takes an initial
+    parameter set, a dataClass (must have only desired ob for comparison
+    specified in dC), assimilation window length and whether a comparison of 
+    background 'b', forecast 'f' or analysis 'a' is desired.
+    """
+    pvallist = m.mod_list(pvals, dC, 0, len(dC.I))
+    y, yerr = fdv.obscost(dC.obdict, dC.oberrdict) 
+    hx = fdv.hxcost(pvallist, dC.obdict, dC)
+    splitval = 0
+    for x in xrange(0,awindl):
+        if np.isnan(dC.obdict[ob][x])!=True:
+            splitval += 1
+    oneone=np.arange(int(min(min(y),min(hx)))-1, int(max(max(y),max(hx)))+1)
+    plt.plot(oneone, oneone)
+    if bfa=='b' or bfa=='a':
+        plt.plot(y[0:splitval], hx[0:splitval], 'o')
+    elif bfa=='f':
+        plt.plot(y[splitval:], hx[splitval:], 'o')
+    else:
+        raise Exception('Please check function input for bfa variable')
     
     
 def plotcycled4dvar(ob, conditions, xb, xa, dC, erbars=1, truth=None):
