@@ -20,7 +20,7 @@ class dalecData( ):
         self.obs_str = obstr
         self.homepath = os.path.expanduser("~")
         self.data = ml.csv2rec(self.homepath+\
-                              "/classdalec/aliceholtdata/ahdat9905.csv",\
+                              "/classdalec/aliceholtdata/ahdat99_13.csv",\
                               missing='nan')
         if lenrun!=None:                      
             self.lenrun = lenrun

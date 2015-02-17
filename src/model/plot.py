@@ -139,11 +139,16 @@ def plotscatterobs(ob, pvals, dC, awindl, bfa='a'):
     plt.plot(oneone, oneone)
     if bfa=='b' or bfa=='a':
         plt.plot(y[0:splitval], hx[0:splitval], 'o')
+        error = np.sqrt(np.sum((y[0:splitval]-hx[0:splitval])**2)/\
+                                                            len(y[0:splitval]))
     elif bfa=='f':
         plt.plot(y[splitval:], hx[splitval:], 'o')
+        error = np.sqrt(np.sum((y[splitval:]-hx[splitval:])**2)/\
+                                                            len(y[splitval:]))
     else:
         raise Exception('Please check function input for bfa variable')
-    
+    return error
+
     
 def plotcycled4dvar(ob, conditions, xb, xa, dC, erbars=1, truth=None):
     """Plots a cycled 4DVar run given an observation string (obs), a set of
