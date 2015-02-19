@@ -147,7 +147,7 @@ def plotscatterobs(ob, pvals, dC, awindl, bfa='a'):
                                                             len(y[splitval:]))
     else:
         raise Exception('Please check function input for bfa variable')
-    return error
+    return error, y[0:splitval]-hx[0:splitval]
 
     
 def plotcycled4dvar(ob, conditions, xb, xa, dC, erbars=1, truth=None):
