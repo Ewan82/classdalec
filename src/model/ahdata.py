@@ -155,20 +155,26 @@ class dalecData( ):
         #MAKE NEW B, THIS IS WRONG!
 
         #'Observartion variances for carbon pools and NEE' 
-        self.sigo_clab = (self.clab*0.1)**2 #10%
-        self.sigo_cf = (self.cf*0.1)**2 #10%
-        self.sigo_cw = (self.cw*0.1)**2 #10%
-        self.sigo_cr = (self.cr*0.3)**2 #30%
-        self.sigo_cl = (self.cl*0.3)**2 #30%
-        self.sigo_cs = (self.cs*0.3)**2 #30% 
-        self.sigo_nee = 0.5 #(gCm-2day-1)**2
-        self.sigo_lf = 0.2**2
-        self.sigo_lw = 0.2**2
+        self.sigo_clab = (self.clab*0.1) #10%
+        self.sigo_cf = (self.cf*0.1) #10%
+        self.sigo_cw = (self.cw*0.1) #10%
+        self.sigo_cr = (self.cr*0.3) #30%
+        self.sigo_cl = (self.cl*0.3) #30%
+        self.sigo_cs = (self.cs*0.3) #30% 
+        self.sigo_nee = 0.71 #(gCm-2day-1)**2
+        self.sigo_lf = 0.2
+        self.sigo_lw = 0.2
+        self.sigo_litresp = 0.6
+        self.sigo_soilresp = 0.6
+        self.sigo_soilrootresp = 0.6
         
         self.errdict = {'clab':self.sigo_clab, 'cf':self.sigo_cf,\
                         'cw':self.sigo_cw,'cl':self.sigo_cl,'cr':self.sigo_cr,\
                         'cs':self.sigo_cs, 'nee':self.sigo_nee,\
-                        'lf':self.sigo_lf, 'lw':self.sigo_lw}
+                        'lf':self.sigo_lf, 'lw':self.sigo_lw,\
+                        'litresp':self.sigo_litresp,\
+                        'soilresp':self.sigo_soilresp,\
+                        'soilrootresp':self.sigo_soilrootresp}
         
         if self.obs_str!=None and self.mnth_lst==None:
             self.obdict, self.oberrdict = self.assimilation_obs(self.obs_str)
@@ -181,7 +187,8 @@ class dalecData( ):
             
     def assimilation_obs(self, obs_str):
         possibleobs = ['gpp', 'lf', 'lw', 'rt', 'nee', 'cf', 'cl', \
-                       'cr', 'cw', 'cs', 'lai', 'clab']
+                       'cr', 'cw', 'cs', 'lai', 'clab', 'litresp', 'soilresp',\
+                       'soilrootresp']
         Obslist = re.findall(r'[^,;\s]+', obs_str)
         Obs_dict = {}
         Obs_err_dict = {}
@@ -199,7 +206,8 @@ class dalecData( ):
         
     def time_assimilation_obs(self, obs_str, mnth_lst):
         possibleobs = ['gpp', 'lf', 'lw', 'rt', 'nee', 'cf', 'cl', \
-                       'cr', 'cw', 'cs', 'lai', 'clab']
+                       'cr', 'cw', 'cs', 'lai', 'clab', 'litresp', 'soilresp',\
+                       'soilrootresp']
         Obslist = re.findall(r'[^,;\s]+', obs_str)
         Obs_dict = {}
         Obs_err_dict = {}

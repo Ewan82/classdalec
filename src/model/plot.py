@@ -45,7 +45,8 @@ def plotobs(ob, pvals, dC, start, fin, lab=0, xax=None, dashed=0,
     modobdict = {'gpp': obs.gpp, 'nee': obs.nee, 'rt': obs.rec, 'cf': obs.cf,
                  'clab': obs.clab, 'cr': obs.cr, 'cw': obs.cw, 'cl': obs.cl,
                  'cs': obs.cs, 'lf': obs.lf, 'lw': obs.lw, 'lai':obs.lai,
-                 'soilresp': obs.soilresp, 'litresp': obs.litresp}
+                 'soilresp': obs.soilresp, 'litresp': obs.litresp,
+                 'soilrootresp': obs.soilrootresp}
     if lab == 0:
         lab = ob
     else:
