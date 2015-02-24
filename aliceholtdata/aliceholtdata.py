@@ -76,7 +76,7 @@ def data(filename):
     return np.array([year, month, date, day, t_mean, t_max, t_min, I, nee])
 
 
-def soilrootresp(filename):
+def soilresp(filename, ob):
     """Extracts data and converts to daily values for soilrootresp.
     """    
     soilroot = mlab.csv2rec(filename, missing='9999')
@@ -85,7 +85,7 @@ def soilrootresp(filename):
     day = np.ones(lenarr)*-9999
     month = np.ones(lenarr)*-9999
     date = np.ones(lenarr)*-9999
-    soilrootresp = np.ones(lenarr)*-9999
+    soilresp = np.ones(lenarr)*-9999
     
     for x in xrange(0,int(lenarr)):
         year[x] = soilroot['year'][x*24]
@@ -94,14 +94,14 @@ def soilrootresp(filename):
         date[x] = soilroot['day'][x*24]
         fill = 0
         for qc in xrange(24*x, 24*x+24):
-            if np.isnan(soilroot['rtot'][qc])==True:
+            if np.isnan(soilroot[ob][qc])==True:
                 fill += 1
         if fill > 0:
-            soilrootresp[x] = float('NaN')
+            soilresp[x] = float('NaN')
         else:
-            soilrootresp[x] = (12.011)*1e-6*60*60*\
-                           np.sum(soilroot['rtot'][24*x:24*x+24])
-    return np.array([year, month, date, day, soilrootresp]).T
+            soilresp[x] = (12.011)*1e-6*60*60*\
+                           np.sum(soilroot[ob][24*x:24*x+24])
+    return np.array([year, month, date, day, soilresp]).T
     
 
 def dat_output(filenames, outputname):
@@ -116,13 +116,13 @@ def dat_output(filenames, outputname):
     return dat
     
     
-def add_obs(filename, ob, obsfile, obsfunc, years):
+def add_obs(filename, obname, ob, obsfile, obsfunc, years):
     """Function adds more observations to current datafile.
     """
     dat = mlab.csv2rec(filename, missing='nan')
-    dat2 = append_fields(dat, ob, np.ones(len(dat))*float('NaN'), 
+    dat2 = append_fields(dat, obname, np.ones(len(dat))*float('NaN'), 
                          fill_value=float('NaN'), usemask=False)
-    newobdat=obsfunc(obsfile) #create new ob array
+    newobdat=obsfunc(obsfile, ob) #create new ob array
     
     indexdata=[] #loop over dat2 to find indices for newobdat dates
     for x in xrange(len(dat2)):
@@ -134,7 +134,7 @@ def add_obs(filename, ob, obsfile, obsfunc, years):
             indexdata.append(x)
     #takes fourth column of data as observation, make sure this is the case 
     #in obsfunc
-    dat2[ob][indexdata[0]:indexdata[1]+1]=newobdat[:,4] 
+    dat2[obname][indexdata[0]:indexdata[1]+1]=newobdat[:,4] 
     #write data to csv file
     mlab.rec2csv(dat2, filename, missing='nan')
     

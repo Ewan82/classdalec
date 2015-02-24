@@ -24,7 +24,7 @@ class dalecModel():
                           'cw': self.cw, 'cl': self.cl, 'cs': self.cs, 
                           'lf': self.lf, 'lw': self.lw, 'lai': self.lai,
                           'litresp': self.litresp, 'soilresp': self.soilresp,
-                          'soilrootresp': self.soilrootresp}
+                          'rtot': self.rtot}
         self.startrun = strtrun
         self.endrun = self.lenrun  
         self.yoblist, self.yerroblist = self.obscost()
@@ -284,17 +284,17 @@ class dalecModel():
         
         
     def soilresp(self, p):
-        """Function calculates soil respiration (soilresp).
+        """Function calculates soil respiration (soilresp). (heterotrophic)
         """
         soilresp = p[8]*p[22]*self.temp_term(p[9])
         return soilresp
 
         
-    def soilrootresp(self, p):
+    def rtot(self, p):
         """Function calculates soil + root respiration (soilrootresp).
         """
-        soilrootresp = p[8]*p[22]*self.temp_term(p[9]) + p[6]*p[19]
-        return soilrootresp
+        rtot = p[8]*p[22]*self.temp_term(p[9]) + 5. #Figure this out boi
+        return rtot
         
                 
     def lai(self, p):

@@ -194,7 +194,8 @@ def plotsumobs(ob, pvals, dC, start, fin):
     modobdict = {'gpp': obs.gpp, 'nee': obs.nee, 'rt': obs.rec, 'cf': obs.cf,
                  'clab': obs.clab, 'cr': obs.cr, 'cw': obs.cw, 'cl': obs.cl,
                  'cs': obs.cs, 'lf': obs.lf, 'lw': obs.lw, 'lai':obs.lai,
-                 'soilresp': obs.soilresp, 'litresp': obs.litresp}
+                 'soilresp': obs.soilresp, 'litresp': obs.litresp,
+                 'rtot': obs.rtot}
 
     pvallist = m.mod_list(pvals, dC, start, fin)
     xlist = np.arange(start, fin)
