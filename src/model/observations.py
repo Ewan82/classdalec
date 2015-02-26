@@ -44,8 +44,15 @@ def soilresp(pvals, dC, x):
     return soilresp
     
     
+def rh(pvals, dC, x):
+    """Function calculates rh.
+    """    
+    rh = soilresp(pvals, dC, x) + litresp(pvals, dC, x)
+    return rh
+    
+    
 def rtot(pvals, dC, x):
-    """Function calculates soil respiration (soilresp).
+    """Function calculates rtot for ground (not yet). This needs thought!!!
     """
     rtot = pvals[8]*pvals[22]*m.temp_term(pvals[9], dC, x) + 5.
     #Figure this out boi
@@ -124,7 +131,7 @@ def linob(ob, pvals, dC, x):
     modobdict = {'gpp': gpp, 'nee': nee, 'rt': rec, 'cf': cf, 'clab': clab, 
                  'cr': cr, 'cw': cw, 'cl': cl, 'cs': cs, 'lf': lf, 'lw': lw, 
                  'lai':lai, 'soilresp': soilresp, 'litresp': litresp,
-                 'rtot': rtot}
+                 'rtot': rtot, 'rh': rh}
     dpvals = ad.adnumber(pvals)
     output = modobdict[ob](dpvals, dC, x)
     return np.array(ad.jacobian(output, dpvals))

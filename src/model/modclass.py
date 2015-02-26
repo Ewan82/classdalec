@@ -24,7 +24,7 @@ class dalecModel():
                           'cw': self.cw, 'cl': self.cl, 'cs': self.cs, 
                           'lf': self.lf, 'lw': self.lw, 'lai': self.lai,
                           'litresp': self.litresp, 'soilresp': self.soilresp,
-                          'rtot': self.rtot}
+                          'rtot': self.rtot, 'rh': self.rh}
         self.startrun = strtrun
         self.endrun = self.lenrun  
         self.yoblist, self.yerroblist = self.obscost()
@@ -288,6 +288,13 @@ class dalecModel():
         """
         soilresp = p[8]*p[22]*self.temp_term(p[9])
         return soilresp
+        
+        
+    def rh(self, p):
+        """Fn calculates rh (soilresp+litrep).
+        """
+        rh = self.litresp(p) + self.soilresp(p)
+        return rh
 
         
     def rtot(self, p):

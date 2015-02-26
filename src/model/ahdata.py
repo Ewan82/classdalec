@@ -81,6 +81,15 @@ class dalecData( ):
                        ('cs', self.cs)])
         self.pvals = np.array(self.paramdict.values())  
         
+        self.ahpvals = np.array([9.41000000e-04, 4.70000000e-01,2.80000000e-01,
+                         2.60000000e-01,   1.01000000e+00,   2.60000000e-04,
+                         2.48000000e-03,   3.38000000e-03,   2.60000000e-06,
+                         1.93000000e-02,   9.00000000e+01,   1.40000000e+02,
+                         4.62900000e-01,   2.70000000e+01,   3.08000000e+02,
+                         3.50000000e+01,   5.20000000e+01,   78.,
+                         2.,   134.,   14257.32,
+                         68.95,   18625.77])
+        
         self.edinburghpvals=np.array([0.000189966332469257,0.565343476756027,
              0.015313852599075,0.229473358726997,1.3820788381002,
              2.56606744808776e-05,0.000653099081656547,0.00635847131570823,
@@ -90,7 +99,7 @@ class dalecData( ):
              201.27512854457,98.9874539256948,443.230119619488,
              20293.9092250464,141.405866537237,2487.84616355469])
              
-        self.xb = self.pvals
+        self.xb = self.ahpvals
         
         self.bnds=((1e-5,1e-2),(0.3,0.7),(0.01,0.5),(0.01,0.5),(1.0001,10.),\
               (2.5e-5,1e-3),(1e-4,1e-2),(1e-4,1e-2),(1e-7,1e-3),(0.018,0.08),\
@@ -150,8 +159,11 @@ class dalecData( ):
         self.backgstnddev=np.array([0.6, 0.5, 0.5, 0.5, 0.4, 0.6, 0.6, 0.6,
                                     0.6, 0.5, 0.5, 0.2, 0.5, 0.4, 0.1, 0.4, 
                                     0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
+        self.cpoolbstnddev=np.array([0.6, 0.5, 0.5, 0.5, 0.4, 0.6, 0.6, 0.6,
+                                    0.6, 0.5, 0.5, 0.2, 0.5, 0.4, 0.1, 0.4, 
+                                    0.5, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2])
 
-        self.B = (self.backgstnddev*self.xb)**2*np.eye(23)
+        self.B = self.makeB(self.backgstnddev)
         #MAKE NEW B, THIS IS WRONG!
 
         #'Observartion variances for carbon pools and NEE' 
@@ -167,6 +179,7 @@ class dalecData( ):
         self.sigo_litresp = 0.6
         self.sigo_soilresp = 0.6
         self.sigo_rtot = 0.6
+        self.sigo_rh = 0.6
         
         self.errdict = {'clab':self.sigo_clab, 'cf':self.sigo_cf,\
                         'cw':self.sigo_cw,'cl':self.sigo_cl,'cr':self.sigo_cr,\
@@ -174,7 +187,8 @@ class dalecData( ):
                         'lf':self.sigo_lf, 'lw':self.sigo_lw,\
                         'litresp':self.sigo_litresp,\
                         'soilresp':self.sigo_soilresp,\
-                        'rtot':self.sigo_rtot}
+                        'rtot':self.sigo_rtot,\
+                        'rh':self.sigo_rh}
         
         if self.obs_str!=None and self.mnth_lst==None:
             self.obdict, self.oberrdict = self.assimilation_obs(self.obs_str)
@@ -185,10 +199,17 @@ class dalecData( ):
             self.obdict, self.oberrdict = None
             
             
+    def makeB(self, bstnddevs):
+        """Creates diagonal B matrix.
+        """
+        B = (bstnddevs*self.xb)**2*np.eye(23)
+        return B
+            
+            
     def assimilation_obs(self, obs_str):
         possibleobs = ['gpp', 'lf', 'lw', 'rt', 'nee', 'cf', 'cl', \
                        'cr', 'cw', 'cs', 'lai', 'clab', 'litresp', 'soilresp',\
-                       'rtot']
+                       'rtot', 'rh']
         Obslist = re.findall(r'[^,;\s]+', obs_str)
         Obs_dict = {}
         Obs_err_dict = {}
@@ -207,7 +228,7 @@ class dalecData( ):
     def time_assimilation_obs(self, obs_str, mnth_lst):
         possibleobs = ['gpp', 'lf', 'lw', 'rt', 'nee', 'cf', 'cl', \
                        'cr', 'cw', 'cs', 'lai', 'clab', 'litresp', 'soilresp',\
-                       'rtot']
+                       'rtot', 'rh']
         Obslist = re.findall(r'[^,;\s]+', obs_str)
         Obs_dict = {}
         Obs_err_dict = {}

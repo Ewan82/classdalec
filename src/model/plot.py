@@ -8,6 +8,7 @@ import observations as obs
 import copy as cp
 import datetime as dt
 import matplotlib.dates as mdates
+import matplotlib.mlab as mlab
     
 def plotgpp(cf, dC, start, fin):
     """Plots gpp using acm equations given a cf value, a dataClass and a start
@@ -46,7 +47,7 @@ def plotobs(ob, pvals, dC, start, fin, lab=0, xax=None, dashed=0,
                  'clab': obs.clab, 'cr': obs.cr, 'cw': obs.cw, 'cl': obs.cl,
                  'cs': obs.cs, 'lf': obs.lf, 'lw': obs.lw, 'lai':obs.lai,
                  'soilresp': obs.soilresp, 'litresp': obs.litresp,
-                 'rtot': obs.rtot}
+                 'rtot': obs.rtot, 'rh': obs.rh}
     if lab == 0:
         lab = ob
     else:
@@ -123,6 +124,48 @@ def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1, awindl=None,
     plt.show()
     
     
+def plotspasomp(ob, dC, start, fin, xa=None, awindl=None, erbars=1, spa=1):
+    """Plot comparison between erics SPA output and the DALEC model run with
+    parameters found from 4DVAR run.
+    """
+    xlist=np.arange(start,fin)
+    datum = dt.datetime(int(dC.year[0]), 1, 1)
+    delta = dt.timedelta(hours=24)
+    
+    times = []
+    for t in xlist:
+        times.append(datum + int(t) * delta)
+    
+    if xa!=None:    
+        plotobs(ob, xa, dC, start, fin, ob+' ACM-D2', times, dashed=0)
+    
+    if spa==True:
+        ericdat=mlab.csv2rec('../../aliceholtdata/ericspadat.csv')
+        plt.plot(times, ericdat[ob], '-', label='Eric SPA-D1 '+ob, alpha=0.75)
+    
+    obdict = dC.obdict
+    oberrdict = dC.oberrdict
+    
+    if ob in obdict.keys():
+        if erbars==True:
+            plt.errorbar(times, obdict[ob], yerr=oberrdict[ob+'_err'], \
+                         fmt='o', label=ob+'_o', color='r', alpha=0.5)
+        else:
+            plt.plot(times, obdict[ob], 'o', label=ob+'_o', color='r')
+    
+    plt.legend()
+    plt.xlabel('Year')
+    plt.ylabel(ob+' (gCm-2)')
+    plt.title(ob+' for Alice Holt flux site')
+    if awindl!=None:
+        plt.axvline(x=times[awindl],color='k',ls='dashed')
+        plt.text(times[20], 9, 'Assimilation window')
+        plt.text(times[awindl+20], 9, 'Forecast')
+    
+    plt.show()
+    
+    
+    
 def plotscatterobs(ob, pvals, dC, awindl, bfa='a'):
     """Plots scatter plot of obs vs model predicted values. Takes an initial
     parameter set, a dataClass (must have only desired ob for comparison
@@ -142,15 +185,17 @@ def plotscatterobs(ob, pvals, dC, awindl, bfa='a'):
         plt.plot(y[0:splitval], hx[0:splitval], 'o')
         error = np.sqrt(np.sum((y[0:splitval]-hx[0:splitval])**2)/\
                                                             len(y[0:splitval]))
+        yhx = np.mean(y[0:splitval]-hx[0:splitval])
     elif bfa=='f':
         plt.plot(y[splitval:], hx[splitval:], 'o')
         error = np.sqrt(np.sum((y[splitval:]-hx[splitval:])**2)/\
                                                             len(y[splitval:]))
+        yhx = np.mean(y[splitval:]-hx[splitval:])                                            
     else:
         raise Exception('Please check function input for bfa variable')
     plt.xlabel(ob+' observations')
     plt.ylabel(ob+' model')
-    plt.title(bfa+'_error=%f' %error)
+    plt.title(bfa+'_error=%f, mean(y-hx)=%f' %(error,yhx))
     return error, y[0:splitval]-hx[0:splitval]
 
     
