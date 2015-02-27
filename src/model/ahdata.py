@@ -118,15 +118,7 @@ class dalecData( ):
                                    0.37836, 7.19298, 0.011136, 2.1001, 
                                    0.789798])
         self.acm = self.acmreflex #(currently using params from REFLEX)
-        self.a2 = self.acm[0]
-        self.a3 = self.acm[1] 
-        self.a4 = self.acm[2] 
-        self.a5 = self.acm[3] 
-        self.a6 = self.acm[4] 
-        self.a7 = self.acm[5] 
-        self.a8 = self.acm[6] 
-        self.a9 = self.acm[7] 
-        self.a10 = self.acm[8] 
+        self.setacm(self.acm)
         self.phi_d = -2. #max. soil leaf water potential difference
         self.R_tot = 1. #total plant-soil hydrolic resistance
         self.lat = 0.89133965 #latitutde of forest site in radians
@@ -205,6 +197,20 @@ class dalecData( ):
         """
         B = (bstnddevs*self.xb)**2*np.eye(23)
         return B
+        
+        
+    def setacm(self, acm):
+        """Sets ACM parameter values.
+        """
+        self.a2 = acm[0]
+        self.a3 = acm[1] 
+        self.a4 = acm[2] 
+        self.a5 = acm[3] 
+        self.a6 = acm[4] 
+        self.a7 = acm[5] 
+        self.a8 = acm[6] 
+        self.a9 = acm[7] 
+        self.a10 = acm[8]             
             
             
     def assimilation_obs(self, obs_str):
