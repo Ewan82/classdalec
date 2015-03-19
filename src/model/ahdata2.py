@@ -117,7 +117,7 @@ class dalecData( ):
         self.acmreflex = np.array([0.0156935, 4.22273, 208.868, 0.0453194,
                                    0.37836, 7.19298, 0.011136, 2.1001, 
                                    0.789798])
-        self.acm = self.acmwreflex #(currently using params from REFLEX)
+        self.acm = self.acmreflex #(currently using params from REFLEX)
         self.setacm(self.acm)
         self.phi_d = -2.5 #max. soil leaf water potential difference
         self.R_tot = 1. #total plant-soil hydrolic resistance
