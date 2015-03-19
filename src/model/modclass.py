@@ -380,19 +380,28 @@ class dalecModel():
 #Assimilation functions
 #------------------------------------------------------------------------------
 
-    def bmat(self):
+    def bmat(self, varyp=False):
         """Attempt at creating a b matrix.
         """
         pmat = np.ones((23, 1000))*9999.
         modevmat = np.ones((23,1000))*9999.
         
-        for x in xrange(23):
-            if x < 17.:
-                for i in xrange(1000):
-                    pmat[x,i] = self.dC.pvals[x]
-            elif x >= 17.:
+        if varyp == False:
+            for x in xrange(23):
+                if x < 17.:
+                    for i in xrange(1000):
+                        pmat[x,i] = self.dC.pvals[x]
+                elif x >= 17.:
+                    pmat[x] = np.random.normal(self.dC.pvals[x], 
+                                               self.dC.pvals[x]*0.3, 1000)
+        else:
+            for x in xrange(23):
                 pmat[x] = np.random.normal(self.dC.pvals[x], 
                                            self.dC.pvals[x]*0.3, 1000)
+        
+        for x in xrange(1000):
+            if pmat[4,x]<1.0001:
+                pmat[4,x]=1.0001
                                        
         for x in xrange(1000):
             modevmat[:,x] = self.mod_list(pmat[:,x])[-1]
