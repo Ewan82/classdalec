@@ -387,15 +387,19 @@ class dalecModel():
         modevmat = np.ones((23,1000))*9999.
         
         for x in xrange(23):
-            pmat[x] = np.random.normal(self.dC.pvals[x], self.dC.pvals[x]*0.3,
-                                       1000)
+            if x < 17.:
+                for i in xrange(1000):
+                    pmat[x,i] = self.dC.pvals[x]
+            elif x >= 17.:
+                pmat[x] = np.random.normal(self.dC.pvals[x], 
+                                           self.dC.pvals[x]*0.3, 1000)
                                        
         for x in xrange(1000):
             modevmat[:,x] = self.mod_list(pmat[:,x])[-1]
             
         bmat=np.cov(modevmat)
             
-        return modevmat
+        return bmat
             
     
 
