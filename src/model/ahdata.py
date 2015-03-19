@@ -216,7 +216,7 @@ class dalecData( ):
     def assimilation_obs(self, obs_str):
         possibleobs = ['gpp', 'lf', 'lw', 'rt', 'nee', 'cf', 'cl', \
                        'cr', 'cw', 'cs', 'lai', 'clab', 'litresp', 'soilresp',\
-                       'rtot', 'rh']
+                       'rtot', 'rh', 'rabg']
         Obslist = re.findall(r'[^,;\s]+', obs_str)
         Obs_dict = {}
         Obs_err_dict = {}
@@ -235,7 +235,7 @@ class dalecData( ):
     def time_assimilation_obs(self, obs_str, mnth_lst):
         possibleobs = ['gpp', 'lf', 'lw', 'rt', 'nee', 'cf', 'cl', \
                        'cr', 'cw', 'cs', 'lai', 'clab', 'litresp', 'soilresp',\
-                       'rtot', 'rh']
+                       'rtot', 'rh', 'rabg']
         Obslist = re.findall(r'[^,;\s]+', obs_str)
         Obs_dict = {}
         Obs_err_dict = {}

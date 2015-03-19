@@ -116,11 +116,11 @@ def dat_output(filenames, outputname):
     return dat
     
     
-def add_obs(filename, obname, ob, obsfile, obsfunc, years):
+def add_obs(filename, obname, ob, obsfile, obsfunc):
     """Function adds more observations to current datafile.
     """
     dat = mlab.csv2rec(filename, missing='nan')
-    dat2 = append_fields(dat, obname, np.ones(len(dat))*float('NaN'), 
+    dat2 = append_fields(dat, obname, np.ones(len(dat))*float('NaN'), \
                          fill_value=float('NaN'), usemask=False)
     newobdat=obsfunc(obsfile, ob) #create new ob array
     

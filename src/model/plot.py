@@ -9,7 +9,8 @@ import copy as cp
 import datetime as dt
 import matplotlib.dates as mdates
 import matplotlib.mlab as mlab
-    
+
+
 def plotgpp(cf, dC, start, fin):
     """Plots gpp using acm equations given a cf value, a dataClass and a start
     and finish point. NOTE cf is treated as constant in this plot 
@@ -69,7 +70,8 @@ def plotobs(ob, pvals, dC, start, fin, lab=0, xax=None, dashed=0,
         if dashed==True:    
             plt.plot(xax, oblist, '--', label=lab, color=colour)
         else:
-            plt.plot(xax, oblist, label=lab, color=colour)        
+            plt.plot(xax, oblist, label=lab, color=colour)   
+    return oblist
 
 
 def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1, awindl=None, 
