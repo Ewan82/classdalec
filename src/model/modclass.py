@@ -380,6 +380,25 @@ class dalecModel():
 #Assimilation functions
 #------------------------------------------------------------------------------
 
+    def bmat(self):
+        """Attempt at creating a b matrix.
+        """
+        pmat = np.ones((23, 1000))*9999.
+        modevmat = np.ones((23,1000))*9999.
+        
+        for x in xrange(23):
+            pmat[x] = np.random.normal(self.dC.pvals[x], self.dC.pvals[x]*0.3,
+                                       1000)
+                                       
+        for x in xrange(1000):
+            modevmat[:,x] = self.mod_list(pmat[:,x])[-1]
+            
+        bmat=np.cov(modevmat)
+            
+        return modevmat
+            
+    
+
     def obscost(self):
         """Function returning list of observations and a list of their 
         corresponding error values. Takes observation dictionary and an 

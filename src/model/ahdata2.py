@@ -53,7 +53,7 @@ class dalecData( ):
         self.p2 = 0.45 #f_auto, fraction of GPP respired  (0.3 - 0.7)
         self.p3 = 0.01 #f_fol, frac GPP to foliage        (0.01 - 0.5)
         self.p4 = 0.457 #f_roo, frac GPP to fine roots     (0.01 - 0.5)
-        self.p5 = 1.01 #clspan, leaf lifespan             (1.0001 - 5)
+        self.p5 = 3. #clspan, leaf lifespan             (1.0001 - 5)
         self.p6 = 0.000023 #theta_woo, wood C turnover     (2.5e-5 - 1e-3)day^-1
         self.p7 = 0.00672 #theta_roo, root C turnover rate(1e-4 - 1e-2)day^-1
         self.p8 = 0.008 #theta_lit, litter C turnover   (1e-4 - 1e-2)day^-1
