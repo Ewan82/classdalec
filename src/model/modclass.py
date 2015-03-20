@@ -380,7 +380,7 @@ class dalecModel():
 #Assimilation functions
 #------------------------------------------------------------------------------
 
-    def bmat(self, varyp=False):
+    def bmat(self, corr=False, varyp=False):
         """Attempt at creating a b matrix.
         """
         pmat = np.ones((23, 1000))*9999.
@@ -405,9 +405,12 @@ class dalecModel():
                                        
         for x in xrange(1000):
             modevmat[:,x] = self.mod_list(pmat[:,x])[-1]
-            
-        bmat=np.cov(modevmat)
-            
+        
+        if corr==False:
+            bmat=np.cov(modevmat)
+        elif corr==True:
+            bmat=np.corrcoef(modevmat)
+        
         return bmat
             
     
