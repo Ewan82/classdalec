@@ -393,7 +393,48 @@ def plottwinerr(truth, xb, xa):
     ax.set_xticklabels(keys, rotation=90)
     ax.legend()
     plt.show()
-
+    
+    
+def plotbmat(bmat):
+    """Plots a B matrix.
+    """
+    fig = plt.figure()
+    ax = fig.add_subplot(1,1,1)
+    ax.set_aspect('equal')
+    plt.imshow(bmat, interpolation='nearest')   
+    plt.colorbar()
+    keys = ['theta_min', 'f_auto', 'f_fol', 'f_roo', 'clspan', 'theta_woo',
+            'theta_roo', 'theta_lit', 'theta_som', 'Theta', 'ceff', 'd_onset',
+            'f_lab', 'cronset', 'd_fall', 'crfall', 'clma', 'clab', 'cf', 'cr',
+            'cw', 'cl', 'cs']
+    ax.set_xticks(np.arange(23))
+    ax.set_xticklabels(keys, rotation=90)
+    ax.set_yticks(np.arange(23))
+    ax.set_yticklabels(keys)
+    plt.show()
+    
+    
+def analysischange(xb, xa):
+    """Plot error between truth and xa/xb shows as a bar chart.
+    """
+    n = 23
+    width = 0.35
+    ind = np.arange(n)
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    rects1 = ax.barh(ind, (xb-xa)/xb, width, color='r',\
+                    label='xa_change')
+    ax.set_xlabel('% diff')
+    ax.set_title('% change in parameter values from xb to xa')
+    ax.set_yticks(ind+width)
+    keys = ['theta_min', 'f_auto', 'f_fol', 'f_roo', 'clspan', 'theta_woo',
+            'theta_roo', 'theta_lit', 'theta_som', 'Theta', 'ceff', 'd_onset',
+            'f_lab', 'cronset', 'd_fall', 'crfall', 'clma', 'clab', 'cf', 'cr',
+            'cw', 'cl', 'cs']
+    ax.set_yticklabels(keys)
+    #ax.legend()
+    plt.show()
+    
     
 def plotlinmoderr(cpool, dC, start, fin):
     """Plots the error for the linearized estimate to the evolution of a carbon

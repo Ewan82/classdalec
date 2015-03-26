@@ -263,7 +263,7 @@ class dalecData( ):
 
         
     def pickle(self, filename):
-            f = open(filename, 'w')
+            f = open(filename, 'wb')
             pickle.dump(self, f)
             f.close()
             
