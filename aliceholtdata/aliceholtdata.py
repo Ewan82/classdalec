@@ -1,9 +1,52 @@
 import matplotlib.mlab as mlab
 import numpy as np
-import datetime
 import xlrd
 import csv
+import datetime
+import netCDF4 as nC
 from numpy.lib.recfunctions import append_fields
+
+
+def open_csv(filename, missing_val='N/A'):
+    """Opens a csv file into a recorded array.
+    """
+    return mlab.csv2rec(filename, missing=missing_val)
+
+
+def open_netcdf(filename):
+    """Opens a netCDF file
+    """
+    return nC.Dataset(filename, 'a')
+
+
+def ah_str2date(date_str):
+    """Converts string into datetime object for alice holt spreadsheet.
+    """
+    return datetime.datetime.strptime(date_str, "%d/%m/%Y %H:%M")
+
+
+def add_data2netcdf(nc_file, csv_file, data_title, nc_title, date_col='date_combined'):
+    """
+    Adds data to a netCDF file
+    :param nc_file: netCDF file
+    :param csv_file: csv file
+    :param data_title: title column for data to add
+    :param nc_title: title of nc variable to add it too
+    :param date_col: title of date column
+    :return: nothing
+    """
+    nc_ob = open_netcdf(nc_file)
+    var = nc_ob.variables[nc_title]
+    times = nc_ob.variables['time']
+    dat_arr = open_csv(csv_file)
+    for x in xrange(len(dat_arr[date_col])):
+        try:
+            idx = nC.date2index(dat_arr[date_col][x], times)
+        except ValueError:
+            print x
+        var[idx, 0, 0] = dat_arr[data_title][x]
+    nc_ob.close()
+    return 'data updated!'
 
 
 def excel2csv(filename, yearst, yearend):

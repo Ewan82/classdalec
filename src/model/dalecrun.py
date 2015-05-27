@@ -9,11 +9,11 @@ server after using "setup epd" command). MUST BE UNPACKED IN HOME DIRECTORY TO
 WORK :).
 """
 import model as mod
-import data as dC
+import ahdata2 as dc
 
-d = dC.dalecData(365)
-def dalecrun(initconditions = d.pvals, dataClass = d, start = 0, fin = 365):
-    print mod.mod_list(initconditions, d, start, fin)
+d = dc.DalecData(365)
+def dalecrun(initconditions=d.pvals, dataclass=d, start=0, fin=365):
+    print mod.mod_list(initconditions, dataclass, start, fin)
     
 if __name__ == "__main__":
     dalecrun() 

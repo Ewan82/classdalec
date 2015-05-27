@@ -28,7 +28,7 @@ class dalecData( ):
         
         #Extract the data
         self.homepath = os.path.expanduser("~")
-        self.f = open(self.homepath+"/dalecv2/oregondata/dalec_drivers.txt",\
+        self.f = open(self.homepath+"/projects/classdalec/oregondata/dalec_drivers.txt",\
                       "r")
         self.allLines = self.f.readlines()
         self.data = np.array([[-9999.]*9 for i in range(self.lenrun)])
@@ -202,7 +202,7 @@ class dalecData( ):
         self.vars = np.array([self.clab*0.1, self.cf*0.1, 
                               self.cw*0.1, self.cr*0.1, 
                               self.cl*0.1, self.cs*0.1, 0.5, 0.2, 
-                              0.2, 0.2, 0.4, 0.12, 0.05, 0.05])
+                              0.2, 0.2, 0.4, 0.12, 0.5, 0.5])
         self.smallvars = self.vars*1e-3
         
         if errs=='normal':

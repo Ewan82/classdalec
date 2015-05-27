@@ -9,6 +9,7 @@ import copy as cp
 import datetime as dt
 import matplotlib.dates as mdates
 import matplotlib.mlab as mlab
+import matplotlib
 
 
 def plotgpp(cf, dC, start, fin):
@@ -436,28 +437,58 @@ def analysischange(xb, xa):
     plt.show()
     
     
-def plotlinmoderr(cpool, dC, start, fin):
+def plotlinmoderr(dC, start, fin, cpool=None, norm_err=0):
     """Plots the error for the linearized estimate to the evolution of a carbon
     pool and the nonlinear models evolution of a carbon pool for comparision 
     and to see if the linear model satisfies the tangent linear hypoethesis.
     Takes a carbon pool as a string, a dataClass and a start and finish point.
     """
-    pooldict={'clab':0, 'cf':1, 'cr':2, 'cw':3, 'cl':4, 'cs':5}
+    pooldict={'clab':-6, 'cf':-5, 'cr':-4, 'cw':-3, 'cl':-2, 'cs':-1}
     cx, matlist = m.linmod_list(dC.pvals, dC, start, fin)
     dC2 = cp.copy(dC)
     dC2.pvals = dC2.pvals*1.05
     cxdx = m.mod_list(dC2.pvals, dC2, start, fin)
     dC3 = cp.copy(dC)
     dC3.pvals = dC3.pvals*0.05
-    
+
     dxl = m.linmod_evolvefac(dC3.pvals, matlist, dC, start, fin)
     
     dxn = cxdx-cx
-    
-    plt.plot(dxn[:,pooldict[cpool]],label='dxn '+cpool)
-    plt.plot(dxl[:,pooldict[cpool]],label='dxl '+cpool)
+
+    xlist = np.arange(start, fin)
+    # We know the datum and delta from reading the file manually
+    datum = dt.datetime(int(dC.year[0]), 1, 1)
+    delta = dt.timedelta(hours=24)
+
+    # Convert the time values to datetime objects
+    times = []
+    for t in xlist:
+        times.append(datum + int(t) * delta)
+
+    # Font change
+    font = {'size'   : 22}
+
+    matplotlib.rc('font', **font)
+
+    if norm_err is True:
+        err = np.ones(fin - start)*-9999.
+        dxn_norm = np.ones(fin - start)*-9999.
+        dxl_norm = np.ones(fin - start)*-9999.
+        for x in xrange(fin - start):
+            dxn_norm[x] = np.linalg.norm(dxn[x,17:22])
+            dxl_norm[x] = np.linalg.norm(dxl[x,17:22])
+            err[x] = abs((np.linalg.norm(dxn[x,17:22])/np.linalg.norm(dxl[x,17:22]))-1)*100.
+        plt.plot(times, err, label='% error')
+        #plt.plot(times, dxn_norm, label='dxn')
+        #plt.plot(times, dxl_norm, label='dxl')
+        plt.xlabel('Date')
+        plt.ylabel('Percentage error in TLM')
+        plt.title('Plot of the TLM error')
+    else:
+        plt.plot(dxn[:,pooldict[cpool]],label='dxn '+cpool)
+        plt.plot(dxl[:,pooldict[cpool]],label='dxl '+cpool)
     plt.legend()
     plt.show()
-    
+
 
 
