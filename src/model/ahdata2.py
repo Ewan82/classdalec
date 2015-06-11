@@ -37,7 +37,7 @@ class DalecData():
 
         # 'I.C. for carbon pools gCm-2'   range
         self.clab = 75.0               # (10,1e3)
-        self.cf = 2.0                  # (10,1e3)
+        self.cf = 10.0                  # (10,1e3)
         self.cr = 135.0                # (10,1e3)
         self.cw = 14313.0              # (3e3,3e4)
         self.cl = 70.                  # (10,1e3)
@@ -46,23 +46,23 @@ class DalecData():
                                 self.cs]])
         
         # 'Parameters for optimization'                    range
-        self.p1 = 2.0e-5  # theta_min, cl to cs decomp      (1e-5 - 1e-2)day^-1
+        self.p1 = 1.1e-5  # theta_min, cl to cs decomp      (1e-5 - 1e-2)day^-1
         self.p2 = 0.45  # f_auto, fraction of GPP respired  (0.3 - 0.7)
-        self.p3 = 0.01  # f_fol, frac GPP to foliage        (0.01 - 0.5)
+        self.p3 = 0.013  # f_fol, frac GPP to foliage       (0.01 - 0.5)
         self.p4 = 0.457  # f_roo, frac GPP to fine roots    (0.01 - 0.5)
         self.p5 = 3.  # clspan, leaf lifespan               (1.0001 - 5)
-        self.p6 = 0.000023  # theta_woo, wood C turnover    (2.5e-5 - 1e-3)day^-1
-        self.p7 = 0.00672  # theta_roo, root C turnover rate(1e-4 - 1e-2)day^-1
+        self.p6 = 4.8e-5  # theta_woo, wood C turnover      (2.5e-5 - 1e-3)day^-1
+        self.p7 = 6.72e-3  # theta_roo, root C turnover rate(1e-4 - 1e-2)day^-1
         self.p8 = 0.008  # theta_lit, litter C turnover     (1e-4 - 1e-2)day^-1
-        self.p9 = 0.0000026  # theta_som, SOM C turnover    (1e-7 - 1e-3)day^-1
+        self.p9 = 2.4e-5  # theta_som, SOM C turnover       (1e-7 - 1e-3)day^-1
         self.p10 = 0.0193  # Theta, temp dependence exp fact(0.018 - 0.08)
         self.p11 = 90.  # ceff, canopy efficiency param     (10 - 100)
         self.p12 = 140.  # d_onset, clab release date       (1 - 365) (60,150)
-        self.p13 = 0.7  # f_lab, frac GPP to clab           (0.01 - 0.5)
+        self.p13 = 0.4  # f_lab, frac GPP to clab           (0.01 - 0.5)
         self.p14 = 27.  # cronset, clab release period      (10 - 100)
         self.p15 = 308.  # d_fall, date of leaf fall        (1 - 365) (242,332)
         self.p16 = 35.  # crfall, leaf fall period          (10 - 100)
-        self.p17 = 46.7  # clma, leaf mass per area         (10 - 400)gCm^-2
+        self.p17 = 24.2  # clma, leaf mass per area         (10 - 400)gCm^-2
         
         self.paramdict = col.OrderedDict([('theta_min', self.p1), 
                                           ('f_auto', self.p2), ('f_fol', self.p3),
@@ -95,6 +95,15 @@ class DalecData():
                                         308.106881011017, 63.6023224321684, 201.056970845445,
                                         201.27512854457, 98.9874539256948, 443.230119619488,
                                         20293.9092250464, 141.405866537237, 2487.84616355469])
+
+        self.ogpvals = np.array([  4.41000000e-05,   4.70000000e-01,   2.80000000e-01,
+                                1.60000000e-01,   1.50000000e+00,   3.60000000e-05,
+                                2.48000000e-03,   2.28000000e-03,   2.60000000e-06,
+                                6.93000000e-02,   1.50000000e+01,   4.04000000e+01,
+                                5.06290000e-02,   3.00000000e+01,   1.97000000e+02,
+                                9.00000000e+01,   5.20000000e+01,   4.18000000e+01,
+                                5.80000000e+01,   1.02000000e+02,   7.70000000e+02,
+                                4.00000000e+01,   9.89700000e+03])
              
         self.xb = self.pvals
         

@@ -437,21 +437,19 @@ def analysischange(xb, xa):
     plt.show()
     
     
-def plotlinmoderr(dC, start, fin, cpool=None, norm_err=0):
+def plotlinmoderr(dC, start, fin, pvals, dx=0.05, cpool=None, norm_err=0, lins='-'):
     """Plots the error for the linearized estimate to the evolution of a carbon
     pool and the nonlinear models evolution of a carbon pool for comparision 
     and to see if the linear model satisfies the tangent linear hypoethesis.
     Takes a carbon pool as a string, a dataClass and a start and finish point.
     """
     pooldict={'clab':-6, 'cf':-5, 'cr':-4, 'cw':-3, 'cl':-2, 'cs':-1}
-    cx, matlist = m.linmod_list(dC.pvals, dC, start, fin)
-    dC2 = cp.copy(dC)
-    dC2.pvals = dC2.pvals*1.05
-    cxdx = m.mod_list(dC2.pvals, dC2, start, fin)
-    dC3 = cp.copy(dC)
-    dC3.pvals = dC3.pvals*0.05
+    cx, matlist = m.linmod_list(pvals, dC, start, fin)
+    d2pvals = pvals*(1. + dx)
+    cxdx = m.mod_list(d2pvals, dC, start, fin)
+    d3pvals = pvals*dx
 
-    dxl = m.linmod_evolvefac(dC3.pvals, matlist, dC, start, fin)
+    dxl = m.linmod_evolvefac(d3pvals, matlist, dC, start, fin)
     
     dxn = cxdx-cx
 
@@ -466,7 +464,7 @@ def plotlinmoderr(dC, start, fin, cpool=None, norm_err=0):
         times.append(datum + int(t) * delta)
 
     # Font change
-    font = {'size'   : 22}
+    font = {'size': 24}
 
     matplotlib.rc('font', **font)
 
@@ -478,17 +476,16 @@ def plotlinmoderr(dC, start, fin, cpool=None, norm_err=0):
             dxn_norm[x] = np.linalg.norm(dxn[x,17:22])
             dxl_norm[x] = np.linalg.norm(dxl[x,17:22])
             err[x] = abs((np.linalg.norm(dxn[x,17:22])/np.linalg.norm(dxl[x,17:22]))-1)*100.
-        plt.plot(times, err, label='% error')
+        plt.plot(times, err, 'k', linestyle=lins, label='$\delta x = %.2f $' % dx)
         #plt.plot(times, dxn_norm, label='dxn')
         #plt.plot(times, dxl_norm, label='dxl')
         plt.xlabel('Date')
         plt.ylabel('Percentage error in TLM')
-        plt.title('Plot of the TLM error')
+        #plt.title('Plot of the TLM error')
     else:
         plt.plot(dxn[:,pooldict[cpool]],label='dxn '+cpool)
         plt.plot(dxl[:,pooldict[cpool]],label='dxl '+cpool)
-    plt.legend()
-    plt.show()
+    plt.legend(loc=2)
 
 
 
