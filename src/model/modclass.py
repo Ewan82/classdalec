@@ -3,6 +3,7 @@ dalecv2 model.
 """
 import numpy as np
 import scipy.optimize as spop
+import scipy.linalg as spl
 import algopy
 import emcee
 
@@ -526,7 +527,96 @@ class DalecModel():
                        np.linalg.inv(np.dot(np.dot(hmatrix, self.dC.B), hmatrix.T) + self.rmatrix))
         xa = pvals + np.dot(k_mat, (self.yoblist - hx))
         return xa
-        
+
+# ------------------------------------------------------------------------------
+# CVT and implied B.
+# ------------------------------------------------------------------------------
+
+    def modcost_cvt(self, zvals):
+        """model part of cost fn.
+        """
+        return np.dot(zvals, zvals.T)
+
+    def obcost_cvt(self, zvals):
+        """Observational part of cost fn.
+        """
+        pvals = (np.dot(spl.sqrtm(self.dC.B),zvals)+self.xb)
+        pvallist = self.mod_list(pvals)
+        hx = self.hxcost(pvallist)
+        return np.dot(np.dot((self.yoblist-hx), np.linalg.inv(self.rmatrix)), (self.yoblist-hx).T)
+
+    def cost_cvt(self, zvals):
+        """4DVAR cost function to be minimized. Takes an initial state (pvals),
+        an observation dictionary, observation error dictionary, a dataClass
+        and a start and finish time step.
+        """
+        ob_cost = self.obcost_cvt(zvals)
+        if self.modcoston is True:
+            mod_cost = self.modcost_cvt(zvals)
+        else:
+            mod_cost = 0
+        cost = 0.5*ob_cost + 0.5*mod_cost
+        return cost
+
+    def gradcost_cvt(self, zvals):
+        """Gradient of 4DVAR cost fn to be passed to optimization routine.
+        Takes an initial state (pvals), an obs dictionary, an obs error
+        dictionary, a dataClass and a start and finish time step.
+        """
+        pvals = (np.dot(spl.sqrtm(self.dC.B),zvals)+self.xb)
+        pvallist, matlist = self.linmod_list(pvals)
+        hx, hmatrix = self.hmat(pvallist, matlist)
+        obcost = np.dot(spl.sqrtm(self.dC.B).T, np.dot(hmatrix.T, np.dot(np.linalg.inv(self.rmatrix),
+                                          (self.yoblist-hx).T)))
+        if self.modcoston is True:
+            modcost = zvals.T
+        else:
+            modcost = 0
+        gradcost = - obcost + modcost
+        return gradcost
+
+    def pvals2zvals(self, pvals):
+        """Convert x_0 state to z_0 state for CVT with DALEC.
+        """
+        Bnegsqrt = np.linalg.inv(spl.sqrtm(self.dC.B))
+        return np.dot(Bnegsqrt, (pvals - self.xb))
+
+    def zvals2pvals(self, zvals):
+        """Convert z_0 to x_0 for CVT.
+        """
+        return (np.dot(spl.sqrtm(self.dC.B),zvals)+self.xb)
+
+    def zvalbnds(self, bnds):
+        """Calculates bounds for transformed problem.
+        """
+        lower_bnds = []
+        upper_bnds = []
+        for t in bnds:
+            lower_bnds.append(t[0])
+            upper_bnds.append(t[1])
+        zval_lowerbnds = self.pvals2zvals(np.array(lower_bnds))
+        zval_upperbnds = self.pvals2zvals(np.array(upper_bnds))
+        new_bnds=[]
+        for t in xrange(len(bnds)):
+            new_bnds.append((zval_lowerbnds[t],zval_upperbnds[t]))
+        return tuple(new_bnds)
+
+    def findmin_cvt(self, pvals, bnds='strict', dispp=None, maxits=2000,
+                   mini=0):
+        """Function which minimizes 4DVAR cost fn. Takes an initial state
+        (pvals).
+        """
+        self.xb = pvals
+        zvals = self.pvals2zvals(pvals)
+        if bnds == 'strict':
+            bnds = self.zvalbnds(self.dC.bnds)
+        else:
+            bnds = bnds
+        findmin = spop.fmin_tnc(self.cost_cvt, zvals,
+                                fprime=self.gradcost_cvt, bounds=bnds,
+                                disp=dispp, fmin=mini, maxfun=maxits)
+        return findmin
+
 # ------------------------------------------------------------------------------
 # Minimization Routines.
 # ------------------------------------------------------------------------------
