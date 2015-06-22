@@ -20,7 +20,7 @@ class DalecModel():
         else:
             self.lenrun = self.dC.lenrun*self.dC.k 
         self.xb = self.dC.xb
-        self.modcoston = 1
+        self.modcoston = True
         self.modobdict = {'gpp': self.gpp, 'nee': self.nee, 'rt': self.rec, 
                           'cf': self.cf, 'clab': self.clab, 'cr': self.cr, 
                           'cw': self.cw, 'cl': self.cl, 'cs': self.cs, 
