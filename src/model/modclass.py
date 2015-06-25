@@ -4,6 +4,7 @@ dalecv2 model.
 import numpy as np
 import scipy.optimize as spop
 import scipy.linalg as spl
+import matplotlib.mlab as mlab
 import algopy
 import emcee
 
@@ -360,30 +361,42 @@ class DalecModel():
 # Assimilation functions
 # ------------------------------------------------------------------------------
 
-    def bmat(self, corr=False, varyp=False):
+    def bmat(self, corr=False, varyp=False, edin=False):
         """Attempt at creating a b matrix.
         """
-        pmat = np.ones((23, 1000))*9999.
-        modevmat = np.ones((23, 1000))*9999.
+        pmat = np.ones((23, 1500))*9999.
+        modevmat = np.ones((23, 1500))*9999.
+
+        if edin is True:
+            params = mlab.csv2rec('alice_holt_parameters.csv')
+            pmat = np.array(params.tolist())
+
+            for x in xrange(1500):
+                modevmat[:, x] = self.mod_list(pmat[x][0:23])[-1]
+
+            if corr is False:
+                return np.cov(modevmat)
+            elif corr is True:
+                return np.corrcoef(modevmat)
         
         if varyp is False:
             for x in xrange(23):
                 if x < 17.:
-                    for i in xrange(1000):
+                    for i in xrange(1500):
                         pmat[x, i] = self.dC.pvals[x]
                 elif x >= 17.:
                     pmat[x] = np.random.normal(self.dC.pvals[x], 
-                                               self.dC.pvals[x]*0.3, 1000)
+                                               self.dC.pvals[x]*0.3, 1500)
         else:
             for x in xrange(23):
                 pmat[x] = np.random.normal(self.dC.pvals[x], 
-                                           self.dC.pvals[x]*0.3, 1000)
+                                           self.dC.pvals[x]*0.3, 1500)
         
-        for x in xrange(1000):
+        for x in xrange(1500):
             if pmat[4, x] < 1.0001:
                 pmat[4, x] = 1.0001
                                        
-        for x in xrange(1000):
+        for x in xrange(1500):
             modevmat[:, x] = self.mod_list(pmat[:, x])[-1]
         
         if corr is False:
@@ -744,8 +757,6 @@ class DalecModel():
         for x in xrange(23):
             if self.dC.bnds[x][0]<pvals[x]<self.dC.bnds[x][1]:
                 tick -= 1
-            else:
-                print x
         if tick==0:
             return 0.0
         return -np.inf
