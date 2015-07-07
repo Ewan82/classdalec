@@ -394,7 +394,27 @@ def plottwinerr(truth, xb, xa):
     ax.set_xticklabels(keys, rotation=90)
     ax.legend()
     plt.show()
-    
+
+def plot_analysis_inc(xb, xa):
+    """Plot error between truth and xa/xb shows as a bar chart.
+    """
+    n = 23
+    width = 0.35
+    ind = np.arange(n)
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.bar(ind, ((xa-xb)/abs(xa-xb))*np.log(abs(xa-xb)), width, color='g',\
+                    label='xa_inc')
+    ax.set_ylabel('xa - xb')
+    ax.set_title('Analysis increment')
+    ax.set_xticks(ind)
+    keys = ['theta_min', 'f_auto', 'f_fol', 'f_roo', 'clspan', 'theta_woo',
+            'theta_roo', 'theta_lit', 'theta_som', 'Theta', 'ceff', 'd_onset',
+            'f_lab', 'cronset', 'd_fall', 'crfall', 'clma', 'clab', 'cf', 'cr',
+            'cw', 'cl', 'cs']
+    ax.set_xticklabels(keys, rotation=90)
+    #ax.legend()
+    plt.show()
     
 def plotbmat(bmat):
     """Plots a B matrix.

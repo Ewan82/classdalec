@@ -404,6 +404,22 @@ class DalecModel():
         elif corr is True:
             return np.corrcoef(modevmat)
 
+    def bmat2(self, corr=False):
+        pmat = np.ones((23, 1500))*9999.
+        modevmat = np.ones((23, 1500*self.lenrun))*9999.
+        for x in xrange(23):
+            pmat[x] = np.random.normal(self.dC.edinburghmedian[x], self.dC.edinburghstdev[x], 1500)
+        for x in xrange(1500):
+            if pmat[4,x] < 1.0001:
+                pmat[4,x] = 1.0001
+            modevmat[:, x*self.lenrun:self.lenrun*x+self.lenrun] = (self.mod_list(pmat[:,x])[0:self.lenrun]).T
+        #return modevmat
+        if corr==True:
+            return np.corrcoef(modevmat)
+        else:
+            return np.cov(modevmat)
+
+
     def obscost(self):
         """Function returning list of observations and a list of their 
         corresponding error values. Takes observation dictionary and an 
