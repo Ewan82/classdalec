@@ -383,14 +383,14 @@ class DalecModel():
             for x in xrange(23):
                 if x < 17.:
                     for i in xrange(1500):
-                        pmat[x, i] = self.dC.pvals[x]
+                        pmat[x, i] = self.dC.edinburghmean[x]
                 elif x >= 17.:
-                    pmat[x] = np.random.normal(self.dC.pvals[x], 
-                                               self.dC.pvals[x]*0.3, 1500)
+                    pmat[x] = np.random.normal(self.dC.edinburghmean[x],
+                                               self.dC.edinburghstdev[x], 1500)
         else:
             for x in xrange(23):
-                pmat[x] = np.random.normal(self.dC.pvals[x], 
-                                           self.dC.pvals[x]*0.3, 1500)
+                pmat[x] = np.random.normal(self.dC.edinburghmean[x],
+                                           self.dC.edinburghstdev[x], 1500)
         
         for x in xrange(1500):
             if pmat[4, x] < 1.0001:
@@ -408,17 +408,15 @@ class DalecModel():
         pmat = np.ones((23, 1500))*9999.
         modevmat = np.ones((23, 1500*self.lenrun))*9999.
         for x in xrange(23):
-            pmat[x] = np.random.normal(self.dC.edinburghmedian[x], self.dC.edinburghstdev[x], 1500)
+            pmat[x] = np.random.normal(self.dC.edinburghmean[x], self.dC.edinburghstdev[x], 1500)
         for x in xrange(1500):
             if pmat[4,x] < 1.0001:
                 pmat[4,x] = 1.0001
             modevmat[:, x*self.lenrun:self.lenrun*x+self.lenrun] = (self.mod_list(pmat[:,x])[0:self.lenrun]).T
-        #return modevmat
         if corr==True:
             return np.corrcoef(modevmat)
         else:
             return np.cov(modevmat)
-
 
     def obscost(self):
         """Function returning list of observations and a list of their 

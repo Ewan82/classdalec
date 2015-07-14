@@ -403,8 +403,10 @@ def plot_analysis_inc(xb, xa):
     ind = np.arange(n)
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    ax.bar(ind, ((xa-xb)/abs(xa-xb))*np.log(abs(xa-xb)), width, color='g',\
-                    label='xa_inc')
+    #ax.bar(ind, ((xa-xb)/abs(xa-xb))*np.log(abs(xa-xb)), width, color='g',\
+    #                label='xa_inc')
+    ax.bar(ind, (xa-xb)/xb, width, color='g',\
+                   label='xa_inc')
     ax.set_ylabel('xa - xb')
     ax.set_title('Analysis increment')
     ax.set_xticks(ind)
