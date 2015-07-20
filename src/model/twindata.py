@@ -344,9 +344,9 @@ class dalecData( ):
         x=0
         for bnd in self.bnds:
             if bnd[0]<pvals[x]<bnd[1]:
-                print 'p%x in bnds' %x
+                print '%x in bnds' %x
             else:
-                print 'p%x not in bnds' %x
+                print '%x not in bnds' %x
             x += 1
         return pvals
         

@@ -28,7 +28,9 @@ class DalecData():
             self.fluxdata = self.data[(self.data['year'] >= startyr) &
                                       (self.data['year'] < endyr)]
             self.lenrun = len(self.fluxdata)
-            self.startrun = 0   
+            self.startrun = 0
+            self.startyr = startyr
+            self.endyr = endyr
             self.timestep = np.arange(startrun, startrun+self.lenrun)
         else:
             raise Exception('No input entered, please check function input')
@@ -37,7 +39,7 @@ class DalecData():
 
         # 'I.C. for carbon pools gCm-2'   range
         self.clab = 75.0               # (10,1e3)
-        self.cf = 10.0                  # (10,1e3)
+        self.cf = 10.1                  # (10,1e3)
         self.cr = 135.0                # (10,1e3)
         self.cw = 14313.0              # (3e3,3e4)
         self.cl = 70.                  # (10,1e3)
@@ -127,7 +129,12 @@ class DalecData():
         
         self.bnds = ((1e-5, 1e-2), (0.3, 0.7), (0.01, 0.5), (0.01, 0.5), (1.0001, 10.),
                      (2.5e-5, 1e-3), (1e-4, 1e-2), (1e-4, 1e-2), (1e-7, 1e-3), (0.018, 0.08),
-                     (10, 100), (1, 365), (0.01, 0.5), (10, 100), (1, 365), (10, 100), (10, 400),
+                     (10, 100), (60, 150), (0.01, 0.5), (10, 100), (242, 332), (10, 100), (10, 400),
+                     (10, 1000), (10, 1000), (10, 1000), (100, 1e5), (10, 1000), (100, 2e5))
+
+        self.bnds2 = ((1e-5, 1e-2), (0.3, 0.7), (0.01, 0.5), (0.01, 0.5), (1.0001, 10.),
+                     (2.5e-5, 1e-3), (1e-4, 1e-2), (1e-4, 1e-2), (1e-7, 1e-3), (0.018, 0.08),
+                     (10, 100), (60, 150), (0.01, 0.5), (10, 100), (242, 332), (10, 150), (10, 400),
                      (10, 1000), (10, 1000), (10, 1000), (100, 1e5), (10, 1000), (100, 2e5))
 
         self.xa = None

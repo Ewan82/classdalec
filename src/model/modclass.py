@@ -354,9 +354,17 @@ class DalecModel():
         and a time step x.
         """
         dpvals = algopy.UTPM.init_jacobian(pvals)
-        return algopy.UTPM.extract_jacobian(self.modobdict[ob](dpvals)) 
-        
-        
+        return algopy.UTPM.extract_jacobian(self.modobdict[ob](dpvals))
+
+    def oblist(self, ob, mod_list):
+        oblist = np.ones(self.endrun-self.startrun)*-9999.
+        self.x = self.startrun
+        for t in xrange(self.endrun-self.startrun):
+            oblist[t] = self.modobdict[ob](mod_list[t])
+            self.x += 1
+        self.x -= self.endrun
+        return oblist
+
 # ------------------------------------------------------------------------------
 # Assimilation functions
 # ------------------------------------------------------------------------------
