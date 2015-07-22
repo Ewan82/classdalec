@@ -30,12 +30,14 @@ def test_pvals_bnds(d, pvals):
 def pvals_test_uc(d, pvals):
     """ Test if pvals pass constraints.
     """
+    #calculate carbon fluxes
     f_auto = pvals[1]
     f_fol = (1-f_auto)*pvals[2]
     f_lab = (1-f_auto-f_fol)*pvals[12]
     f_roo = (1-f_auto-f_fol-f_lab)*pvals[3]
     f_woo = (1 - f_auto - f_fol - f_lab - f_roo)
 
+    #universal constraint tests
     uc = [10*pvals[16] > pvals[18],
           pvals[8] < pvals[7],
           pvals[0] > pvals[8],
@@ -46,7 +48,7 @@ def pvals_test_uc(d, pvals):
 
     if all(uc) == True:
         m = mc.DalecModel(d)
-        mod_list = m.mod_list(pvals)
+        mod_list = m.mod_list(pvals) #run model
         cf_mean = np.mean(mod_list[:,18])
         cr_mean = np.mean(mod_list[:,19])
         gpp_mean = np.mean(m.oblist('gpp', mod_list))
@@ -65,7 +67,6 @@ def pvals_test_uc(d, pvals):
                 return False
 
         for x in xrange(17,23):
-
             if (np.mean(mod_list[-365:-1,x]) / np.mean(mod_list[0:365,x]) < 1+0.1*((d.endyr-d.startyr-1)/10)) == False:
                 return False
 
@@ -125,4 +126,12 @@ def create_ensemble_trunc(d):
         else:
             failed_ensemble.append(pvals)
             continue
-    return param_ensemble, failed_ensemble
+    return np.array(param_ensemble), failed_ensemble
+
+def evolve_ensemble(d, pmat):
+
+    m = mc.DalecModel(d)
+    modevmat = np.ones((23, 1500))*9999.
+    for x in xrange(1500):
+        modevmat[:, x] = m.mod_list(pmat[x])[-1]
+    return modevmat
