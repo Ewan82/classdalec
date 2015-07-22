@@ -101,7 +101,7 @@ def create_ensemble(d):
             continue
     return param_ensemble, failed_ensemble
 
-def create_ensemble_trunc(d):
+def create_ensemble_trunc_edc(d):
     """ Creates an ensemble of parameter values satisfying ecological constraints.
     """
     trunc_dist_dict = {}
@@ -127,6 +127,26 @@ def create_ensemble_trunc(d):
             failed_ensemble.append(pvals)
             continue
     return np.array(param_ensemble), failed_ensemble
+
+def create_ensemble_trunc(d):
+    """ Creates an ensemble of parameter values satisfying ecological constraints.
+    """
+    trunc_dist_dict = {}
+    for x in xrange(23):
+        lower = d.bnds2[x][0]
+        upper = d.bnds2[x][1]
+        mu = d.edinburghmean[x]
+        sigma = d.edinburghstdev[x]
+        a = (lower-mu) / sigma
+        b = (upper-mu) / sigma
+        trunc_dist_dict['p%i' %int(x)] = stats.truncnorm(a, b, loc=mu, scale=sigma)
+
+    param_ensemble = []
+    while len(param_ensemble) < 1500:
+        pvals = np.ones(23)*9999.
+        for x in xrange(23):
+            pvals[x] = trunc_dist_dict['p%i' %int(x)].rvs(1)[0]
+    return param_ensemble
 
 def evolve_ensemble(d, pmat):
 
