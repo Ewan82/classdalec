@@ -146,6 +146,7 @@ def create_ensemble_trunc(d):
         pvals = np.ones(23)*9999.
         for x in xrange(23):
             pvals[x] = trunc_dist_dict['p%i' %int(x)].rvs(1)[0]
+        param_ensemble.append(pvals)
     return param_ensemble
 
 def evolve_ensemble(d, pmat):
