@@ -2,18 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="837283c5-404a-4f65-ab79-716c1adfdf9d" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/b_edc_modev_corr.p" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/bmatedinb.p" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/bmatedinbcorr.p" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/bmatev1yr.p" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/bmatoneyear.p" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/bmatsampvars.p" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/bmatsampvars_corr.p" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/bmattwoyear.p" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/ahdata2.py" afterPath="$PROJECT_DIR$/src/model/ahdata2.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/exec_var.py" afterPath="$PROJECT_DIR$/src/model/exec_var.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/plot.py" afterPath="$PROJECT_DIR$/src/model/plot.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="classdalec.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -66,8 +55,8 @@
       <file leaf-file-name="exec_var.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/model/exec_var.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.44313148">
-              <caret line="32" column="57" selection-start-line="32" selection-start-column="57" selection-end-line="32" selection-end-column="57" />
+            <state vertical-scroll-proportion="0.77548003">
+              <caret line="47" column="19" selection-start-line="47" selection-start-column="19" selection-end-line="47" selection-end-column="19" />
               <folding>
                 <element signature="e#0#21#0" expanded="true" />
               </folding>
@@ -1088,8 +1077,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/model/exec_var.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.44313148">
-          <caret line="32" column="57" selection-start-line="32" selection-start-column="57" selection-end-line="32" selection-end-column="57" />
+        <state vertical-scroll-proportion="0.77548003">
+          <caret line="47" column="19" selection-start-line="47" selection-start-column="19" selection-end-line="47" selection-end-column="19" />
           <folding>
             <element signature="e#0#21#0" expanded="true" />
           </folding>

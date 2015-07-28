@@ -42,9 +42,10 @@ def savefig_fourdvar(d, bname, floc=None, fname=None):
     ax,fig=p.analysischange(d.edinburghmedian, xa[0])
     fig.savefig(floc+fname+'_inc.png', bbox_inches='tight')
     plt.close()
-    ax, fig = p.plotbmat(pickle.load(open(bname+'_cor.p', 'rb')))
-    fig.savefig(floc+fname+'_corrmat.png', bbox_inches='tight')
-    plt.close()
+    if bname!='bdiag':
+        ax, fig = p.plotbmat(pickle.load(open(bname+'_cor.p', 'rb')))
+        fig.savefig(floc+fname+'_corrmat.png', bbox_inches='tight')
+        plt.close()
     return xa
 
 def test_pvals_bnds(d, pvals):
