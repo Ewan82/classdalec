@@ -1,7 +1,10 @@
 import modclass as mc
+import ahdata2 as ahd2
 import numpy as np
 import pickle
 import scipy.stats as stats
+import matplotlib.pyplot as plt
+import plot as p
 
 def fourdvar_run(d, b, r_var, pvals='mean', maxiters=3000):
     """Run 4dvar with DALEC2 using specified pickled B file and diagonal R with specified variance on diagonal.
@@ -16,10 +19,33 @@ def fourdvar_run(d, b, r_var, pvals='mean', maxiters=3000):
         pvals = pvals
     return m.findmintnc(pvals, maxits=maxiters)
 
-def savefig_fourdvar():
+def savefig_fourdvar(d, bname, floc=None, fname=None):
     """ Runs DALEC2 fourdvar code with specified B and R variance, saves plots and pickles xa to specified directory.
     """
-    return 'whoop'
+    d.B = pickle.load(open(bname+'.p', 'rb'))
+    m = mc.DalecModel(d)
+    xa_zvals = m.findmin_cvt(d.edinburghmedian)
+    xa=(m.zvals2pvals(xa_zvals[0]), xa_zvals[1], xa_zvals[2])
+    f = open(floc+fname+'_xa', 'wb')
+    pickle.dump(xa, f)
+    f.close()
+    d2 = ahd2.DalecData(startyr=d.startyr, endyr=2014, obstr='nee')
+    ax, fig = p.plot4dvarrun('nee', d.edinburghmedian, xa[0], d2, len(d2.I), awindl=len(d.I))
+    fig.savefig(floc+fname+'_4dvar.png', bbox_inches='tight')
+    plt.close()
+    ax, fig = p.plotscatterobs('nee', xa[0], d2, len(d.I), 'f')
+    fig.savefig(floc+fname+'_forecast_scatter.png', bbox_inches='tight')
+    plt.close()
+    ax, fig = p.plotscatterobs('nee', xa[0], d2, len(d.I), 'a')
+    fig.savefig(floc+fname+'_analysis_scatter.png', bbox_inches='tight')
+    plt.close()
+    ax,fig=p.analysischange(d.edinburghmedian, xa[0])
+    fig.savefig(floc+fname+'_inc.png', bbox_inches='tight')
+    plt.close()
+    ax, fig = p.plotbmat(pickle.load(open(bname+'_cor.p', 'rb')))
+    fig.savefig(floc+fname+'_corrmat.png', bbox_inches='tight')
+    plt.close()
+    return xa
 
 def test_pvals_bnds(d, pvals):
     """Tests pvals to see if they are within the correct bnds.

@@ -41,10 +41,14 @@ def plotphi(onoff, dC, start, fin):
     
     
 def plotobs(ob, pvals, dC, start, fin, lab=0, xax=None, dashed=0, 
-            colour=None):
+            colour=None, ax=None):
     """Plots a specified observation using obs eqn in obs module. Takes an
     observation string, a dataClass (dC) and a start and finish point.
     """
+    if ax == None:
+        ax = plt.subplots( nrows=1, ncols=1 )
+    else:
+        ax = ax
     modobdict = {'gpp': obs.gpp, 'nee': obs.nee, 'rt': obs.rec, 'cf': obs.cf,
                  'clab': obs.clab, 'cr': obs.cr, 'cw': obs.cw, 'cl': obs.cl,
                  'cs': obs.cs, 'lf': obs.lf, 'lw': obs.lw, 'lai':obs.lai,
@@ -64,15 +68,15 @@ def plotobs(ob, pvals, dC, start, fin, lab=0, xax=None, dashed=0,
         oblist[x-start] = modobdict[ob](pvallist[x-start],dC,x)
     if colour==None:
         if dashed==True:    
-            plt.plot(xax, oblist, '--', label=lab)
+            ax.plot(xax, oblist, '--', label=lab)
         else:
-            plt.plot(xax, oblist, label=lab)
+            ax.plot(xax, oblist, label=lab)
     else:
         if dashed==True:    
-            plt.plot(xax, oblist, '--', label=lab, color=colour)
+            ax.plot(xax, oblist, '--', label=lab, color=colour)
         else:
-            plt.plot(xax, oblist, label=lab, color=colour)   
-    return oblist
+            ax.plot(xax, oblist, label=lab, color=colour)
+    return ax
 
 
 def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1, awindl=None, 
@@ -84,7 +88,8 @@ def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1, awindl=None,
     """
     #dayLocator    = mdates.DayLocator()
     #hourLocator   = mdates.HourLocator()
-    #dateFmt = mdates.DateFormatter('%Y')  
+    #dateFmt = mdates.DateFormatter('%Y')
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(20,10))
     xlist = np.arange(start, fin)
     # We know the datum and delta from reading the file manually
     datum = dt.datetime(int(dC.year[0]), 1, 1)
@@ -95,26 +100,26 @@ def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1, awindl=None,
     for t in xlist:
         times.append(datum + int(t) * delta)
 
-    plotobs(ob, xb, dC, start, fin, ob+'_b', times, 1)
-    plotobs(ob, xa, dC, start, fin, ob+'_a', times)
+    ax2 = plotobs(ob, xb, dC, start, fin, ob+'_b', times, 1, ax=ax)
+    ax3 = plotobs(ob, xa, dC, start, fin, ob+'_a', times, ax=ax2)
     obdict = dC.obdict
     oberrdict = dC.oberrdict
     if ob in obdict.keys():
         if erbars==True:
-            plt.errorbar(times, obdict[ob], yerr=oberrdict[ob+'_err'], \
+            ax3.errorbar(times, obdict[ob], yerr=oberrdict[ob+'_err'], \
                          fmt='o', label=ob+'_o')
         else:
-            plt.plot(times, obdict[ob], 'o', label=ob+'_o')
+            ax3.plot(times, obdict[ob], 'o', label=ob+'_o')
     if obdict_a!=None:
-        plt.plot(times[0:len(obdict_a[ob])], obdict_a[ob], 'o')
-    plt.legend()
+        ax3.plt.plot(times[0:len(obdict_a[ob])], obdict_a[ob], 'o')
+    #ax3.legend()
     plt.xlabel('Year')
     plt.ylabel(ob+' (gCm-2)')
     plt.title(ob+' for Alice Holt flux site')
     if awindl!=None:
-        plt.axvline(x=times[awindl],color='k',ls='dashed')
-        plt.text(times[20], 9, 'Assimilation window')
-        plt.text(times[awindl+20], 9, 'Forecast')
+        ax3.axvline(x=times[awindl],color='k',ls='dashed')
+        #ax3.text(times[20], 8.5, 'Assimilation\n window')
+        #ax3.text(times[awindl+20], 9, 'Forecast')
 
     #plt.gcf().autofmt_xdate()     
     #ax = plt.gca()
@@ -123,8 +128,13 @@ def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1, awindl=None,
     #ax.xaxis.set_major_locator(dayLocator)
     #ax.xaxis.set_major_formatter(dateFmt)
     #ax.xaxis.set_minor_locator(hourLocator)
-
-    plt.show()
+    return ax3, fig
+    """plt.show()
+    import matplotlib.pyplot as plt
+fig, ax = plt.subplots( nrows=1, ncols=1 )  # create figure & 1 axis
+ax.plot([0,1,2], [10,20,3])
+fig.savefig('path/to/save/image/to.png')   # save the figure to file
+plt.close(fig)    # close the figure"""
     
     
 def plotspasomp(ob, dC, start, fin, xa=None, awindl=None, erbars=1, spa=1):
@@ -175,6 +185,7 @@ def plotscatterobs(ob, pvals, dC, awindl, bfa='a'):
     specified in dC), assimilation window length and whether a comparison of 
     background 'b', forecast 'f' or analysis 'a' is desired.
     """
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(10,10))
     pvallist = m.mod_list(pvals, dC, 0, len(dC.I))
     y, yerr = fdv.obscost(dC.obdict, dC.oberrdict) 
     hx = fdv.hxcost(pvallist, dC.obdict, dC)
@@ -185,12 +196,12 @@ def plotscatterobs(ob, pvals, dC, awindl, bfa='a'):
     oneone=np.arange(int(min(min(y),min(hx)))-1, int(max(max(y),max(hx)))+1)
     plt.plot(oneone, oneone)
     if bfa=='b' or bfa=='a':
-        plt.plot(y[0:splitval], hx[0:splitval], 'o')
+        ax.plot(y[0:splitval], hx[0:splitval], 'o')
         error = np.sqrt(np.sum((y[0:splitval]-hx[0:splitval])**2)/\
                                                             len(y[0:splitval]))
         yhx = np.mean(y[0:splitval]-hx[0:splitval])
     elif bfa=='f':
-        plt.plot(y[splitval:], hx[splitval:], 'o')
+        ax.plot(y[splitval:], hx[splitval:], 'o')
         error = np.sqrt(np.sum((y[splitval:]-hx[splitval:])**2)/\
                                                             len(y[splitval:]))
         yhx = np.mean(y[splitval:]-hx[splitval:])                                            
@@ -199,7 +210,7 @@ def plotscatterobs(ob, pvals, dC, awindl, bfa='a'):
     plt.xlabel(ob+' observations')
     plt.ylabel(ob+' model')
     plt.title(bfa+'_error=%f, mean(y-hx)=%f' %(error,yhx))
-    return error, y[0:splitval]-hx[0:splitval]
+    return ax, fig #error, y[0:splitval]-hx[0:splitval]
 
     
 def plotcycled4dvar(ob, conditions, xb, xa, dC, erbars=1, truth=None):
@@ -401,11 +412,11 @@ def plot_analysis_inc(xb, xa):
     n = 23
     width = 0.35
     ind = np.arange(n)
-    fig = plt.figure()
+    fig = plt.figure(figsize=(6,8))
     ax = fig.add_subplot(111)
     #ax.bar(ind, ((xa-xb)/abs(xa-xb))*np.log(abs(xa-xb)), width, color='g',\
     #                label='xa_inc')
-    ax.bar(ind, (xa-xb)/xb, width, color='g',\
+    ax.bar(ind, (xa-xb), width, color='g',\
                    label='xa_inc')
     ax.set_ylabel('xa - xb')
     ax.set_title('Analysis increment')
@@ -415,8 +426,7 @@ def plot_analysis_inc(xb, xa):
             'f_lab', 'cronset', 'd_fall', 'crfall', 'clma', 'clab', 'cf', 'cr',
             'cw', 'cl', 'cs']
     ax.set_xticklabels(keys, rotation=90)
-    #ax.legend()
-    plt.show()
+    return ax, fig
     
 def plotbmat(bmat):
     """Plots a B matrix.
@@ -434,7 +444,7 @@ def plotbmat(bmat):
     ax.set_xticklabels(keys, rotation=90)
     ax.set_yticks(np.arange(23))
     ax.set_yticklabels(keys)
-    plt.show()
+    return ax, fig
     
     
 def analysischange(xb, xa):
@@ -443,11 +453,11 @@ def analysischange(xb, xa):
     n = 23
     width = 0.35
     ind = np.arange(n)
-    fig = plt.figure()
+    fig = plt.figure(figsize=(8,8))
     ax = fig.add_subplot(111)
-    rects1 = ax.barh(ind, (xb-xa)/xb, width, color='r',\
+    ax.barh(ind, (xb-xa)/xb, width, color='r',\
                     label='xa_change')
-    ax.set_xlabel('diff (xb-xa)/xb')
+    ax.set_xlabel('(xb-xa)/xb')
     ax.set_title('change in parameter values from xb to xa')
     ax.set_yticks(ind+width)
     keys = ['theta_min', 'f_auto', 'f_fol', 'f_roo', 'clspan', 'theta_woo',
@@ -455,8 +465,7 @@ def analysischange(xb, xa):
             'f_lab', 'cronset', 'd_fall', 'crfall', 'clma', 'clab', 'cf', 'cr',
             'cw', 'cl', 'cs']
     ax.set_yticklabels(keys)
-    #ax.legend()
-    plt.show()
+    return ax, fig
     
     
 def plotlinmoderr(dC, start, fin, pvals, dx=0.05, cpool=None, norm_err=0, lins='-'):
