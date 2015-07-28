@@ -447,8 +447,8 @@ def analysischange(xb, xa):
     ax = fig.add_subplot(111)
     rects1 = ax.barh(ind, (xb-xa)/xb, width, color='r',\
                     label='xa_change')
-    ax.set_xlabel('% diff')
-    ax.set_title('% change in parameter values from xb to xa')
+    ax.set_xlabel('diff (xb-xa)/xb')
+    ax.set_title('change in parameter values from xb to xa')
     ax.set_yticks(ind+width)
     keys = ['theta_min', 'f_auto', 'f_fol', 'f_roo', 'clspan', 'theta_woo',
             'theta_roo', 'theta_lit', 'theta_som', 'Theta', 'ceff', 'd_onset',

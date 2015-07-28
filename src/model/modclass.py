@@ -32,6 +32,8 @@ class DalecModel():
         self.endrun = self.lenrun  
         self.yoblist, self.yerroblist = self.obscost()
         self.rmatrix = self.rmat(self.yerroblist)
+        self.diag_b = np.diag(np.diag(self.dC.B))
+        self.b_tilda = np.dot(np.dot(np.linalg.inv(np.sqrt(self.diag_b)),self.dC.B),np.linalg.inv(np.sqrt(self.diag_b)))
         self.nume = 100
 
 
@@ -570,12 +572,12 @@ class DalecModel():
     def modcost_cvt(self, zvals):
         """model part of cost fn.
         """
-        return np.dot(zvals, zvals.T)
+        return np.dot(np.dot(zvals, np.linalg.inv(self.b_tilda)), zvals.T)
 
     def obcost_cvt(self, zvals):
         """Observational part of cost fn.
         """
-        pvals = (np.dot(spl.sqrtm(self.dC.B),zvals)+self.xb)
+        pvals = self.zvals2pvals(zvals)
         pvallist = self.mod_list(pvals)
         hx = self.hxcost(pvallist)
         return np.dot(np.dot((self.yoblist-hx), np.linalg.inv(self.rmatrix)), (self.yoblist-hx).T)
@@ -598,13 +600,13 @@ class DalecModel():
         Takes an initial state (pvals), an obs dictionary, an obs error
         dictionary, a dataClass and a start and finish time step.
         """
-        pvals = (np.dot(spl.sqrtm(self.dC.B),zvals)+self.xb)
+        pvals = self.zvals2pvals(zvals)
         pvallist, matlist = self.linmod_list(pvals)
         hx, hmatrix = self.hmat(pvallist, matlist)
-        obcost = np.dot(spl.sqrtm(self.dC.B).T, np.dot(hmatrix.T, np.dot(np.linalg.inv(self.rmatrix),
+        obcost = np.dot(np.sqrt(self.diag_b).T, np.dot(hmatrix.T, np.dot(np.linalg.inv(self.rmatrix),
                                           (self.yoblist-hx).T)))
         if self.modcoston is True:
-            modcost = zvals.T
+            modcost = np.dot(np.linalg.inv(self.b_tilda), zvals.T)
         else:
             modcost = 0
         gradcost = - obcost + modcost
@@ -613,13 +615,13 @@ class DalecModel():
     def pvals2zvals(self, pvals):
         """Convert x_0 state to z_0 state for CVT with DALEC.
         """
-        Bnegsqrt = np.linalg.inv(spl.sqrtm(self.dC.B))
-        return np.dot(Bnegsqrt, (pvals - self.xb))
+        Bsqrt = np.linalg.inv(np.sqrt(self.diag_b))
+        return np.dot(Bsqrt, (pvals - self.xb))
 
     def zvals2pvals(self, zvals):
         """Convert z_0 to x_0 for CVT.
         """
-        return (np.dot(spl.sqrtm(self.dC.B),zvals)+self.xb)
+        return np.dot(np.sqrt(self.diag_b),zvals)+self.xb
 
     def zvalbnds(self, bnds):
         """Calculates bounds for transformed problem.
@@ -644,7 +646,7 @@ class DalecModel():
         self.xb = pvals
         zvals = self.pvals2zvals(pvals)
         if bnds == 'strict':
-            bnds = self.zvalbnds(self.dC.bnds)
+            bnds = self.zvalbnds(self.dC.bnds2)
         else:
             bnds = bnds
         findmin = spop.fmin_tnc(self.cost_cvt, zvals,
