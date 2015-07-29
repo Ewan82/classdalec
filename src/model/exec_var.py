@@ -19,32 +19,32 @@ def fourdvar_run(d, b, r_var, pvals='mean', maxiters=3000):
         pvals = pvals
     return m.findmintnc(pvals, maxits=maxiters)
 
-def savefig_fourdvar(d, bname, floc=None, fname=None):
+def savefig_fourdvar(d, bname, floc=None):
     """ Runs DALEC2 fourdvar code with specified B and R variance, saves plots and pickles xa to specified directory.
     """
     d.B = pickle.load(open(bname+'.p', 'rb'))
     m = mc.DalecModel(d)
     xa_zvals = m.findmin_cvt(d.edinburghmedian)
     xa=(m.zvals2pvals(xa_zvals[0]), xa_zvals[1], xa_zvals[2])
-    f = open(floc+fname+'_xa', 'wb')
+    f = open(floc+bname+'_xa', 'wb')
     pickle.dump(xa, f)
     f.close()
     d2 = ahd2.DalecData(startyr=d.startyr, endyr=2014, obstr='nee')
-    ax, fig = p.plot4dvarrun('nee', d.edinburghmedian, xa[0], d2, len(d2.I), awindl=len(d.I))
-    fig.savefig(floc+fname+'_4dvar.png', bbox_inches='tight')
+    ax, fig = p.plot4dvarrun('nee', d.edinburghmedian, xa[0], d2, 0, len(d2.I), awindl=len(d.I))
+    fig.savefig(floc+bname+'_4dvar.png', bbox_inches='tight')
     plt.close()
     ax, fig = p.plotscatterobs('nee', xa[0], d2, len(d.I), 'f')
-    fig.savefig(floc+fname+'_forecast_scatter.png', bbox_inches='tight')
+    fig.savefig(floc+bname+'_forecast_scatter.png', bbox_inches='tight')
     plt.close()
     ax, fig = p.plotscatterobs('nee', xa[0], d2, len(d.I), 'a')
-    fig.savefig(floc+fname+'_analysis_scatter.png', bbox_inches='tight')
+    fig.savefig(floc+bname+'_analysis_scatter.png', bbox_inches='tight')
     plt.close()
     ax,fig=p.analysischange(d.edinburghmedian, xa[0])
-    fig.savefig(floc+fname+'_inc.png', bbox_inches='tight')
+    fig.savefig(floc+bname+'_inc.png', bbox_inches='tight')
     plt.close()
     if bname!='bdiag':
         ax, fig = p.plotbmat(pickle.load(open(bname+'_cor.p', 'rb')))
-        fig.savefig(floc+fname+'_corrmat.png', bbox_inches='tight')
+        fig.savefig(floc+bname+'_corrmat.png', bbox_inches='tight')
         plt.close()
     return xa
 
