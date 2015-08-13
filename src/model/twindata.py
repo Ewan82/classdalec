@@ -8,6 +8,7 @@ import os
 import re
 import collections as col
 import oregondata as ogd
+import ahdata2 as ahd
 import model as mod
 import observations as obs
 
@@ -22,7 +23,7 @@ class dalecData( ):
         self.lenrun = lenrun
         self.startrun = startrun
         self.timestep = np.arange(startrun, startrun+lenrun)
-        self.d = ogd.dalecData(self.lenrun, k=k)
+        self.d = ahd.DalecData(self.lenrun)
         self.erron = erron    
         self.k = k
         
@@ -81,7 +82,25 @@ class dalecData( ):
                        ('clab', self.clab), ('cf', self.cf), 
                        ('cr', self.cr), ('cw', self.cw), ('cl', self.cl),
                        ('cs', self.cs)])
-        self.pvals = np.array(self.paramdict.values())  
+        self.pvals = np.array(self.paramdict.values())
+
+        self.x_truth = np.array([  1.75177537e-03,   4.39216724e-01,   1.45275772e-01,
+                                4.85994115e-01,   1.34919734e+00,   1.43577821e-04,
+                                5.33065591e-03,   1.42217674e-03,   2.81251902e-04,
+                                2.23716106e-02,   4.91216576e+01,   1.15606853e+02,
+                                3.09940679e-01,   4.95177377e+01,   2.54598514e+02,
+                                9.74817836e+01,   8.05741919e+01,   1.92147202e+02,
+                                1.09382538e+02,   3.27096649e+02,   8.91617573e+03,
+                                2.40016633e+02,   2.36359753e+03]) #from generated EDC ensem
+
+        self.x_guess = np.array([  2.87887370e-03,   5.27924849e-01,   2.01393985e-01,
+                                4.03067711e-01,   1.23305582e+00,   2.11375971e-04,
+                                4.22635967e-03,   2.35355321e-03,   8.90362689e-05,
+                                5.24112200e-02,   7.92041640e+01,   1.17878177e+02,
+                                3.53102244e-01,   4.00692448e+01,   2.64689459e+02,
+                                1.36275240e+02,   1.65420736e+02,   1.89494364e+02,
+                                6.14492054e+01,   3.00083726e+02,   1.32900072e+04,
+                                3.76682105e+02,   2.57863745e+03])
         
         self.pvalguess = np.array([5.42167609e-03, 3.75592769e-01, 
                              1.13412142e-01, 4.71855328e-01, 3.36472138e+00,  
@@ -142,6 +161,11 @@ class dalecData( ):
                    (0,None),(0,None),(0,None),(0,None),(0,None),(1.0001,None),\
                    (0,None),(0,None),(0,None),(0,None),(0,None),(0,None),\
                    (0,None),(0,None),(0,None),(0,None),(0,None),(0,None))
+
+        self.bnds2 = ((1e-5, 1e-2), (0.3, 0.7), (0.01, 0.5), (0.01, 0.5), (1.0001, 10.),
+                     (2.5e-5, 1e-3), (1e-4, 1e-2), (1e-4, 1e-2), (1e-7, 1e-3), (0.018, 0.08),
+                     (10, 100), (60, 150), (0.01, 0.5), (10, 100), (242, 332), (10, 150), (10, 400),
+                     (10, 1000), (10, 1000), (10, 1000), (100, 1e5), (10, 1000), (100, 2e5))
   
             
         #Constants for ACM model 
@@ -184,7 +208,7 @@ class dalecData( ):
         
         
         #Model values
-        self.pvallist = mod.mod_list(self.pvalburn, self.d, 0, k*self.lenrun-1)
+        self.pvallist = mod.mod_list(self.x_truth, self.d, 0, k*self.lenrun-1)
   
       
         #'Background variances for carbon pools & B matrix'

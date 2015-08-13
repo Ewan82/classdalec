@@ -30,8 +30,9 @@ class DalecModel():
                           'rtot': self.rtot, 'rh': self.rh}
         self.startrun = strtrun
         self.endrun = self.lenrun  
-        self.yoblist, self.yerroblist = self.obscost()
+        self.yoblist, self.yerroblist, self.ytimestep = self.obscost()
         self.rmatrix = self.rmat(self.yerroblist)
+        self.obs_time_step = self.no_obs_at_time()
         self.diag_b = np.diag(np.diag(self.dC.B))
         self.b_tilda = np.dot(np.dot(np.linalg.inv(np.sqrt(self.diag_b)),self.dC.B),np.linalg.inv(np.sqrt(self.diag_b)))
         self.nume = 100
@@ -435,13 +436,15 @@ class DalecModel():
         """
         yoblist = np.array([])
         yerrlist = np.array([])
+        ytimestep = np.array([])
         for t in xrange(self.startrun, self.endrun):
             for ob in self.dC.obdict.iterkeys():
                 if np.isnan(self.dC.obdict[ob][t]) != True:
                     yoblist = np.append(yoblist, self.dC.obdict[ob][t])
                     yerrlist = np.append(yerrlist,
                                          self.dC.oberrdict[ob+'_err'][t])
-        return yoblist, yerrlist
+                    ytimestep = np.append(ytimestep, t)
+        return yoblist, yerrlist, ytimestep
 
     def hxcost(self, pvallist):
         """Function returning a list of observation values as predicted by the 
@@ -466,6 +469,73 @@ class DalecModel():
         """
         r = (yerr**2)*np.eye(len(yerr))
         return r
+
+    def no_obs_at_time(self):
+        """ Returns a list of the number of observations at each time step.
+        """
+        obs_time_step = np.array([])
+        self.x = self.startrun
+        for t in xrange(self.startrun, self.endrun):
+            p = 0
+            for ob in self.dC.obdict.iterkeys():
+                if np.isnan(self.dC.obdict[ob][t]) != True:
+                    p += 1
+            obs_time_step = np.append(obs_time_step, p)
+            self.x += 1
+
+        self.x -= self.endrun
+        return obs_time_step
+
+    def gradcost2(self, pvals):
+        """Gradient of 4DVAR cost fn to be passed to optimization routine.
+        Takes an initial state (pvals), an obs dictionary, an obs error
+        dictionary, a dataClass and a start and finish time step.
+        """
+        pvallist, matlist = self.linmod_list(pvals)
+        hx, hhat = self.hhat(pvallist)
+        r_yhx = np.dot(np.linalg.inv(self.rmatrix), (self.yoblist-hx).T)
+        idx1 = len(self.yoblist) - sum(self.obs_time_step[self.lenrun-1:])
+        idx2 = len(self.yoblist) - sum(self.obs_time_step[self.lenrun-1+1:])
+        obcost = np.dot(hhat[idx1:idx2].T, r_yhx[idx1:idx2])
+        for i in xrange(self.lenrun-2, -1, -1):
+            if self.obs_time_step[i] != 0:
+                idx1 = len(self.yoblist) - sum(self.obs_time_step[i:])
+                idx2 = len(self.yoblist) - sum(self.obs_time_step[i+1:])
+                obcost = np.dot(matlist[i].T, obcost) + np.dot(hhat[idx1:idx2].T, r_yhx[idx1:idx2])
+            else:
+                obcost = np.dot(matlist[i].T, obcost)
+
+        if self.modcoston is True:
+            modcost = np.dot(np.linalg.inv(self.dC.B), (pvals-self.xb).T)
+        else:
+            modcost = 0
+        gradcost = - obcost + modcost
+        return gradcost
+
+    def hhat(self, pvallist):
+        """Returns a list of observation values as predicted by DALEC (hx) and
+        a linearzied observation error covariance matrix (hmat). Takes a list
+        of model values (pvallist), a observation dictionary, a list of
+        linearized models (matlist) and a dataClass (dC).
+        """
+        hx = np.array([])
+        hhat = []
+        self.x = self.startrun
+        for t in xrange(self.startrun, self.endrun):
+            temp = []
+            for ob in self.dC.obdict.iterkeys():
+                if np.isnan(self.dC.obdict[ob][t]) != True:
+                    hx = np.append(hx,
+                                   self.modobdict[ob](pvallist[t-self.startrun]))
+                    temp.append([self.linob(ob, pvallist[t-self.startrun])])
+            self.x += 1
+            if len(temp) != 0.:
+                hhat.append(np.vstack(temp))
+            else:
+                continue
+
+        self.x -= self.endrun
+        return hx, np.vstack(hhat)
 
     def hmat(self, pvallist, matlist):
         """Returns a list of observation values as predicted by DALEC (hx) and 
@@ -699,6 +769,21 @@ class DalecModel():
                                 fprime=self.gradcost, bounds=bnds,
                                 disp=dispp, fmin=mini, maxfun=maxits)
         return findmin        
+
+    def findmintnc2(self, pvals, bnds='strict', dispp=None, maxits=2000,
+                   mini=0):
+        """Function which minimizes 4DVAR cost fn. Takes an initial state
+        (pvals).
+        """
+        self.xb = pvals
+        if bnds == 'strict':
+            bnds = self.dC.bnds2
+        else:
+            bnds = bnds
+        findmin = spop.fmin_tnc(self.cost, pvals,
+                                fprime=self.gradcost2, bounds=bnds,
+                                disp=dispp, fmin=mini, maxfun=maxits)
+        return findmin
 
     def findminglob(self, pvals, meth='TNC', bnds='strict', it=300,
                     stpsize=0.5, temp=1., displ=True, maxits=3000):

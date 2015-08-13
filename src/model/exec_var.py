@@ -3,6 +3,7 @@ import ahdata2 as ahd2
 import numpy as np
 import pickle
 import scipy.stats as stats
+import sympy as smp
 import matplotlib.pyplot as plt
 import plot as p
 
@@ -260,9 +261,24 @@ def create_ensemble_trunc_uc(d):
     return param_ensemble, failed_ensemble
 
 def evolve_ensemble(d, pmat):
-
+    """Evolves an ensemble of parameters for given dataClass.
+    """
     m = mc.DalecModel(d)
     modevmat = np.ones((23, 1500))*9999.
     for x in xrange(1500):
         modevmat[:, x] = m.mod_list(pmat[x])[-1]
     return modevmat
+
+def r_mat_corr(yerroblist, ytimestep, corr=0.3, tau=1, cut_off=4):
+    """ Creates a correlated R matrix.
+    """
+    r_corr = np.eye(len(ytimestep))
+    r_diag = (yerroblist**2)*np.eye(len(yerroblist))
+    for i in xrange(len(ytimestep)):
+        for j in xrange(len(ytimestep)):
+            if abs(ytimestep[i]-ytimestep[j]) < cut_off:
+                r_corr[i,j] = corr*np.exp(-(abs(ytimestep[i]-ytimestep[j])**2)/tau**2) \
+                              + (1-corr)*smp.KroneckerDelta(ytimestep[i],ytimestep[j])
+    r = np.dot(np.dot((np.sqrt(r_diag)),r_corr),np.sqrt(r_diag))
+    return r_corr, r
+

@@ -10,6 +10,7 @@ import datetime as dt
 import matplotlib.dates as mdates
 import matplotlib.mlab as mlab
 import matplotlib
+import seaborn as sns
 
 
 def plotgpp(cf, dC, start, fin):
@@ -46,7 +47,7 @@ def plotobs(ob, pvals, dC, start, fin, lab=0, xax=None, dashed=0,
     observation string, a dataClass (dC) and a start and finish point.
     """
     if ax == None:
-        ax = plt.subplots( nrows=1, ncols=1 )
+        fig, ax = plt.subplots( nrows=1, ncols=1, figsize=(20,10))
     else:
         ax = ax
     modobdict = {'gpp': obs.gpp, 'nee': obs.nee, 'rt': obs.rec, 'cf': obs.cf,
@@ -302,10 +303,11 @@ def plottwin(ob, truth, xb, xa, dC, start, fin, erbars=1, obdict=None,
     """For identical twin experiments plots the truths trajectory and xa's and 
     xb's to see imporvements.
     """
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(10,10))
     xlist = np.arange(start, fin)
-    plotobs(ob, truth, dC, start, fin, ob+'_truth')
-    plotobs(ob, xb, dC, start, fin, ob+'_b')
-    plotobs(ob, xa, dC, start, fin, ob+'_a', None, 1)
+    ax = plotobs(ob, truth, dC, start, fin, ob+'_truth', ax=ax)
+    ax = plotobs(ob, xb, dC, start, fin, ob+'_b', ax=ax)
+    ax = plotobs(ob, xa, dC, start, fin, ob+'_a', None, 1, ax=ax)
     
     if obdict == None:
         obdict = dC.obdict
@@ -431,11 +433,9 @@ def plot_analysis_inc(xb, xa):
 def plotbmat(bmat):
     """Plots a B matrix.
     """
-    fig = plt.figure()
-    ax = fig.add_subplot(1,1,1)
+    sns.set(style="white")
+    fig, ax = plt.subplots(figsize=(11,9))
     ax.set_aspect('equal')
-    plt.imshow(bmat, interpolation='nearest')   
-    plt.colorbar()
     keys = ['theta_min', 'f_auto', 'f_fol', 'f_roo', 'clspan', 'theta_woo',
             'theta_roo', 'theta_lit', 'theta_som', 'Theta', 'ceff', 'd_onset',
             'f_lab', 'cronset', 'd_fall', 'crfall', 'clma', 'clab', 'cf', 'cr',
@@ -444,7 +444,16 @@ def plotbmat(bmat):
     ax.set_xticklabels(keys, rotation=90)
     ax.set_yticks(np.arange(23))
     ax.set_yticklabels(keys)
+    cmap = sns.diverging_palette(220, 10, as_cmap=True)
+    sns.heatmap(bmat, xticklabels=keys, yticklabels=keys, ax=ax,)
+                #cmap=cmap, vmax=.3, square=True, linewidths=.5, cbar=True)
+    #plt.colorbar()
     return ax, fig
+
+# Draw the heatmap with the mask and correct aspect ratio
+#sns.heatmap(corr, mask=mask, cmap=cmap, vmax=.3,
+#            square=True, xticklabels=5, yticklabels=5,
+#            linewidths=.5, cbar_kws={"shrink": .5}, ax=ax)
     
     
 def analysischange(xb, xa):
