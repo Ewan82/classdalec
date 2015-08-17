@@ -7,18 +7,60 @@ import sympy as smp
 import matplotlib.pyplot as plt
 import plot as p
 
-def fourdvar_run(d, b, r_var, pvals='mean', maxiters=3000):
+
+exp_list = [('bdiag', 'None'), ('b_edc', 'None'), ('bdiag', 'r_corr_cor0.3_tau4_cotoff4_var0.5'),
+            ('b_edc', 'r_corr_cor0.3_tau4_cotoff4_var0.5'), ('b_edc', 'r_corr_cor0.3_tau4_cotoff4_var0.7'),
+            ('b_edc', 'r_corr_cor0.5_tau1_cotoff4_var0.5'), ('bdiag', 'r_corr_cor0.5_tau1_cotoff4_var0.5')]
+
+def pickle_mat(matrix, mat_name):
+    """ Pickles error covariance matrix.
+    """
+    f = open(mat_name+'.p', 'wb')
+    pickle.dump(matrix, f)
+    f.close()
+    return 'matrix pickled!'
+
+def fourdvar_list(d, floc, matlist):
+    """ Runs over a list of cov matrices.
+    """
+    for x in xrange(len(matlist)):
+        fourdvar_run(d, matlist[x][0], matlist[x][1], floc)
+
+def fourdvar_run(d, bname, rname='None', floc=None, pvals='mean', maxiters=3000):
     """Run 4dvar with DALEC2 using specified pickled B file and diagonal R with specified variance on diagonal.
     """
-    d.B = pickle.load(open(b, 'rb'))
+    d.B = pickle.load(open(bname+'.p', 'rb'))
     m = mc.DalecModel(d)
-    rmat = np.eye(len(m.rmatrix))*r_var
-    m.rmatrix = rmat
+    if rname!='None':
+        rmat = pickle.load(open(rname+'.p', 'rb'))
+        m.rmatrix = rmat
     if pvals=='mean':
         pvals = d.edinburghmean
     else:
         pvals = pvals
-    return m.findmintnc(pvals, maxits=maxiters)
+    xa = m.findmintnc(pvals, maxits=maxiters)
+    f = open(floc+bname+'_xa', 'wb')
+    pickle.dump(xa, f)
+    f.close()
+    d2 = ahd2.DalecData(startyr=d.startyr, endyr=2014, obstr='nee')
+    ax, fig = p.plot4dvarrun('nee', d.edinburghmedian, xa[0], d2, 0, len(d2.I), awindl=len(d.I))
+    fig.savefig(floc+bname+rname+'_4dvar.png', bbox_inches='tight')
+    plt.close()
+    ax, fig = p.plotscatterobs('nee', xa[0], d2, len(d.I), 'f')
+    fig.savefig(floc+bname+rname+'_forecast_scatter.png', bbox_inches='tight')
+    plt.close()
+    ax, fig = p.plotscatterobs('nee', xa[0], d2, len(d.I), 'a')
+    fig.savefig(floc+bname+rname+'_analysis_scatter.png', bbox_inches='tight')
+    plt.close()
+    ax,fig=p.analysischange(d.edinburghmedian, xa[0])
+    fig.savefig(floc+bname+rname+'_inc.png', bbox_inches='tight')
+    plt.close()
+    if bname!='bdiag':
+        ax, fig = p.plotbmat(pickle.load(open(bname+'_cor.p', 'rb')))
+        fig.savefig(floc+bname+rname+'_corrmat.png', bbox_inches='tight')
+        plt.close()
+    return xa
+
 
 def savefig_fourdvar(d, bname, floc=None):
     """ Runs DALEC2 fourdvar code with specified B and R variance, saves plots and pickles xa to specified directory.
@@ -269,11 +311,11 @@ def evolve_ensemble(d, pmat):
         modevmat[:, x] = m.mod_list(pmat[x])[-1]
     return modevmat
 
-def r_mat_corr(yerroblist, ytimestep, corr=0.3, tau=1, cut_off=4):
+def r_mat_corr(yerroblist, ytimestep, corr=0.3, tau=1, cut_off=4, r_var=0.5):
     """ Creates a correlated R matrix.
     """
     r_corr = np.eye(len(ytimestep))
-    r_diag = (yerroblist**2)*np.eye(len(yerroblist))
+    r_diag = (r_var)*np.eye(len(yerroblist))
     for i in xrange(len(ytimestep)):
         for j in xrange(len(ytimestep)):
             if abs(ytimestep[i]-ytimestep[j]) < cut_off:
