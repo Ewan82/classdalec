@@ -10,7 +10,8 @@ import plot as p
 
 exp_list = [('bdiag', 'None'), ('b_edc', 'None'), ('bdiag', 'r_corr_cor0.3_tau4_cotoff4_var0.5'),
             ('b_edc', 'r_corr_cor0.3_tau4_cotoff4_var0.5'), ('b_edc', 'r_corr_cor0.3_tau4_cotoff4_var0.7'),
-            ('b_edc', 'r_corr_cor0.5_tau1_cotoff4_var0.5'), ('bdiag', 'r_corr_cor0.5_tau1_cotoff4_var0.5')]
+            ('b_edc', 'r_corr_cor0.5_tau1_cotoff4_var0.5'), ('bdiag', 'r_corr_cor0.5_tau1_cotoff4_var0.5'),
+            ('bdiag', 'r_corr_cor0.3_tau4_cotoff20_var0.5'), ('b_edc', 'r_corr_cor0.3_tau4_cotoff20_var0.5')]
 
 def pickle_mat(matrix, mat_name):
     """ Pickles error covariance matrix.
