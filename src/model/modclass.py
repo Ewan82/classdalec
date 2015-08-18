@@ -709,7 +709,7 @@ class DalecModel():
         return tuple(new_bnds)
 
     def findmin_cvt(self, pvals, bnds='strict', dispp=None, maxits=2000,
-                   mini=0):
+                   mini=0, f_tol=-1):
         """Function which minimizes 4DVAR cost fn. Takes an initial state
         (pvals).
         """
@@ -721,7 +721,7 @@ class DalecModel():
             bnds = bnds
         findmin = spop.fmin_tnc(self.cost_cvt, zvals,
                                 fprime=self.gradcost_cvt, bounds=bnds,
-                                disp=dispp, fmin=mini, maxfun=maxits)
+                                disp=dispp, fmin=mini, maxfun=maxits, ftol=f_tol)
         return findmin
 
 # ------------------------------------------------------------------------------
@@ -756,7 +756,7 @@ class DalecModel():
         return findmin             
 
     def findmintnc(self, pvals, bnds='strict', dispp=None, maxits=2000, 
-                   mini=0):
+                   mini=0, f_tol=-1):
         """Function which minimizes 4DVAR cost fn. Takes an initial state
         (pvals).
         """
@@ -767,7 +767,7 @@ class DalecModel():
             bnds = bnds
         findmin = spop.fmin_tnc(self.cost, pvals,
                                 fprime=self.gradcost, bounds=bnds,
-                                disp=dispp, fmin=mini, maxfun=maxits)
+                                disp=dispp, fmin=mini, maxfun=maxits, ftol=f_tol)
         return findmin        
 
     def findmintnc2(self, pvals, bnds='strict', dispp=None, maxits=2000,
