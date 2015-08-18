@@ -2,8 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="837283c5-404a-4f65-ab79-716c1adfdf9d" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/r_corr_cor0.3_tau4_cotoff20_var0.5.p" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/r_corr_cor0.3_tau4_cotoff4_var0.5.p" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/r_corr_cor0.3_tau4_cotoff4_var0.7.p" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/r_corr_cor0.5_tau1_cotoff4_var0.5.p" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/exec_var.py" afterPath="$PROJECT_DIR$/src/model/exec_var.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/modclass.py" afterPath="$PROJECT_DIR$/src/model/modclass.py" />
     </list>
     <ignored path="classdalec.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -56,8 +59,8 @@
       <file leaf-file-name="exec_var.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/model/exec_var.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.3755523">
-              <caret line="41" column="58" selection-start-line="41" selection-start-column="58" selection-end-line="41" selection-end-column="58" />
+            <state vertical-scroll-proportion="0.77548003">
+              <caret line="51" column="63" selection-start-line="51" selection-start-column="63" selection-end-line="51" selection-end-column="63" />
               <folding>
                 <element signature="e#0#21#0" expanded="true" />
               </folding>
@@ -1062,8 +1065,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/model/exec_var.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3755523">
-          <caret line="41" column="58" selection-start-line="41" selection-start-column="58" selection-end-line="41" selection-end-column="58" />
+        <state vertical-scroll-proportion="0.77548003">
+          <caret line="51" column="63" selection-start-line="51" selection-start-column="63" selection-end-line="51" selection-end-column="63" />
           <folding>
             <element signature="e#0#21#0" expanded="true" />
           </folding>

@@ -8,10 +8,12 @@ import matplotlib.pyplot as plt
 import plot as p
 
 
-exp_list = [('bdiag', 'None'), ('b_edc', 'None'), ('bdiag', 'r_corr_cor0.3_tau4_cotoff4_var0.5'),
-            ('b_edc', 'r_corr_cor0.3_tau4_cotoff4_var0.5'), ('b_edc', 'r_corr_cor0.3_tau4_cotoff4_var0.7'),
-            ('b_edc', 'r_corr_cor0.5_tau1_cotoff4_var0.5'), ('bdiag', 'r_corr_cor0.5_tau1_cotoff4_var0.5'),
-            ('bdiag', 'r_corr_cor0.3_tau4_cotoff20_var0.5'), ('b_edc', 'r_corr_cor0.3_tau4_cotoff20_var0.5')]
+exp_list = [('bdiag', 'None'), ('b_edc', 'None'), ('bdiag', 'r_corr_cor0.3_tau4_cutoff4_var0.5'),
+            ('b_edc', 'r_corr_cor0.3_tau4_cutoff4_var0.5'), ('b_diag', 'r_corr_cor0.3_tau4_cutoff4_var0.8'),
+            ('b_edc', 'r_corr_cor0.3_tau4_cutoff4_var0.8'), ('bdiag', 'r_corr_cor0.3_tau6_cutoff10_var0.5'),
+            ('b_edc', 'r_corr_cor0.3_tau6_cutoff10_var0.5'), ('bdiag', 'r_corr_cor0.3_tau24_cutoff24_var0.5'),
+            ('b_edc', 'r_corr_cor0.3_tau24_cutoff24_var0.5'), ('bdiag', 'r_corr_cor0.6_tau4_cutoff4_var0.5'),
+            ('b_edc', 'r_corr_cor0.6_tau4_cutoff4_var0.5')]
 
 def pickle_mat(matrix, mat_name):
     """ Pickles error covariance matrix.
@@ -27,7 +29,7 @@ def fourdvar_list(d, floc, matlist):
     for x in xrange(len(matlist)):
         fourdvar_run(d, matlist[x][0], matlist[x][1], floc)
 
-def fourdvar_run(d, bname, rname='None', floc=None, pvals='mean', maxiters=3000, f_tol=0.05):
+def fourdvar_run(d, bname, rname='None', floc=None, pvals='mean', maxiters=3000, f_tol=-1):
     """Run 4dvar with DALEC2 using specified pickled B file and diagonal R with specified variance on diagonal.
     """
     d.B = pickle.load(open(bname+'.p', 'rb'))
@@ -40,7 +42,7 @@ def fourdvar_run(d, bname, rname='None', floc=None, pvals='mean', maxiters=3000,
     else:
         pvals = pvals
     xa = m.findmintnc(pvals, maxits=maxiters, f_tol=f_tol)
-    f = open(floc+bname+rname+'_xa', 'wb')
+    f = open(floc+bname+'_'+rname+'_xa', 'wb')
     pickle.dump(xa, f)
     f.close()
     d2 = ahd2.DalecData(startyr=d.startyr, endyr=2014, obstr='nee')
@@ -312,15 +314,15 @@ def evolve_ensemble(d, pmat):
         modevmat[:, x] = m.mod_list(pmat[x])[-1]
     return modevmat
 
-def r_mat_corr(yerroblist, ytimestep, corr=0.3, tau=1, cut_off=4, r_var=0.5):
+def r_mat_corr(yerroblist, ytimestep, corr=0.3, tau=1., cut_off=4., r_var=0.5):
     """ Creates a correlated R matrix.
     """
-    r_corr = np.eye(len(ytimestep))
+    r_corr = np.eye(len(ytimestep)) #MAKE SURE ALL VALUES ARE FLOATS FIRST!!!!
     r_diag = (r_var)*np.eye(len(yerroblist))
     for i in xrange(len(ytimestep)):
         for j in xrange(len(ytimestep)):
             if abs(ytimestep[i]-ytimestep[j]) < cut_off:
-                r_corr[i,j] = corr*np.exp(-(abs(ytimestep[i]-ytimestep[j])**2)/tau**2) \
+                r_corr[i,j] = corr*np.exp(-(abs(float(ytimestep[i])-float(ytimestep[j]))**2)/float(tau)**2) \
                               + (1-corr)*smp.KroneckerDelta(ytimestep[i],ytimestep[j])
     r = np.dot(np.dot((np.sqrt(r_diag)),r_corr),np.sqrt(r_diag))
     return r_corr, r
