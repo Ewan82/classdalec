@@ -40,7 +40,7 @@ def fourdvar_run(d, bname, rname='None', floc=None, pvals='mean', maxiters=3000)
     else:
         pvals = pvals
     xa = m.findmintnc(pvals, maxits=maxiters, f_tol=0.5)
-    f = open(floc+bname+'_xa', 'wb')
+    f = open(floc+bname+rname+'_xa', 'wb')
     pickle.dump(xa, f)
     f.close()
     d2 = ahd2.DalecData(startyr=d.startyr, endyr=2014, obstr='nee')
