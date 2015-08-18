@@ -39,7 +39,7 @@ def fourdvar_run(d, bname, rname='None', floc=None, pvals='mean', maxiters=3000)
         pvals = d.edinburghmean
     else:
         pvals = pvals
-    xa = m.findmintnc(pvals, maxits=maxiters)
+    xa = m.findmintnc(pvals, maxits=maxiters, f_tol=0.5)
     f = open(floc+bname+'_xa', 'wb')
     pickle.dump(xa, f)
     f.close()
