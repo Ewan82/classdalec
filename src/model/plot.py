@@ -455,13 +455,13 @@ def plotbmat(bmat):
 #            square=True, xticklabels=5, yticklabels=5,
 #            linewidths=.5, cbar_kws={"shrink": .5}, ax=ax)
 
-def plotrmat(rmat):
+def plotrmat(rmat, ticks=5):
     """Plots a R matrix.
     """
     sns.set(style="white")
     fig, ax = plt.subplots(figsize=(11,9))
     ax.set_aspect('equal')
-    sns.heatmap(rmat, ax=ax, xticklabels=5, yticklabels=5)
+    sns.heatmap(rmat, ax=ax, xticklabels=ticks, yticklabels=ticks)
     return ax, fig
     
 def analysischange(xb, xa):
