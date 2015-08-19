@@ -62,6 +62,10 @@ def fourdvar_run(d, bname, rname='None', floc=None, pvals='mean', maxiters=3000,
         ax, fig = p.plotbmat(pickle.load(open(bname+'_cor.p', 'rb')))
         fig.savefig(floc+bname+rname+'_corrmat.png', bbox_inches='tight')
         plt.close()
+    if rname!='None':
+        ax, fig = p.plotrmat(pickle.load(open(rname+'.p', 'rb')))
+        fig.savefig(floc+bname+rname+'_rmat.png', bbox_inches='tight')
+        plt.close()
     return xa
 
 

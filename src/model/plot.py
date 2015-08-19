@@ -454,7 +454,15 @@ def plotbmat(bmat):
 #sns.heatmap(corr, mask=mask, cmap=cmap, vmax=.3,
 #            square=True, xticklabels=5, yticklabels=5,
 #            linewidths=.5, cbar_kws={"shrink": .5}, ax=ax)
-    
+
+def plotrmat(rmat):
+    """Plots a R matrix.
+    """
+    sns.set(style="white")
+    fig, ax = plt.subplots(figsize=(11,9))
+    ax.set_aspect('equal')
+    sns.heatmap(rmat, ax=ax, xticklabels=5, yticklabels=5)
+    return ax, fig
     
 def analysischange(xb, xa):
     """Plot error between truth and xa/xb shows as a bar chart.
