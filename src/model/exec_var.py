@@ -9,7 +9,7 @@ import plot as p
 
 
 exp_list = [('bdiag', 'None'), ('b_edc', 'None'), ('bdiag', 'r_corr_cor0.3_tau4_cutoff4_var0.5'),
-            ('b_edc', 'r_corr_cor0.3_tau4_cutoff4_var0.5'), ('b_diag', 'r_corr_cor0.3_tau4_cutoff4_var0.8'),
+            ('b_edc', 'r_corr_cor0.3_tau4_cutoff4_var0.5'), ('bdiag', 'r_corr_cor0.3_tau4_cutoff4_var0.8'),
             ('b_edc', 'r_corr_cor0.3_tau4_cutoff4_var0.8'), ('bdiag', 'r_corr_cor0.3_tau6_cutoff10_var0.5'),
             ('b_edc', 'r_corr_cor0.3_tau6_cutoff10_var0.5'), ('bdiag', 'r_corr_cor0.3_tau24_cutoff24_var0.5'),
             ('b_edc', 'r_corr_cor0.3_tau24_cutoff24_var0.5'), ('bdiag', 'r_corr_cor0.6_tau4_cutoff4_var0.5'),
