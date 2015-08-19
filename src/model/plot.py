@@ -461,7 +461,7 @@ def plotrmat(rmat):
     sns.set(style="white")
     fig, ax = plt.subplots(figsize=(11,9))
     ax.set_aspect('equal')
-    sns.heatmap(rmat, ax=ax, xticklabels=len(rmat), yticklabels=len(rmat))
+    sns.heatmap(rmat, ax=ax, xticklabels=np.arange(len(rmat)), yticklabels=np.arange(len(rmat)))
     return ax, fig
     
 def analysischange(xb, xa):
