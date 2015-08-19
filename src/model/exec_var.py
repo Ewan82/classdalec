@@ -23,11 +23,11 @@ def pickle_mat(matrix, mat_name):
     f.close()
     return 'matrix pickled!'
 
-def fourdvar_list(d, floc, matlist):
+def fourdvar_list(d, floc, matlist, pvals='mean'):
     """ Runs over a list of cov matrices.
     """
     for x in xrange(len(matlist)):
-        fourdvar_run(d, matlist[x][0], matlist[x][1], floc)
+        fourdvar_run(d, matlist[x][0], matlist[x][1], floc, pvals)
 
 def fourdvar_run(d, bname, rname='None', floc=None, pvals='mean', maxiters=3000, f_tol=-1):
     """Run 4dvar with DALEC2 using specified pickled B file and diagonal R with specified variance on diagonal.
