@@ -510,7 +510,7 @@ class DalecModel():
         else:
             modcost = 0
         gradcost = - obcost + modcost
-        return - gradcost #Remove minus after experiment!!
+        return gradcost
 
     def hhat(self, pvallist):
         """Returns a list of observation values as predicted by DALEC (hx) and
