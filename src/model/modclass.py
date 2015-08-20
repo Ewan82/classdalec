@@ -742,7 +742,7 @@ class DalecModel():
                                          'ftol': factr})
         return findmin
 
-    def findminlbfgsb(self, pvals, bnds='strict', factr=1e7, prnt=-1):
+    def findminlbfgsb(self, pvals, bnds='strict', factr=1e5, prnt=-1, dispp=5):
         """Function which minimizes 4DVAR cost fn. Takes an initial state
         (pvals).
         """
@@ -752,7 +752,7 @@ class DalecModel():
             bnds = bnds
         findmin = spop.fmin_l_bfgs_b(self.cost, pvals,
                                      fprime=self.gradcost, bounds=bnds,
-                                     iprint=prnt, factr=factr)
+                                     iprint=prnt, factr=factr, disp=dispp)
         return findmin             
 
     def findmintnc(self, pvals, bnds='strict', dispp=None, maxits=2000, 
