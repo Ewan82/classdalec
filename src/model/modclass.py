@@ -755,6 +755,19 @@ class DalecModel():
                                      iprint=prnt, factr=factr, disp=dispp, m=mm)
         return findmin             
 
+    def findminslsqp(self, pvals, bnds='strict', prnt=-1, dispp=5):
+        """Function which minimizes 4DVAR cost fn. Takes an initial state
+        (pvals).
+        """
+        if bnds == 'strict':
+            bnds = self.dC.bnds
+        else:
+            bnds = bnds
+        findmin = spop.fmin_slsqp(self.cost, pvals,
+                                     fprime=self.gradcost, bounds=bnds,
+                                     iprint=prnt, disp=dispp)
+        return findmin
+
     def findmintnc(self, pvals, bnds='strict', dispp=None, maxits=2000, 
                    mini=0, f_tol=-1):
         """Function which minimizes 4DVAR cost fn. Takes an initial state
