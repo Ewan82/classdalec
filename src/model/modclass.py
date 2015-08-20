@@ -510,7 +510,7 @@ class DalecModel():
         else:
             modcost = 0
         gradcost = - obcost + modcost
-        return gradcost
+        return - gradcost #Remove minus after experiment!!
 
     def hhat(self, pvallist):
         """Returns a list of observation values as predicted by DALEC (hx) and
@@ -764,7 +764,7 @@ class DalecModel():
         else:
             bnds = bnds
         findmin = spop.fmin_slsqp(self.cost, pvals,
-                                     fprime=self.gradcost, bounds=bnds,
+                                     fprime=self.gradcost2, bounds=bnds,
                                      iprint=prnt, disp=dispp)
         return findmin
 
