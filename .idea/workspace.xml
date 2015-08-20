@@ -43,8 +43,8 @@
       <file leaf-file-name="modclass.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/model/modclass.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.3755523">
-              <caret line="745" column="66" selection-start-line="745" selection-start-column="66" selection-end-line="745" selection-end-column="66" />
+            <state vertical-scroll-proportion="0.5964654">
+              <caret line="755" column="35" selection-start-line="755" selection-start-column="35" selection-end-line="755" selection-end-column="35" />
               <folding>
                 <element signature="e#96#114#0" expanded="true" />
               </folding>
@@ -1061,8 +1061,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/model/modclass.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3755523">
-          <caret line="745" column="66" selection-start-line="745" selection-start-column="66" selection-end-line="745" selection-end-column="66" />
+        <state vertical-scroll-proportion="0.5964654">
+          <caret line="755" column="35" selection-start-line="755" selection-start-column="35" selection-end-line="755" selection-end-column="35" />
           <folding>
             <element signature="e#96#114#0" expanded="true" />
           </folding>
