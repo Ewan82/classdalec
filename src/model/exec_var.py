@@ -15,9 +15,9 @@ exp_list = [('bdiag', 'None'), ('b_edc', 'None'), ('bdiag', 'r_corr_cor0.3_tau4_
             ('b_edc', 'r_corr_cor0.3_tau24_cutoff24_var0.5'), ('bdiag', 'r_corr_cor0.6_tau4_cutoff4_var0.5'),
             ('b_edc', 'r_corr_cor0.6_tau4_cutoff4_var0.5')]
 #cor, tau, cutoff, vars
-exp_list2 = [('bdiag,', (0., 0., 1., 0.5)), ('b_edc', (0., 0., 1., 0.5)), ('b_uc_modev1yr', (0., 0., 1., 0.5)),
-             ('bdiag,', (0.3, 8., 4., 0.5)), ('b_edc', (0.3, 8., 4., 0.5)), ('b_uc_modev1yr', (0.3, 8., 4., 0.5)),
-             ('bdiag,', (0.3, 8., 2., 0.5)), ('b_edc', (0.3, 8., 2., 0.5)), ('b_uc_modev1yr', (0.3, 8., 2., 0.5))]
+exp_list2 = [('bdiag', (0., 0., 1., 0.5)), ('b_edc', (0., 0., 1., 0.5)), ('b_uc_modev1yr', (0., 0., 1., 0.5)),
+             ('bdiag', (0.3, 8., 4., 0.5)), ('b_edc', (0.3, 8., 4., 0.5)), ('b_uc_modev1yr', (0.3, 8., 4., 0.5)),
+             ('bdiag', (0.3, 8., 2., 0.5)), ('b_edc', (0.3, 8., 2., 0.5)), ('b_uc_modev1yr', (0.3, 8., 2., 0.5))]
 
 def pickle_mat(matrix, mat_name):
     """ Pickles error covariance matrix.
