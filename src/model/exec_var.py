@@ -374,3 +374,15 @@ def r_mat_corr(yerroblist, ytimestep, corr=0.3, tau=1., cut_off=4., r_var=0.5):
     r = np.dot(np.dot((np.sqrt(r_diag)),r_corr),np.sqrt(r_diag))
     return r_corr, r
 
+def r_mat_soar(yerroblist, ytimestep, tau=.4, cut_off=4., r_var=0.5):
+    """ Creates a correlated R matrix.
+    """
+    r_corr = np.eye(len(ytimestep)) #MAKE SURE ALL VALUES ARE FLOATS FIRST!!!!
+    r_diag = (r_var)*np.eye(len(yerroblist))
+    for i in xrange(len(ytimestep)):
+        for j in xrange(len(ytimestep)):
+            if abs(ytimestep[i]-ytimestep[j]) < cut_off:
+                r_corr[i,j] = (1+(abs(float(ytimestep[i])-float(ytimestep[j]))/float(tau)))* \
+                              np.exp(-(abs(float(ytimestep[i])-float(ytimestep[j])))/float(tau))
+    r = np.dot(np.dot((np.sqrt(r_diag)),r_corr),np.sqrt(r_diag))
+    return r_corr, r
