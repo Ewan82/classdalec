@@ -38,7 +38,7 @@ def fourdvar_run2(d, bname, r_list, floc=None, pvals='mean', maxiters=3000, f_to
     """
     d.B = pickle.load(open(bname+'.p', 'rb'))
     m = mc.DalecModel(d)
-    rmat = r_mat_corr(m.yerroblist, m.ytimestep, r_list[0], r_list[1], r_list[2], r_list[3])
+    rmat = r_mat_corr(m.yerroblist, m.ytimestep, r_list[0], r_list[1], r_list[2], r_list[3])[1]
     m.rmatrix = rmat
     if pvals=='mean':
         pvals = d.edinburghmean
