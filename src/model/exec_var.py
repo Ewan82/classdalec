@@ -262,15 +262,19 @@ def pvals_test_edc(d, pvals):
     else:
         return False
 
-def create_ensemble(d):
+def create_ensemble(d, mu='edin', sigma='edin'):
     """ Creates an ensemble of parameter values satisfying ecological constraints.
     """
     param_ensemble = []
     failed_ensemble = []
+    if mu == 'edin':
+        mu = d.edinburghmean
+    if sigma == 'edin':
+        sigma = d.edinburghstdev
     while len(param_ensemble) < 1000:
         pvals = np.ones(23)*9999.
         for x in xrange(23):
-            pvals[x] = np.random.normal(d.edinburghmean[x], d.edinburghstdev[x])
+            pvals[x] = np.random.normal(mu[x], sigma[x])
         if test_pvals_bnds(d, pvals)== True and pvals_test_uc(d, pvals)== True:
             param_ensemble.append(pvals)
             print '%i' %len(param_ensemble)
@@ -279,15 +283,19 @@ def create_ensemble(d):
             continue
     return param_ensemble, failed_ensemble
 
-def create_ensemble_trunc_edc(d):
+def create_ensemble_trunc_edc(d, mean='edin', stdev='edin'):
     """ Creates an ensemble of parameter values satisfying ecological constraints.
     """
     trunc_dist_dict = {}
+    if mean == 'edin':
+        mean = d.edinburghmean
+    if stdev == 'edin':
+        stdev = d.edinburghstdev
     for x in xrange(23):
         lower = d.bnds2[x][0]
         upper = d.bnds2[x][1]
-        mu = d.edinburghmean[x]
-        sigma = d.edinburghstdev[x]
+        mu = mean[x]
+        sigma = stdev[x]
         a = (lower-mu) / sigma
         b = (upper-mu) / sigma
         trunc_dist_dict['p%i' %int(x)] = stats.truncnorm(a, b, loc=mu, scale=sigma)
@@ -306,15 +314,19 @@ def create_ensemble_trunc_edc(d):
             continue
     return np.array(param_ensemble), failed_ensemble
 
-def create_ensemble_trunc(d):
+def create_ensemble_trunc(d, mean='edin', stdev='edin'):
     """ Creates an ensemble of parameter values satisfying ecological constraints.
     """
     trunc_dist_dict = {}
+    if mean == 'edin':
+        mean = d.edinburghmean
+    if stdev == 'edin':
+        stdev = d.edinburghstdev
     for x in xrange(23):
         lower = d.bnds2[x][0]
         upper = d.bnds2[x][1]
-        mu = d.edinburghmean[x]
-        sigma = d.edinburghstdev[x]
+        mu = mean[x]
+        sigma = stdev[x]
         a = (lower-mu) / sigma
         b = (upper-mu) / sigma
         trunc_dist_dict['p%i' %int(x)] = stats.truncnorm(a, b, loc=mu, scale=sigma)
@@ -327,15 +339,19 @@ def create_ensemble_trunc(d):
         param_ensemble.append(pvals)
     return param_ensemble
 
-def create_ensemble_trunc_uc(d):
+def create_ensemble_trunc_uc(d, mean='edin', stdev='edin'):
     """ Creates an ensemble of parameter values satisfying ecological constraints.
     """
     trunc_dist_dict = {}
+    if mean == 'edin':
+        mean = d.edinburghmean
+    if stdev == 'edin':
+        stdev = d.edinburghstdev
     for x in xrange(23):
         lower = d.bnds2[x][0]
         upper = d.bnds2[x][1]
-        mu = d.edinburghmean[x]
-        sigma = d.edinburghstdev[x]
+        mu = mean[x]
+        sigma = stdev[x]
         a = (lower-mu) / sigma
         b = (upper-mu) / sigma
         trunc_dist_dict['p%i' %int(x)] = stats.truncnorm(a, b, loc=mu, scale=sigma)
