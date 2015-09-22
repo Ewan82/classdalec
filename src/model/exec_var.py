@@ -287,6 +287,27 @@ def create_ensemble(d, mu='edin', sigma='edin'):
             continue
     return param_ensemble, failed_ensemble
 
+def create_ensemble_edc(d, mu='edin', sigma='edin'):
+    """ Creates an ensemble of parameter values satisfying ecological constraints.
+    """
+    param_ensemble = []
+    failed_ensemble = []
+    if mu == 'edin':
+        mu = d.edinburghmean
+    if sigma == 'edin':
+        sigma = d.edinburghstdev
+    while len(param_ensemble) < 1000:
+        pvals = np.ones(23)*9999.
+        for x in xrange(23):
+            pvals[x] = np.random.normal(mu[x], sigma[x])
+        if test_pvals_bnds(d, pvals)== True and pvals_test_edc(d, pvals) == True:
+            param_ensemble.append(pvals)
+            print '%i' %len(param_ensemble)
+        else:
+            failed_ensemble.append(pvals)
+            continue
+    return param_ensemble, failed_ensemble
+
 def create_ensemble_trunc_edc(d, mean='edin', stdev='edin'):
     """ Creates an ensemble of parameter values satisfying ecological constraints.
     """
