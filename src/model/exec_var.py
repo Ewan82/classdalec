@@ -244,9 +244,6 @@ def pvals_test_edc(d, pvals):
             if (pvals[x+19] / 10 < inf_list[x] < 10*pvals[x+19]) == False: #Steady state constraint
                 return False
 
-        else:
-            return True
-
         for x in xrange(17,23): #Pool growth constraint
             if (np.mean(mod_list[-365:-1,x]) / np.mean(mod_list[0:365,x]) < 1+0.1*((d.endyr-d.startyr-1)/10)) == False:
                 return False
