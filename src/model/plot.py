@@ -46,6 +46,7 @@ def plotobs(ob, pvals, dC, start, fin, lab=0, xax=None, dashed=0,
     """Plots a specified observation using obs eqn in obs module. Takes an
     observation string, a dataClass (dC) and a start and finish point.
     """
+    sns.set_context(rc={'lines.linewidth':0.4, 'lines.markersize':3.8})
     if ax == None:
         fig, ax = plt.subplots( nrows=1, ncols=1, figsize=(20,10))
     else:
@@ -90,7 +91,9 @@ def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1, awindl=None,
     #dayLocator    = mdates.DayLocator()
     #hourLocator   = mdates.HourLocator()
     #dateFmt = mdates.DateFormatter('%Y')
-    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(20,10))
+    sns.set_style('ticks')
+    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':0.4, 'lines.markersize':3.8})
+    fig, ax = plt.subplots(nrows=1, ncols=1,) #figsize=(20,10))
     xlist = np.arange(start, fin)
     # We know the datum and delta from reading the file manually
     datum = dt.datetime(int(dC.year[0]), 1, 1)
@@ -115,8 +118,9 @@ def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1, awindl=None,
         ax3.plt.plot(times[0:len(obdict_a[ob])], obdict_a[ob], 'o')
     #ax3.legend()
     plt.xlabel('Year')
-    plt.ylabel(ob+' (gCm-2)')
-    plt.title(ob+' for Alice Holt flux site')
+    plt.ylabel(ob.upper()+' (g C m-2)')
+    #plt.title(ob+' for Alice Holt flux site')
+    plt.ylim((-20,15))
     if awindl!=None:
         ax3.axvline(x=times[awindl],color='k',ls='dashed')
         #ax3.text(times[20], 8.5, 'Assimilation\n window')
@@ -186,7 +190,9 @@ def plotscatterobs(ob, pvals, dC, awindl, bfa='a'):
     specified in dC), assimilation window length and whether a comparison of 
     background 'b', forecast 'f' or analysis 'a' is desired.
     """
-    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(10,10))
+    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':1, 'lines.markersize':6})
+    fig, ax = plt.subplots(nrows=1, ncols=1,)#figsize=(10,10))
+    sns.set_style('ticks')
     pvallist = m.mod_list(pvals, dC, 0, len(dC.I))
     y, yerr = fdv.obscost(dC.obdict, dC.oberrdict) 
     hx = fdv.hxcost(pvallist, dC.obdict, dC)
@@ -208,9 +214,12 @@ def plotscatterobs(ob, pvals, dC, awindl, bfa='a'):
         yhx = np.mean(y[splitval:]-hx[splitval:])                                            
     else:
         raise Exception('Please check function input for bfa variable')
-    plt.xlabel(ob+' observations')
-    plt.ylabel(ob+' model')
-    plt.title(bfa+'_error=%f, mean(y-hx)=%f' %(error,yhx))
+    plt.xlabel(ob.upper()+' observations (g C m-2)')
+    plt.ylabel(ob.upper()+' model (g C m-2)')
+    #plt.title(bfa+'_error=%f, mean(y-hx)=%f' %(error,yhx))
+    print bfa+'_error=%f, mean(y-hx)=%f' %(error,yhx)
+    plt.xlim((-20,10))
+    plt.ylim((-20,15))
     return ax, fig #error, y[0:splitval]-hx[0:splitval]
 
     
@@ -434,6 +443,7 @@ def plotbmat(bmat):
     """Plots a B matrix.
     """
     sns.set(style="white")
+    sns.set_context('poster', font_scale=1.2)
     fig, ax = plt.subplots(figsize=(11,9))
     ax.set_aspect('equal')
     keys = ['theta_min', 'f_auto', 'f_fol', 'f_roo', 'clspan', 'theta_woo',
@@ -445,8 +455,9 @@ def plotbmat(bmat):
     ax.set_yticks(np.arange(23))
     ax.set_yticklabels(keys)
     cmap = sns.diverging_palette(220, 10, as_cmap=True)
-    sns.heatmap(bmat, xticklabels=keys, yticklabels=keys, ax=ax,)
-                #cmap=cmap, vmax=.3, square=True, linewidths=.5, cbar=True)
+    sns.heatmap(bmat, xticklabels=keys, yticklabels=keys, ax=ax,
+                cmap=cmap, vmax=.4, square=True, linewidths=.5, cbar=True)
+
     #plt.colorbar()
     return ax, fig
 
@@ -459,9 +470,12 @@ def plotrmat(rmat):
     """Plots a R matrix.
     """
     sns.set(style="white")
+    sns.set_context('poster', font_scale=1.2)
     fig, ax = plt.subplots(figsize=(11,9))
     ax.set_aspect('equal')
-    sns.heatmap(rmat, ax=ax, xticklabels=np.arange(len(rmat)), yticklabels=np.arange(len(rmat)))
+    sns.heatmap(rmat, ax=ax, vmax=.5, xticklabels=False, yticklabels=False,
+                square=True, linewidths=.5, cbar=True)
+    #sns.heatmap(rmat, ax=ax, xticklabels=np.arange(len(rmat)), yticklabels=np.arange(len(rmat)))
     return ax, fig
     
 def analysischange(xb, xa):
