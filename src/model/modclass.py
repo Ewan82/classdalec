@@ -625,6 +625,28 @@ class DalecModel():
         gradcost = - obcost + modcost
         return gradcost
 
+    def gradcost_bnd(self, pvals):
+        """Gradient of 4DVAR cost fn to be passed to optimization routine.
+        Takes an initial state (pvals), an obs dictionary, an obs error
+        dictionary, a dataClass and a start and finish time step.
+        """
+        tick = 0
+        for x in xrange(23):
+            if self.dC.bnds5[x][0] >= pvals[x] >= self.dC.bnds5[x][1]:
+                tick -= 1
+        if tick != 0:
+            return np.ones(23)*-np.inf
+        pvallist, matlist = self.linmod_list(pvals)
+        hx, hmatrix = self.hmat(pvallist, matlist)
+        obcost = np.dot(hmatrix.T, np.dot(np.linalg.inv(self.rmatrix),
+                                          (self.yoblist-hx).T))
+        if self.modcoston is True:
+            modcost = np.dot(np.linalg.inv(self.dC.B), (pvals-self.xb).T)
+        else:
+            modcost = 0
+        gradcost = - obcost + modcost
+        return gradcost
+
     def acovmat(self, pvals):
         """Calculates approximation to analysis error covariance matrix
         A = (B^(-1) + H^(T) * R^(-1) * H)^(-1).
@@ -828,7 +850,7 @@ class DalecModel():
         else:
             bnds = bnds
         findmin = spop.fmin_tnc(self.cost_bnd, pvals,
-                                fprime=self.gradcost, bounds=bnds,
+                                fprime=self.gradcost_bnd, bounds=bnds,
                                 disp=dispp, fmin=mini, maxfun=maxits, ftol=f_tol)
         return findmin
 
