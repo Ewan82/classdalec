@@ -7,6 +7,7 @@ import fourdvar as fdv
 import observations as obs
 import copy as cp
 import datetime as dt
+import taylordiagram as td
 import matplotlib.dates as mdates
 import matplotlib.mlab as mlab
 import matplotlib
@@ -222,7 +223,64 @@ def plotscatterobs(ob, pvals, dC, awindl, bfa='a'):
     plt.ylim((-20,15))
     return ax, fig #error, y[0:splitval]-hx[0:splitval]
 
-    
+
+def da_std_corrcoef_obs(ob, pvals, dC, awindl, bfa='a'):
+    """
+    :param ob: observation to compare with data
+    :param pvals: xa from DA experiment
+    :param dC: dataClass with observations
+    :param awindl: length of analysis window
+    :param bfa: background, forecast or analysis (b,f,a)
+    :return: std of model and observations, rms and correlation coef.
+    """
+    fig, ax = plt.subplots(nrows=1, ncols=1,)
+    pvallist = m.mod_list(pvals, dC, 0, len(dC.I))
+    y, yerr = fdv.obscost(dC.obdict, dC.oberrdict)
+    hx = fdv.hxcost(pvallist, dC.obdict, dC)
+    splitval = 0
+    for x in xrange(0,awindl):
+        if np.isnan(dC.obdict[ob][x])!=True:
+            splitval += 1
+
+    if bfa=='b' or bfa=='a':
+        obs = y[0:splitval]
+        mod_obs = hx[0:splitval]
+    elif bfa=='f':
+        obs = y[splitval:]
+        mod_obs = hx[splitval:]
+    else:
+        raise Exception('Please check function input for bfa variable')
+
+    std_mod_obs = np.std(mod_obs)
+    mod_obs_bar = np.mean(mod_obs)
+    std_obs = np.std(obs)
+    obs_bar = np.mean(obs)
+    rms = np.sqrt(np.sum([((mod_obs[x]-mod_obs_bar)-(obs[x]-obs_bar))**2 for x in xrange(len(obs))])/len(obs))
+    corr_coef = (np.sum([((mod_obs[x]-mod_obs_bar)*(obs[x]-obs_bar)) for x in xrange(len(obs))])/len(obs))\
+                /(std_mod_obs*std_obs)
+    return std_mod_obs, std_obs, rms, corr_coef
+
+def plot_taylor_diagram():
+    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':1.4, 'lines.markersize':9})
+    fig = plt.figure()
+    sns.set_style('ticks')
+    experiments = [(2.3484143513774565, 0.66197831433922605, 'xb'),
+                   (6.7512375011313743, 0.78718349020688749, 'A'),
+                   (5.1295310098679368, 0.8684810131720303, 'B'),
+                   (6.49605967589775, 0.78273625256663071, 'C'),
+                   (4.9966680670866221, 0.88331243820904048, 'D')]
+    std_obs = 4.7067407809222761
+    dia = td.TaylorDiagram(std_obs, fig=fig)
+    for i, (std, corrcoef, name) in enumerate(experiments):
+        dia.add_sample(std, corrcoef, marker='o', label=name)
+    contours = dia.add_contours(levels=8)
+    plt.clabel(contours, inline=1, fontsize=10)
+    fig.legend(dia.samplePoints,
+               [p.get_label() for p in dia.samplePoints],
+               numpoints=1, loc='upper right')
+    plt.ylabel('Standard Deviation')
+    plt.show()
+
 def plotcycled4dvar(ob, conditions, xb, xa, dC, erbars=1, truth=None):
     """Plots a cycled 4DVar run given an observation string (obs), a set of
     conditions from modclass output and a list of xb's and xa's.
@@ -442,7 +500,7 @@ def plot_analysis_inc(xb, xa):
 def plotbmat(bmat):
     """Plots a B matrix.
     """
-    sns.set(style="white")
+    sns.set(style="whitegrid")
     sns.set_context('poster', font_scale=1.2)
     fig, ax = plt.subplots(figsize=(11,9))
     ax.set_aspect('equal')
@@ -455,8 +513,9 @@ def plotbmat(bmat):
     ax.set_yticks(np.arange(23))
     ax.set_yticklabels(keys)
     cmap = sns.diverging_palette(220, 10, as_cmap=True)
-    sns.heatmap(bmat, xticklabels=keys, yticklabels=keys, ax=ax,
-                cmap=cmap, vmax=.4, square=True, linewidths=.5, cbar=True)
+    mask = np.eye(23, dtype=bool)
+    sns.heatmap(bmat, mask=mask, xticklabels=keys, yticklabels=keys, ax=ax,
+                cmap=cmap, vmax=.43, square=True, linewidths=.5, cbar=True)
 
     #plt.colorbar()
     return ax, fig
