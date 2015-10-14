@@ -597,7 +597,7 @@ class DalecModel():
         """
         tick = 0
         for x in xrange(23):
-            if self.dC.bnds3[x][0]<=pvals[x]<=self.dC.bnds3[x][1]:
+            if self.dC.bnds5[x][0]<=pvals[x]<=self.dC.bnds5[x][1]:
                 tick -= 1
         if tick != 0:
             return np.inf
@@ -762,6 +762,20 @@ class DalecModel():
                                          'ftol': factr})
         return findmin
 
+    def findmin_bnd(self, pvals, meth='L-BFGS-B', bnds='strict', factr=1e7):
+        """Function which minimizes 4DVAR cost fn. Takes an initial state
+        (pvals).
+        """
+        if bnds == 'strict':
+            bnds = self.dC.bnds5
+        else:
+            bnds = bnds
+        findmin = spop.minimize(self.cost, pvals, method=meth,
+                                jac=self.gradcost, bounds=bnds,
+                                options={'gtol': 1e-1, 'disp': True, 'iprint': 2,
+                                         'ftol': factr})
+        return findmin
+
     def findminlbfgsb(self, pvals, bnds='strict', factr=1e5, prnt=-1, dispp=5, mm=23):
         """Function which minimizes 4DVAR cost fn. Takes an initial state
         (pvals).
@@ -810,7 +824,7 @@ class DalecModel():
         """
         self.xb = pvals
         if bnds == 'strict':
-            bnds = self.dC.bnds3
+            bnds = self.dC.bnds5
         else:
             bnds = bnds
         findmin = spop.fmin_tnc(self.cost_bnd, pvals,
@@ -941,3 +955,15 @@ class DalecModel():
         """
         sample = sampler.chain[:, nburn:, :].reshape(-1, 23)
         return sample.mean(0)
+
+    def tstpvals(self, pvals, bnds):
+        """Tests pvals to see if they are within the correct bnds.
+        """
+        x=0
+        for bnd in bnds:
+            if bnd[0]<pvals[x]<bnd[1]:
+                print '%f in bnds' %x
+            else:
+                print '%f not in bnds' %x
+            x += 1
+        return pvals
