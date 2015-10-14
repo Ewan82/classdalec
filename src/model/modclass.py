@@ -581,6 +581,26 @@ class DalecModel():
         an observation dictionary, observation error dictionary, a dataClass 
         and a start and finish time step.
         """
+
+        ob_cost = self.obcost(pvals)
+        if self.modcoston is True:
+            mod_cost = self.modcost(pvals)
+        else:
+            mod_cost = 0
+        cost = 0.5*ob_cost + 0.5*mod_cost
+        return cost
+
+    def cost_bnd(self, pvals):
+        """4DVAR cost function to be minimized. Takes an initial state (pvals),
+        an observation dictionary, observation error dictionary, a dataClass
+        and a start and finish time step.
+        """
+        tick = 0
+        for x in xrange(23):
+            if self.dC.bnds3[x][0]<=pvals[x]<=self.dC.bnds3[x][1]:
+                tick -= 1
+        if tick != 0:
+            return np.inf
         ob_cost = self.obcost(pvals)
         if self.modcoston is True:
             mod_cost = self.modcost(pvals)
@@ -781,7 +801,22 @@ class DalecModel():
         findmin = spop.fmin_tnc(self.cost, pvals,
                                 fprime=self.gradcost, bounds=bnds,
                                 disp=dispp, fmin=mini, maxfun=maxits, ftol=f_tol)
-        return findmin        
+        return findmin
+
+    def findmintnc_bnd(self, pvals, bnds='strict', dispp=None, maxits=2000,
+                   mini=0, f_tol=-1):
+        """Function which minimizes 4DVAR cost fn. Takes an initial state
+        (pvals).
+        """
+        self.xb = pvals
+        if bnds == 'strict':
+            bnds = self.dC.bnds3
+        else:
+            bnds = bnds
+        findmin = spop.fmin_tnc(self.cost_bnd, pvals,
+                                fprime=self.gradcost, bounds=bnds,
+                                disp=dispp, fmin=mini, maxfun=maxits, ftol=f_tol)
+        return findmin
 
     def findmintnc2(self, pvals, bnds='strict', dispp=None, maxits=2000,
                    mini=0, f_tol=-1):
