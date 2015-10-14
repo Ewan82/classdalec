@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="837283c5-404a-4f65-ab79-716c1adfdf9d" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/ahdata2.py" afterPath="$PROJECT_DIR$/src/model/ahdata2.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/modclass.py" afterPath="$PROJECT_DIR$/src/model/modclass.py" />
     </list>
     <ignored path="classdalec.iws" />
@@ -44,8 +44,8 @@
       <file leaf-file-name="modclass.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/model/modclass.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="2.1486487">
-              <caret line="826" column="32" selection-start-line="826" selection-start-column="32" selection-end-line="826" selection-end-column="32" />
+            <state vertical-scroll-proportion="0.6061776">
+              <caret line="603" column="36" selection-start-line="603" selection-start-column="36" selection-end-line="603" selection-end-column="36" />
               <folding>
                 <element signature="e#96#114#0" expanded="true" />
               </folding>
@@ -989,8 +989,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/model/modclass.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="2.1486487">
-          <caret line="826" column="32" selection-start-line="826" selection-start-column="32" selection-end-line="826" selection-end-column="32" />
+        <state vertical-scroll-proportion="0.6061776">
+          <caret line="603" column="36" selection-start-line="603" selection-start-column="36" selection-end-line="603" selection-end-column="36" />
           <folding>
             <element signature="e#96#114#0" expanded="true" />
           </folding>

@@ -597,7 +597,7 @@ class DalecModel():
         """
         tick = 0
         for x in xrange(23):
-            if self.dC.bnds5[x][0]<=pvals[x]<=self.dC.bnds5[x][1]:
+            if self.dC.bnds5[x][0] >= pvals[x] >= self.dC.bnds5[x][1]:
                 tick -= 1
         if tick != 0:
             return np.inf
@@ -967,3 +967,12 @@ class DalecModel():
                 print '%f not in bnds' %x
             x += 1
         return pvals
+
+    def tstpvals2(self, pvals):
+        tick = 0
+        for x in xrange(23):
+            if self.dC.bnds5[x][0] >= pvals[x] >= self.dC.bnds5[x][1]:
+                print '%f' %x
+                tick -= 1
+        if tick != 0:
+            return np.inf
