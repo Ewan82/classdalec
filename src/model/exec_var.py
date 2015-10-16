@@ -21,6 +21,9 @@ exp_list2 = [('bdiag', (0., 1., 1., 0.5)), ('b_edc', (0., 1., 1., 0.5)), ('b_uc_
              ('bdiag', (0.3, 8., 2., 0.5)), ('b_edc', (0.3, 8., 2., 0.5)), ('b_uc_modev1yr', (0.3, 8., 2., 0.5)),
              ('bdiag', (0.6, 4., 4., 0.5)), ('b_edc', (0.6, 4., 4., 0.5)), ('b_uc_modev1yr', (0.6, 4., 4., 0.5))]
 
+exp_list3= [('bdiag', 'None'), ('b_edc', 'None'), ('bdiag', 'r_corr_cor0.3_tau4_cutoff4_var0.5'),
+            ('b_edc', 'r_corr_cor0.3_tau4_cutoff4_var0.5')]
+
 def pickle_mat(matrix, mat_name):
     """ Pickles error covariance matrix.
     """
@@ -53,6 +56,14 @@ def fourdvar_run2(d, bname, r_list, floc=None, pvals='mean', maxiters=3000, f_to
     pickle.dump(xa, f)
     f.close()
     d2 = ahd2.DalecData(startyr=d.startyr, endyr=2014, obstr='nee')
+    analysis_err_dict = p.da_std_corrcoef_obs('nee', xa[0], d2, len(d.I), 'a')
+    f = open(floc+bname+'_'+rname+'analysis_errdict', 'wb')
+    pickle.dump(analysis_err_dict, f)
+    f.close()
+    forecast_err_dict = p.da_std_corrcoef_obs('nee', xa[0], d2, len(d.I), 'f')
+    f = open(floc+bname+'_'+rname+'forecast_errdict', 'wb')
+    pickle.dump(forecast_err_dict, f)
+    f.close()
     ax, fig = p.plot4dvarrun('nee', d.edinburghmedian, xa[0], d2, 0, len(d2.I), awindl=len(d.I))
     fig.savefig(floc+bname+rname+'_4dvar.png', bbox_inches='tight')
     plt.close()

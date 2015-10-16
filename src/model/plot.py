@@ -258,7 +258,8 @@ def da_std_corrcoef_obs(ob, pvals, dC, awindl, bfa='a'):
     rms = np.sqrt(np.sum([((mod_obs[x]-mod_obs_bar)-(obs[x]-obs_bar))**2 for x in xrange(len(obs))])/len(obs))
     corr_coef = (np.sum([((mod_obs[x]-mod_obs_bar)*(obs[x]-obs_bar)) for x in xrange(len(obs))])/len(obs))\
                 /(std_mod_obs*std_obs)
-    return std_mod_obs, std_obs, rms, corr_coef
+    rmse = np.sqrt(np.sum((obs-mod_obs)**2) / len(obs))
+    return {'std_mod_obs': std_mod_obs, 'std_obs': std_obs, 'rms': rms, 'rmse': rmse, 'corr_coef': corr_coef}
 
 def plot_taylor_diagram():
     sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':1.4, 'lines.markersize':9})
