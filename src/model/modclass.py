@@ -590,52 +590,11 @@ class DalecModel():
         cost = 0.5*ob_cost + 0.5*mod_cost
         return cost
 
-    def cost_bnd(self, pvals):
-        """4DVAR cost function to be minimized. Takes an initial state (pvals),
-        an observation dictionary, observation error dictionary, a dataClass
-        and a start and finish time step.
-        """
-        tick = 0
-        for x in xrange(23):
-            if self.dC.bnds5[x][0] >= pvals[x] >= self.dC.bnds5[x][1]:
-                tick -= 1
-        if tick != 0:
-            return np.inf
-        ob_cost = self.obcost(pvals)
-        if self.modcoston is True:
-            mod_cost = self.modcost(pvals)
-        else:
-            mod_cost = 0
-        cost = 0.5*ob_cost + 0.5*mod_cost
-        return cost
-
     def gradcost(self, pvals):
         """Gradient of 4DVAR cost fn to be passed to optimization routine. 
         Takes an initial state (pvals), an obs dictionary, an obs error 
         dictionary, a dataClass and a start and finish time step.
         """
-        pvallist, matlist = self.linmod_list(pvals)
-        hx, hmatrix = self.hmat(pvallist, matlist)
-        obcost = np.dot(hmatrix.T, np.dot(np.linalg.inv(self.rmatrix),
-                                          (self.yoblist-hx).T))
-        if self.modcoston is True:
-            modcost = np.dot(np.linalg.inv(self.dC.B), (pvals-self.xb).T)
-        else:
-            modcost = 0
-        gradcost = - obcost + modcost
-        return gradcost
-
-    def gradcost_bnd(self, pvals):
-        """Gradient of 4DVAR cost fn to be passed to optimization routine.
-        Takes an initial state (pvals), an obs dictionary, an obs error
-        dictionary, a dataClass and a start and finish time step.
-        """
-        tick = 0
-        for x in xrange(23):
-            if self.dC.bnds5[x][0] >= pvals[x] >= self.dC.bnds5[x][1]:
-                tick -= 1
-        if tick != 0:
-            return np.ones(23)*-np.inf
         pvallist, matlist = self.linmod_list(pvals)
         hx, hmatrix = self.hmat(pvallist, matlist)
         obcost = np.dot(hmatrix.T, np.dot(np.linalg.inv(self.rmatrix),
@@ -868,6 +827,24 @@ class DalecModel():
                                 fprime=self.gradcost2, bounds=bnds,
                                 disp=dispp, fmin=mini, maxfun=maxits, ftol=f_tol)
         return findmin
+
+
+    def findmintnc_cvt(self, pvals, bnds='strict', dispp=5, maxits=1000,
+                   mini=0, f_tol=1e-4):
+        """Function which minimizes 4DVAR cost fn. Takes an initial state
+        (pvals).
+        """
+        self.xb = pvals
+        if bnds == 'strict':
+            bnds = self.zvalbnds(self.dC.bnds5)
+        else:
+            bnds = bnds
+        zvals = self.pvals2zvals(pvals)
+        findmin = spop.fmin_tnc(self.cost_cvt, zvals,
+                                fprime=self.gradcost_cvt, bounds=bnds,
+                                disp=dispp, fmin=mini, maxfun=maxits, ftol=f_tol)
+        xa = self.zvals2pvals(findmin[0])
+        return findmin, xa
 
     def findminglob(self, pvals, meth='TNC', bnds='strict', it=300,
                     stpsize=0.5, temp=1., displ=True, maxits=3000):

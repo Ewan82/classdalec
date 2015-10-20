@@ -38,6 +38,14 @@ def fourdvar_list(d, floc, matlist, pvals='mean'):
     for x in xrange(len(matlist)):
         fourdvar_run2(d, matlist[x][0], matlist[x][1], floc, pvals)
 
+
+def fourdvar_listcvt(d, floc, matlist, pvals='mean'):
+    """ Runs over a list of cov matrices.
+    """
+    for x in xrange(len(matlist)):
+        fourdvar_run_cvt(d, matlist[x][0], matlist[x][1], floc, pvals)
+
+
 def fourdvar_run2(d, bname, r_list, floc=None, pvals='mean', maxiters=3000, f_tol=-1):
     """Run 4dvar with DALEC2 using specified pickled B file and diagonal R with specified variance on diagonal.
     """
@@ -49,7 +57,6 @@ def fourdvar_run2(d, bname, r_list, floc=None, pvals='mean', maxiters=3000, f_to
         pvals = d.edinburghmean
     else:
         pvals = pvals
-
     rname = 'cor%r_tau%r_cutoff%r_var%r' %(r_list)
     xa = m.findmintnc(pvals, maxits=maxiters, f_tol=f_tol)
     f = open(floc+bname+'_'+rname+'_xa', 'wb')
@@ -85,7 +92,7 @@ def fourdvar_run2(d, bname, r_list, floc=None, pvals='mean', maxiters=3000, f_to
     plt.close()
     return xa
 
-def fourdvar_run(d, bname, rname='None', floc=None, pvals='mean', maxiters=3000, f_tol=-1):
+def fourdvar_run_cvt(d, bname, rname='None', floc=None, pvals='mean', maxiters=1000, f_tol=1e-6):
     """Run 4dvar with DALEC2 using specified pickled B file and diagonal R with specified variance on diagonal.
     """
     d.B = pickle.load(open(bname+'.p', 'rb'))
@@ -97,31 +104,41 @@ def fourdvar_run(d, bname, rname='None', floc=None, pvals='mean', maxiters=3000,
         pvals = d.edinburghmean
     else:
         pvals = pvals
-    xa = m.findmintnc(pvals, maxits=maxiters, f_tol=f_tol)
+    findmin, xa = m.findmintnc(pvals, maxits=maxiters, f_tol=f_tol)
+    f = open(floc+bname+'_'+rname+'_fmin', 'wb')
+    pickle.dump(findmin, f)
+    f.close()
     f = open(floc+bname+'_'+rname+'_xa', 'wb')
     pickle.dump(xa, f)
     f.close()
     d2 = ahd2.DalecData(startyr=d.startyr, endyr=2014, obstr='nee')
-    ax, fig = p.plot4dvarrun('nee', d.edinburghmedian, xa[0], d2, 0, len(d2.I), awindl=len(d.I))
+    analysis_err_dict = p.da_std_corrcoef_obs('nee', xa, d2, len(d.I), 'a')
+    f = open(floc+bname+'_'+rname+'analysis_errdict', 'wb')
+    pickle.dump(analysis_err_dict, f)
+    f.close()
+    forecast_err_dict = p.da_std_corrcoef_obs('nee', xa, d2, len(d.I), 'f')
+    f = open(floc+bname+'_'+rname+'forecast_errdict', 'wb')
+    pickle.dump(forecast_err_dict, f)
+    f.close()
+    ax, fig = p.plot4dvarrun('nee', d.edinburghmedian, xa, d2, 0, len(d2.I), awindl=len(d.I))
     fig.savefig(floc+bname+rname+'_4dvar.png', bbox_inches='tight')
     plt.close()
-    ax, fig = p.plotscatterobs('nee', xa[0], d2, len(d.I), 'f')
+    ax, fig = p.plotscatterobs('nee', xa, d2, len(d.I), 'f')
     fig.savefig(floc+bname+rname+'_forecast_scatter.png', bbox_inches='tight')
     plt.close()
-    ax, fig = p.plotscatterobs('nee', xa[0], d2, len(d.I), 'a')
+    ax, fig = p.plotscatterobs('nee', xa, d2, len(d.I), 'a')
     fig.savefig(floc+bname+rname+'_analysis_scatter.png', bbox_inches='tight')
     plt.close()
-    ax,fig=p.analysischange(d.edinburghmedian, xa[0])
+    ax,fig=p.analysischange(d.edinburghmedian, xa)
     fig.savefig(floc+bname+rname+'_inc.png', bbox_inches='tight')
     plt.close()
     if bname!='bdiag':
         ax, fig = p.plotbmat(pickle.load(open(bname+'_cor.p', 'rb')))
         fig.savefig(floc+bname+rname+'_corrmat.png', bbox_inches='tight')
         plt.close()
-    if rname!='None':
-        ax, fig = p.plotrmat(pickle.load(open(rname+'.p', 'rb')))
-        fig.savefig(floc+bname+rname+'_rmat.png', bbox_inches='tight')
-        plt.close()
+    ax, fig = p.plotrmat(rmat)
+    fig.savefig(floc+bname+rname+'_rmat.png', bbox_inches='tight')
+    plt.close()
     return xa
 
 
