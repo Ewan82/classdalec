@@ -104,7 +104,7 @@ def fourdvar_run_cvt(d, bname, rname='None', floc=None, pvals='mean', maxiters=1
         pvals = d.edinburghmean
     else:
         pvals = pvals
-    findmin, xa = m.findmintnc(pvals, maxits=maxiters, f_tol=f_tol)
+    findmin, xa = m.findmintnc_cvt(pvals, maxits=maxiters, f_tol=f_tol)
     f = open(floc+bname+'_'+rname+'_fmin', 'wb')
     pickle.dump(findmin, f)
     f.close()
