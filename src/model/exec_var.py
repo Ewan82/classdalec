@@ -97,12 +97,12 @@ def fourdvar_run_cvt(d, bname, rname='None', floc=None, pvals='mean', maxiters=1
     """
     d.B = pickle.load(open(bname+'.p', 'rb'))
     m = mc.DalecModel(d)
-    if rname!='None':
+    if rname != 'None':
         rmat = pickle.load(open(rname+'.p', 'rb'))
         m.rmatrix = rmat
-    if rname==None:
+    if rname == 'None':
         rmat=m.rmatrix
-    if pvals=='mean':
+    if pvals == 'mean':
         pvals = d.edinburghmean
     else:
         pvals = pvals
