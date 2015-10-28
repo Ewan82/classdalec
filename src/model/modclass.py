@@ -820,7 +820,7 @@ class DalecModel():
         """
         self.xb = pvals
         if bnds == 'strict':
-            bnds = self.dC.bnds2
+            bnds = self.dC.bnds
         else:
             bnds = bnds
         findmin = spop.fmin_tnc(self.cost, pvals,
@@ -836,7 +836,7 @@ class DalecModel():
         """
         self.xb = pvals
         if bnds == 'strict':
-            bnds = self.zvalbnds(self.dC.bnds5)
+            bnds = self.zvalbnds(self.dC.bnds)
         else:
             bnds = bnds
         zvals = self.pvals2zvals(pvals)

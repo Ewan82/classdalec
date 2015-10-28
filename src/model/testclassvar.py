@@ -5,6 +5,7 @@ import ahdata2 as dC
 import modclass as mc
 import matplotlib
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 def test_linmod(gamma=1e1):
     """ Test from TLM to check it converges.
@@ -54,8 +55,8 @@ def test_cost(alph=1e-8, vect=0):
     """
     d = dC.DalecData(365, 'nee')
     m = mc.DalecModel(d)
-    pvals = d.edinburghpvals
-    gradj = m.gradcost(pvals)
+    pvals = d.edinburghmean
+    gradj = m.gradcost2(pvals)
     if vect == True:
         h = pvals*(np.linalg.norm(pvals))**(-1)
     else:
@@ -66,85 +67,95 @@ def test_cost(alph=1e-8, vect=0):
     print np.dot(alph*h, gradj)
     return (jalph-j) / (np.dot(alph*h, gradj))
 
-def plotcost():
+def plotcost(vect=1):
     """Using test_cost plots convergance of cost fn gradient for decreasing
     value of alpha.
     """
-    power=np.arange(0,6,1)
+    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':1, 'lines.markersize':6})
+    fig, ax = plt.subplots(nrows=1, ncols=1,)#figsize=(10,10))
+    sns.set_style('ticks')
+    power=np.arange(1,10,1)
     xlist = [10**(-x) for x in power]
-    tstlist = [abs(test_cost(x, 1)-1) for x in xlist]
-    plt.loglog(xlist, tstlist, 'k')
-    font = {'size'   : 24}
-    matplotlib.rc('font', **font)
-    plt.xlabel('alpha')
-    plt.ylabel('abs(1 - grad test function)')
+    tstlist = [abs(test_cost(x, vect)-1) for x in xlist]
+    ax.loglog(xlist, tstlist, 'k')
+    plt.xlabel(r'$\alpha$')
+    plt.ylabel(r'$|1 - f(\alpha)|$')
     #plt.title('test of the gradient of the cost function')
     print tstlist
-    plt.show()
+    return ax, fig
 
-def plotcostone():
+def plotcostone(vect=1):
     """Using test_cost plots convergance of cost fn gradient for decreasing
     value of alpha.
     """
-    power=np.arange(0,5,1)
+    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':1, 'lines.markersize':6})
+    fig, ax = plt.subplots(nrows=1, ncols=1,)#figsize=(10,10))
+    sns.set_style('ticks')
+    power=np.arange(1,10,1)
     xlist = [10**(-x) for x in power]
-    tstlist = [test_cost(x, 1) for x in xlist]
-    plt.semilogx(xlist, tstlist, 'k')
-    font = {'size'   : 24}
-    matplotlib.rc('font', **font)
-    plt.xlabel('alpha')
-    plt.ylabel('grad test function')
+    tstlist = [test_cost(x, vect) for x in xlist]
+    ax.semilogx(xlist, tstlist, 'k')
+    plt.xlabel(r'$\alpha$')
+    plt.ylabel(r'$f(\alpha)$')
+    plt.ylim((0.9960, 1.0005))
     #plt.title('test of the gradient of the cost function')
     print tstlist
-    plt.show()
+    return ax, fig
 
 def test_cost_cvt(alph=1e-8, vect=0):
     """Test for cost and gradcost functions.
     """
     d = dC.DalecData(365, 'nee')
     m = mc.DalecModel(d)
-    pvals = d.edinburghpvals
+    pvals = d.edinburghmean
     zvals = m.pvals2zvals(pvals)
     gradj = m.gradcost_cvt(zvals)
-    if vect == True:
+    if vect == 0:
         h = zvals*(np.linalg.norm(zvals))**(-1)
-    else:
+    elif vect == 1:
         h = gradj*(np.linalg.norm(gradj))**(-1)
+    elif vect == 2:
+        h = np.ones(23)*(np.sqrt(23)**-1)
     j = m.cost_cvt(zvals)
     jalph = m.cost_cvt(zvals + alph*h)
     print jalph - j
     print np.dot(alph*h, gradj)
     print (jalph-j) / (np.dot(alph*h, gradj))
-    return (jalph-j) / (np.dot(alph*h, gradj))
+    return abs(jalph-j) / (np.dot(alph*h, gradj))
 
-def plotcost_cvt():
+def plotcost_cvt(vect=1):
     """Using test_cost plots convergance of cost fn gradient for decreasing
     value of alpha.
     """
-    power=np.arange(0,8,1)
+    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':1, 'lines.markersize':6})
+    fig, ax = plt.subplots(nrows=1, ncols=1,)#figsize=(10,10))
+    sns.set_style('ticks')
+    power=np.arange(1,10,1)
     xlist = [10**(-x) for x in power]
-    tstlist = [abs(test_cost_cvt(x, 1)-1) for x in xlist]
-    plt.loglog(xlist, tstlist, 'k')
-    font = {'size'   : 24}
-    matplotlib.rc('font', **font)
-    plt.xlabel('alpha')
-    plt.ylabel('abs(1 - grad test function)')
+    tstlist = [abs(test_cost_cvt(x, vect)-1) for x in xlist]
+    ax.loglog(xlist, tstlist, 'k')
+    #font = {'size'   : 24}
+    #matplotlib.rc('font', **font)
+    plt.xlabel(r'$\alpha$')
+    plt.ylabel(r'$|1 - f(\alpha)|$')
     #plt.title('test of the gradient of the cost function')
     print tstlist
-    plt.show()
+    #plt.show()
+    return ax, fig
 
-def plotcostone_cvt():
+def plotcostone_cvt(vect=1):
     """Using test_cost plots convergance of cost fn gradient for decreasing
     value of alpha.
     """
-    power=np.arange(0,8,1)
+    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':1, 'lines.markersize':6})
+    fig, ax = plt.subplots(nrows=1, ncols=1,)#figsize=(10,10))
+    sns.set_style('ticks')
+    power=np.arange(1,14,1)
     xlist = [10**(-x) for x in power]
-    tstlist = [test_cost_cvt(x, 1) for x in xlist]
-    plt.semilogx(xlist, tstlist, 'k')
-    font = {'size'   : 24}
-    matplotlib.rc('font', **font)
-    plt.xlabel('alpha')
-    plt.ylabel('grad test function')
+    tstlist = [test_cost_cvt(x, vect) for x in xlist]
+    ax.semilogx(xlist, tstlist, 'k')
+    plt.xlabel(r'$\alpha$')
+    plt.ylabel(r'$f(\alpha)$')
     #plt.title('test of the gradient of the cost function')
     print tstlist
-    plt.show()
+    return ax, fig

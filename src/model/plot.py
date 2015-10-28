@@ -141,6 +141,97 @@ fig, ax = plt.subplots( nrows=1, ncols=1 )  # create figure & 1 axis
 ax.plot([0,1,2], [10,20,3])
 fig.savefig('path/to/save/image/to.png')   # save the figure to file
 plt.close(fig)    # close the figure"""
+
+
+def oblist(ob, pvals, dC, start, fin):
+    """Returns a list of observations
+    """
+    modobdict = {'gpp': obs.gpp, 'nee': obs.nee, 'rt': obs.rec, 'cf': obs.cf,
+                 'clab': obs.clab, 'cr': obs.cr, 'cw': obs.cw, 'cl': obs.cl,
+                 'cs': obs.cs, 'lf': obs.lf, 'lw': obs.lw, 'lai':obs.lai,
+                 'soilresp': obs.soilresp, 'litresp': obs.litresp,
+                 'rtot': obs.rtot, 'rh': obs.rh}
+    pvallist = m.mod_list(pvals, dC, start, fin)
+    oblist = np.ones(fin - start)*-9999.
+    for x in xrange(start, fin):
+        oblist[x-start] = modobdict[ob](pvallist[x-start],dC,x)
+    return oblist
+
+
+def plotbroken(ob, xb, xa, dC, start, fin, yr1=1, yr2=1, awindl=None):
+    """Plots a model predicted observation value for two initial states (xb,xa)
+    and also the actual observations taken of the physical quantity. Takes a ob
+    string, two initial states (xb,xa), a dataClass and a start and finish
+    time step.
+    """
+    sns.set_style('ticks')
+    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':0.8, 'lines.markersize':4.0})
+    xlist = np.arange(start, fin)
+    # We know the datum and delta from reading the file manually
+    datum = dt.datetime(int(dC.year[0]), 1, 1)
+    delta = dt.timedelta(hours=24)
+
+    # Convert the time values to datetime objects
+    times = []
+    for t in xlist:
+        times.append(datum + int(t) * delta)
+
+    xbobs = oblist(ob, xb, dC, start, fin)
+    xaobs = oblist(ob, xa, dC, start, fin)
+    obdict = dC.obdict[ob]
+    oberrdict = dC.oberrdict[ob+'_err']
+    timessplit = np.hstack(np.array([times[0:365*yr1+1], times[-365*yr2-1:]]))
+    xbobssplit = np.hstack(np.array([xbobs[0:365*yr1+1], xbobs[-365*yr2-1:]]))
+    xaobssplit = np.hstack(np.array([xaobs[0:365*yr1+1], xaobs[-365*yr2-1:]]))
+    obdictsplit = np.hstack(np.array([obdict[0:365*yr1+1], obdict[-365*yr2-1:]]))
+    oberrdictsplit = np.hstack(np.array([oberrdict[0:365*yr1+1], oberrdict[-365*yr2-1:]]))
+
+    fig,(ax,ax2) = plt.subplots(1, 2, sharey=True)
+
+    # plot the same data on both axes
+    ax.plot(timessplit, xbobssplit, '--')
+    ax2.plot(timessplit, xbobssplit, '--')
+    ax.plot(timessplit, xaobssplit)
+    ax2.plot(timessplit, xaobssplit)
+    ax.errorbar(timessplit, obdictsplit, yerr=oberrdictsplit,
+                fmt='o', label=ob+'_o')
+    ax2.errorbar(timessplit, obdictsplit, yerr=oberrdictsplit,
+                 fmt='o', label=ob+'_o')
+    if awindl!=None:
+        ax.axvline(x=times[awindl],color='k',ls='dashed')
+        ax2.axvline(x=times[awindl],color='k',ls='dashed')
+
+    # zoom-in / limit the view to different portions of the data
+    ax.set_xlim(times[0],times[365*yr1+1]) # most of the data
+    ax2.set_xlim(times[-365*yr2-1],times[-1]) # outliers only
+
+    # hide the spines between ax and ax2
+    ax.spines['right'].set_visible(False)
+    ax2.spines['left'].set_visible(False)
+    ax.yaxis.tick_left()
+    ax.tick_params(labeltop='off') # don't put tick labels at the top
+    ax2.yaxis.tick_right()
+
+    # Make the spacing between the two axes a bit smaller
+    plt.subplots_adjust(wspace=0.15)
+    d = .015 # how big to make the diagonal lines in axes coordinates
+    # arguments to pass plot, just so we don't keep repeating them
+    kwargs = dict(transform=ax.transAxes, color='k', clip_on=False)
+    ax.plot((1-d,1+d),(-d,+d), **kwargs) # top-left diagonal
+    ax.plot((1-d,1+d),(1-d,1+d), **kwargs) # bottom-left diagonal
+
+    kwargs.update(transform=ax2.transAxes) # switch to the bottom axes
+    ax2.plot((-d,d),(-d,+d), **kwargs) # top-right diagonal
+    ax2.plot((-d,d),(1-d,1+d), **kwargs) # bottom-right diagonal
+    plt.setp(ax.xaxis.get_majorticklabels(),rotation=90)
+    plt.setp(ax2.xaxis.get_majorticklabels(),rotation=90)
+    ax.xaxis.set_major_locator(mdates.YearLocator())
+    ax.xaxis.set_minor_locator(mdates.YearLocator())
+    ax2.xaxis.set_major_locator(mdates.YearLocator())
+    ax2.xaxis.set_minor_locator(mdates.YearLocator())
+    #fig.autofmt_xdate()
+    plt.ylim((-20,15))
+    return (ax, ax2), fig
     
     
 def plotspasomp(ob, dC, start, fin, xa=None, awindl=None, erbars=1, spa=1):
@@ -270,6 +361,11 @@ def plot_taylor_diagram():
                    (5.1295310098679368, 0.8684810131720303, 'B'),
                    (6.49605967589775, 0.78273625256663071, 'C'),
                    (4.9966680670866221, 0.88331243820904048, 'D')]
+    experimentscvt = [(2.3484143513774565, 0.66197831433922605, 'xb'),
+                   (7.8009546554083959, 0.76449508770831232, 'A'),
+                   (5.0906177054726136, 0.8747492423149803, 'B'),
+                   (6.2653252067993268, 0.80802198474804199, 'C'),
+                   (4.9113481383243682, 0.8885483101065843, 'D')]
     std_obs = 4.7067407809222761
     dia = td.TaylorDiagram(std_obs, fig=fig)
     for i, (std, corrcoef, name) in enumerate(experiments):
@@ -280,7 +376,9 @@ def plot_taylor_diagram():
                [p.get_label() for p in dia.samplePoints],
                numpoints=1, loc='upper right')
     plt.ylabel('Standard Deviation')
+    plt.ylim((0, 8.))
     plt.show()
+    return fig
 
 def plotcycled4dvar(ob, conditions, xb, xa, dC, erbars=1, truth=None):
     """Plots a cycled 4DVar run given an observation string (obs), a set of
@@ -497,7 +595,39 @@ def plot_analysis_inc(xb, xa):
             'cw', 'cl', 'cs']
     ax.set_xticklabels(keys, rotation=90)
     return ax, fig
-    
+
+
+def plot_a_inc_all(xb, xadiag, xaedc, xarcor, xaedcrcor):
+    """Plot error between truth and xa/xb shows as a bar chart.
+    """
+    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':1, 'lines.markersize':6})
+    fig, ax = plt.subplots(nrows=1, ncols=1,)#figsize=(10,10))
+    sns.set_style('ticks')
+    n = 23
+    width = 0.21
+    ind = np.arange(n)
+    #fig = plt.figure()
+    #ax = fig.add_subplot(111)
+    rects1 = ax.bar(ind, (xadiag-xb)/xb, width, color=sns.xkcd_rgb["faded green"],
+                    label='A')
+    rects2 = ax.bar(ind+width, (xaedc-xb)/xb, width, color=sns.xkcd_rgb["pale red"],
+                    label='B')
+    rects3 = ax.bar(ind+width*2, (xarcor-xb)/xb, width, color=sns.xkcd_rgb["dusty purple"],
+                    label='C')
+    rects4 = ax.bar(ind+width*3, (xaedcrcor-xb)/xb, width, color=sns.xkcd_rgb["amber"],
+                    label='D')
+    ax.set_ylabel('Analysis increment')
+    #ax.set_title('% error in parameter values for xa and xb')
+    ax.set_xticks(ind+width*2)
+    keys = ['theta_min', 'f_auto', 'f_fol', 'f_roo', 'clspan', 'theta_woo',
+            'theta_roo', 'theta_lit', 'theta_som', 'Theta', 'ceff', 'd_onset',
+            'f_lab', 'cronset', 'd_fall', 'crfall', 'clma', 'clab', 'cf', 'cr',
+            'cw', 'cl', 'cs']
+    ax.set_xticklabels(keys, rotation=90)
+    ax.legend()
+    return ax, fig
+
+
 def plotbmat(bmat):
     """Plots a B matrix.
     """
@@ -609,5 +739,15 @@ def plotlinmoderr(dC, start, fin, pvals, dx=0.05, cpool=None, norm_err=0, lins='
         plt.plot(dxl[:,pooldict[cpool]],label='dxl '+cpool)
     plt.legend(loc=2)
 
-
+def cov2cor(X):
+    """ Takes a covariance matrix and returns the correlation matrix
+    :param X: Covariance matrix
+    :return: Correlation matrix
+    """
+    D = np.zeros_like(X)
+    d = np.sqrt(np.diag(X))
+    np.fill_diagonal(D, d)
+    DInv = np.linalg.inv(D)
+    R = np.dot(np.dot(DInv, X), DInv)
+    return R
 
