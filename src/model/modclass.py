@@ -794,7 +794,7 @@ class DalecModel():
         else:
             bnds = bnds
         findmin = spop.fmin_tnc(self.cost, pvals,
-                                fprime=self.gradcost, bounds=bnds,
+                                fprime=self.gradcost2, bounds=bnds,
                                 disp=dispp, fmin=mini, maxfun=maxits, ftol=f_tol)
         return findmin
 

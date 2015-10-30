@@ -483,13 +483,13 @@ def plottwin(ob, truth, xb, xa, dC, start, fin, erbars=1, obdict=None,
         oberrdict = oberrdict
         
     if ob in obdict.keys() and len(obdict[ob])==(start-fin) and erbars==True:
-        plt.errorbar(xlist, obdict[ob], yerr=oberrdict[ob+'_err'], \
+        plt.errorbar(xlist, obdict[ob], yerr=oberrdict[ob+'_err'],
                          fmt='o', label=ob+'_o')
     elif ob in obdict.keys() and len(obdict[ob])!=(start-fin) and erbars==True:
         apnd = np.ones((fin-start)-len(obdict[ob]))*float('NaN')
         obdict = np.concatenate((obdict[ob],apnd))                
         oberrdict = np.concatenate((oberrdict[ob+'_err'],apnd)) 
-        plt.errorbar(xlist, obdict, yerr=oberrdict, \
+        plt.errorbar(xlist, obdict, yerr=oberrdict,
                          fmt='o', label=ob+'_o')
                          
     elif ob in obdict.keys() and len(obdict[ob])==(start-fin) and erbars==False:       
@@ -646,9 +646,10 @@ def plotbmat(bmat):
     cmap = sns.diverging_palette(220, 10, as_cmap=True)
     mask = np.eye(23, dtype=bool)
     sns.heatmap(bmat, mask=mask, xticklabels=keys, yticklabels=keys, ax=ax,
-                cmap=cmap, vmax=.43, square=True, linewidths=.5, cbar=True)
+                cmap=cmap, vmax=.43, square=True, linewidths=.5, cbar=True,
+                cbar_kws={'label': 'Correlation'})
 
-    #plt.colorbar()
+    #ax.set_label('Correlation')
     return ax, fig
 
 # Draw the heatmap with the mask and correct aspect ratio
@@ -664,7 +665,7 @@ def plotrmat(rmat):
     fig, ax = plt.subplots(figsize=(11,9))
     ax.set_aspect('equal')
     sns.heatmap(rmat, ax=ax, vmax=.5, xticklabels=False, yticklabels=False,
-                square=True, linewidths=.5, cbar=True)
+                square=True, linewidths=.5, cbar=True, cbar_kws={'label': 'Correlation'})
     #sns.heatmap(rmat, ax=ax, xticklabels=np.arange(len(rmat)), yticklabels=np.arange(len(rmat)))
     return ax, fig
     
