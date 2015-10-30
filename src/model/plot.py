@@ -666,7 +666,6 @@ def plotrmat(rmat):
     ax.set_aspect('equal')
     sns.heatmap(rmat, ax=ax, vmax=1., xticklabels=False, yticklabels=False,
                 linewidths=.5, cbar=True, cbar_kws={'label': 'Correlation'})
-    ax.colorbar()
     #sns.heatmap(rmat, ax=ax, xticklabels=np.arange(len(rmat)), yticklabels=np.arange(len(rmat)))
     return ax, fig
     
