@@ -616,7 +616,7 @@ def plot_a_inc_all(xb, xadiag, xaedc, xarcor, xaedcrcor):
                     label='C')
     rects4 = ax.bar(ind+width*3, (xaedcrcor-xb)/xb, width, color=sns.xkcd_rgb["amber"],
                     label='D')
-    ax.set_ylabel('Analysis increment')
+    ax.set_ylabel('Normalised analysis increment')
     #ax.set_title('% error in parameter values for xa and xb')
     ax.set_xticks(ind+width*2)
     keys = ['theta_min', 'f_auto', 'f_fol', 'f_roo', 'clspan', 'theta_woo',
@@ -644,8 +644,8 @@ def plotbmat(bmat):
     ax.set_yticks(np.arange(23))
     ax.set_yticklabels(keys)
     cmap = sns.diverging_palette(220, 10, as_cmap=True)
-    mask = np.eye(23, dtype=bool)
-    sns.heatmap(bmat, mask=mask, xticklabels=keys, yticklabels=keys, ax=ax,
+    #mask = np.eye(23, dtype=bool)
+    sns.heatmap(bmat, mask=None, xticklabels=keys, yticklabels=keys, ax=ax,
                 cmap=cmap, vmax=.43, square=True, linewidths=.5, cbar=True,
                 cbar_kws={'label': 'Correlation'})
 
@@ -660,12 +660,13 @@ def plotbmat(bmat):
 def plotrmat(rmat):
     """Plots a R matrix.
     """
-    sns.set(style="white")
+    sns.set(style="whitegrid")
     sns.set_context('poster', font_scale=1.2)
     fig, ax = plt.subplots(figsize=(11,9))
     ax.set_aspect('equal')
-    sns.heatmap(rmat, ax=ax, vmax=.5, xticklabels=False, yticklabels=False,
-                square=True, linewidths=.5, cbar=True, cbar_kws={'label': 'Correlation'})
+    sns.heatmap(rmat, ax=ax, vmax=1., xticklabels=False, yticklabels=False,
+                linewidths=.5, cbar=True, cbar_kws={'label': 'Correlation'})
+    ax.colorbar()
     #sns.heatmap(rmat, ax=ax, xticklabels=np.arange(len(rmat)), yticklabels=np.arange(len(rmat)))
     return ax, fig
     
