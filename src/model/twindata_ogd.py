@@ -8,7 +8,6 @@ import os
 import re
 import collections as col
 import oregondata as ogd
-import ahdata2 as ahd
 import model as mod
 import observations as obs
 
@@ -23,9 +22,10 @@ class dalecData( ):
         self.lenrun = lenrun
         self.startrun = startrun
         self.timestep = np.arange(startrun, startrun+lenrun)
-        self.d = ahd.DalecData(self.lenrun)
+        self.d = ogd.dalecData(self.lenrun)
         self.erron = erron    
         self.k = k
+        self.year = [2007]
         
         #Extract the data
         self.homepath = os.path.expanduser("~")
@@ -84,7 +84,7 @@ class dalecData( ):
                        ('cs', self.cs)])
         self.pvals = np.array(self.paramdict.values())
 
-        self.x_truth = np.array([  1.75177537e-03,   4.39216724e-01,   1.45275772e-01,
+        self.x_truth = np.array([1.75177537e-03,   4.39216724e-01,   1.45275772e-01,
                                 4.85994115e-01,   1.34919734e+00,   1.43577821e-04,
                                 5.33065591e-03,   1.42217674e-03,   2.81251902e-04,
                                 2.23716106e-02,   4.91216576e+01,   1.15606853e+02,
@@ -93,7 +93,7 @@ class dalecData( ):
                                 1.09382538e+02,   3.27096649e+02,   8.91617573e+03,
                                 2.40016633e+02,   2.36359753e+03]) #from generated EDC ensem
 
-        self.x_guess = np.array([  2.87887370e-03,   5.27924849e-01,   2.01393985e-01,
+        self.x_guess = np.array([2.87887370e-03,   5.27924849e-01,   2.01393985e-01,
                                 4.03067711e-01,   1.23305582e+00,   2.11375971e-04,
                                 4.22635967e-03,   2.35355321e-03,   8.90362689e-05,
                                 5.24112200e-02,   7.92041640e+01,   1.17878177e+02,
@@ -304,7 +304,7 @@ class dalecData( ):
                     Obslist}
         Obs_err_dict = {ob+'_err':np.ones(self.lenrun*self.k)*float('NaN') \
                         for ob in Obslist}
-        if type(freq_list[0])==int:
+        if type(freq_list[0]) == int:
             Obs_freq_dict = {Obslist[x]+'_freq': \
                          random.sample(range(self.lenrun*self.k), freq_list[x]) \
                          for x in xrange(len(Obslist))}
@@ -317,13 +317,13 @@ class dalecData( ):
         for x in xrange(self.lenrun*self.k):
             for ob in Obslist:
                 if x in Obs_freq_dict[ob+'_freq']:
-                    if self.erron==1:
+                    if self.erron == 1:
                         Obs_dict[ob][x] = self.modobdict[ob](self.pvallist[x], 
-                                                         self.d, x) + \
+                                                             self.d, x) + \
                                       random.gauss(0, self.errdict[ob])
                     else:
                         Obs_dict[ob][x] = self.modobdict[ob](self.pvallist[x], 
-                                                         self.d, x)
+                                                             self.d, x)
                     Obs_err_dict[ob+'_err'][x] = self.errdict[ob]  
                 else:
                     continue

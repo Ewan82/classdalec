@@ -26,17 +26,20 @@ def test_linmod(gamma=1e1):
 def plt_linmod_er():
     """Plots linmod test for decreasing gamma.
     """
-    power=np.arange(1,7,1)
+    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':1, 'lines.markersize':6})
+    fig, ax = plt.subplots(nrows=1, ncols=1,)#figsize=(10,10))
+    sns.set_style('ticks')
+    power=np.arange(2,9,1)
     xlist = [10**(-x) for x in power]
     tstlist = [test_linmod(x) for x in xlist]
-    plt.loglog(xlist, tstlist, 'k')
-    font = {'size'   : 24}
-    matplotlib.rc('font', **font)
-    plt.xlabel('Gamma')
+    ax.loglog(xlist, tstlist, 'k', marker='x', mew=1, ms=8)
+    #font = {'size'   : 24}
+    #matplotlib.rc('font', **font)
+    plt.xlabel(r'$\gamma$')
     plt.ylabel('TLM test function')
     #plt.title('test of the tangent linear model')
     print tstlist
-    plt.show()
+    return ax, fig
 
 def test_costfn(alph=1e-9):
     """Test for cost and gradcost functions.
@@ -133,11 +136,11 @@ def plotcost_cvt(vect=1):
     power=np.arange(1,10,1)
     xlist = [10**(-x) for x in power]
     tstlist = [abs(test_cost_cvt(x, vect)-1) for x in xlist]
-    ax.loglog(xlist, tstlist, 'k')
+    ax.loglog(xlist, tstlist, 'k', marker='x', mew=1, ms=8)
     #font = {'size'   : 24}
     #matplotlib.rc('font', **font)
     plt.xlabel(r'$\alpha$')
-    plt.ylabel(r'$|1 - f(\alpha)|$')
+    plt.ylabel(r'$|f(\alpha) - 1|$')
     #plt.title('test of the gradient of the cost function')
     print tstlist
     #plt.show()
@@ -147,13 +150,14 @@ def plotcostone_cvt(vect=1):
     """Using test_cost plots convergance of cost fn gradient for decreasing
     value of alpha.
     """
-    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':1, 'lines.markersize':6})
+    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth': 1, 'lines.markersize': 6})
     fig, ax = plt.subplots(nrows=1, ncols=1,)#figsize=(10,10))
     sns.set_style('ticks')
     power=np.arange(1,14,1)
     xlist = [10**(-x) for x in power]
     tstlist = [test_cost_cvt(x, vect) for x in xlist]
-    ax.semilogx(xlist, tstlist, 'k')
+    ax.semilogx(xlist, tstlist, 'k', marker='x', mew=1, ms=8)
+    #ax.semilogx(xlist, tstlist, 'k', 'x')
     plt.xlabel(r'$\alpha$')
     plt.ylabel(r'$f(\alpha)$')
     #plt.title('test of the gradient of the cost function')

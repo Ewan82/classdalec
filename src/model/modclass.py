@@ -615,6 +615,18 @@ class DalecModel():
         return np.linalg.inv(np.linalg.inv(self.dC.B) + np.dot(hmatrix.T,
                         np.dot(np.linalg.inv(self.rmatrix), hmatrix)))
 
+    def k_gain_mat(self, pvals):
+        """ Calculates Kalman gain matrix for info content experiments.
+        :param pvals: state vector for assimilation
+        :return: Kalman gain hat matrix
+        """
+        pvallist, matlist = self.linmod_list(pvals)
+        hx, hmatrix = self.hmat(pvallist, matlist)
+        k_gain = np.dot(np.linalg.inv(np.dot(np.dot(hmatrix.T, np.linalg.inv(self.rmatrix)), hmatrix) +
+                                      np.linalg.inv(self.dC.B)),
+                        np.dot(hmatrix.T, np.linalg.inv(self.rmatrix)))
+        return k_gain
+
     def influence_mat(self, pvals):
         """Calculates the Influence matrix
         """
@@ -625,6 +637,38 @@ class DalecModel():
         s_mat = np.dot(np.linalg.inv(self.rmatrix), np.dot(hmatrix, np.dot(
                               a_mat, hmatrix.T)))
         return s_mat
+
+    @staticmethod
+    def inf_mat_colsum(infmat):
+        """Sums columns of provided infmat
+        """
+        infmat_sum = np.sum(abs(infmat), axis=1)
+        return infmat_sum
+
+    def inf_mat_partition(self, infmat):
+        """Partitions summed columns of inf_matrix to correspond to their
+        relevant observations.
+        """
+        infmat_sum = self.inf_mat_colsum(infmat)
+        inf_con = {}
+        step_size = len(self.dC.obdict.keys())
+        for i in enumerate(self.dC.obdict.keys()):
+            inf_con[i[1]] = infmat_sum[i[0]::step_size]
+        return inf_con
+
+    def k_gain_partition(self, kgain):
+        """Partitions rows of kgain_matrix to correspond to their
+        relevant observations.
+        """
+        keys = ['theta_min', 'f_auto', 'f_fol', 'f_roo', 'clspan', 'theta_woo',
+                'theta_roo', 'theta_lit', 'theta_som', 'Theta', 'ceff', 'd_onset',
+                'f_lab', 'cronset', 'd_fall', 'crfall', 'clma', 'clab', 'cf', 'cr',
+                'cw', 'cl', 'cs']
+        kgain_part = {}
+        for i in enumerate(keys):
+            kgain_part[i[1]] = kgain[:, i[0]]
+        return kgain_part
+
 
     def analytic_xa(self, pvals):
         """See how good linear approx is.

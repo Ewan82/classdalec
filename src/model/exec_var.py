@@ -488,6 +488,7 @@ def evolve_ensemble(d, pmat):
         modevmat[:, x] = m.mod_list(pmat[x])[-1]
     return modevmat
 
+
 def r_mat_corr(yerroblist, ytimestep, corr=0.3, tau=1., cut_off=4., r_var=0.5):
     """ Creates a correlated R matrix.
     """
@@ -500,6 +501,7 @@ def r_mat_corr(yerroblist, ytimestep, corr=0.3, tau=1., cut_off=4., r_var=0.5):
                               + (1-corr)*smp.KroneckerDelta(ytimestep[i],ytimestep[j])
     r = np.dot(np.dot((np.sqrt(r_diag)),r_corr),np.sqrt(r_diag))
     return r_corr, r
+
 
 def r_mat_soar(yerroblist, ytimestep, tau=.4, cut_off=4., r_var=0.5):
     """ Creates a correlated R matrix.

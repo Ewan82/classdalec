@@ -47,7 +47,7 @@ def plotobs(ob, pvals, dC, start, fin, lab=0, xax=None, dashed=0,
     """Plots a specified observation using obs eqn in obs module. Takes an
     observation string, a dataClass (dC) and a start and finish point.
     """
-    sns.set_context(rc={'lines.linewidth':0.4, 'lines.markersize':3.8})
+    sns.set_context(rc={'lines.linewidth':1., 'lines.markersize':3.8})
     if ax == None:
         fig, ax = plt.subplots( nrows=1, ncols=1, figsize=(20,10))
     else:
@@ -82,7 +82,7 @@ def plotobs(ob, pvals, dC, start, fin, lab=0, xax=None, dashed=0,
     return ax
 
 
-def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1, awindl=None, 
+def plot4dvarrun(ob, dC, start, fin, xb=None, xa=None, erbars=1, awindl=None,
                  obdict_a=None):
     """Plots a model predicted observation value for two initial states (xb,xa)
     and also the actual observations taken of the physical quantity. Takes a ob
@@ -93,7 +93,7 @@ def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1, awindl=None,
     #hourLocator   = mdates.HourLocator()
     #dateFmt = mdates.DateFormatter('%Y')
     sns.set_style('ticks')
-    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':0.4, 'lines.markersize':3.8})
+    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':1., 'lines.markersize':3.8})
     fig, ax = plt.subplots(nrows=1, ncols=1,) #figsize=(20,10))
     xlist = np.arange(start, fin)
     # We know the datum and delta from reading the file manually
@@ -105,25 +105,31 @@ def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1, awindl=None,
     for t in xlist:
         times.append(datum + int(t) * delta)
 
-    ax2 = plotobs(ob, xb, dC, start, fin, ob+'_b', times, 1, ax=ax)
-    ax3 = plotobs(ob, xa, dC, start, fin, ob+'_a', times, ax=ax2)
+    if xb != None:
+        ax2 = plotobs(ob, xb, dC, start, fin, ob+'_b', times, 1, ax=ax, colour='b')
+        ax = ax2
+    if xa != None:
+        ax3 = plotobs(ob, xa, dC, start, fin, ob+'_a', times, ax=ax2, colour='g')
+        ax = ax3
+
     obdict = dC.obdict
     oberrdict = dC.oberrdict
     if ob in obdict.keys():
         if erbars==True:
-            ax3.errorbar(times, obdict[ob], yerr=oberrdict[ob+'_err'], \
-                         fmt='o', label=ob+'_o')
+            ax.errorbar(times, obdict[ob], yerr=oberrdict[ob+'_err'], \
+                         fmt='o', label=ob+'_o', color='r')
         else:
-            ax3.plot(times, obdict[ob], 'o', label=ob+'_o')
+            ax.plot(times, obdict[ob], 'o', label=ob+'_o')
     if obdict_a!=None:
-        ax3.plt.plot(times[0:len(obdict_a[ob])], obdict_a[ob], 'o')
+        ax.plt.plot(times[0:len(obdict_a[ob])], obdict_a[ob], 'o')
     #ax3.legend()
     plt.xlabel('Year')
-    plt.ylabel(ob.upper()+' (g C m-2)')
+    #plt.ylabel(ob.upper()+' (g C m-2)')
+    plt.ylabel('Carbon balance (g C m-2)')
     #plt.title(ob+' for Alice Holt flux site')
     plt.ylim((-20,15))
     if awindl!=None:
-        ax3.axvline(x=times[awindl],color='k',ls='dashed')
+        ax.axvline(x=times[awindl],color='k',ls='dashed')
         #ax3.text(times[20], 8.5, 'Assimilation\n window')
         #ax3.text(times[awindl+20], 9, 'Forecast')
 
@@ -134,7 +140,7 @@ def plot4dvarrun(ob, xb, xa, dC, start, fin, erbars=1, awindl=None,
     #ax.xaxis.set_major_locator(dayLocator)
     #ax.xaxis.set_major_formatter(dateFmt)
     #ax.xaxis.set_minor_locator(hourLocator)
-    return ax3, fig
+    return ax, fig
     """plt.show()
     import matplotlib.pyplot as plt
 fig, ax = plt.subplots( nrows=1, ncols=1 )  # create figure & 1 axis
@@ -361,14 +367,24 @@ def plot_taylor_diagram():
                    (5.1295310098679368, 0.8684810131720303, 'B'),
                    (6.49605967589775, 0.78273625256663071, 'C'),
                    (4.9966680670866221, 0.88331243820904048, 'D')]
-    experimentscvt = [(2.3484143513774565, 0.66197831433922605, 'xb'),
+    experimentscvtbnts = [(2.3484143513774565, 0.66197831433922605, 'xb'),
                    (7.8009546554083959, 0.76449508770831232, 'A'),
                    (5.0906177054726136, 0.8747492423149803, 'B'),
                    (6.2653252067993268, 0.80802198474804199, 'C'),
                    (4.9113481383243682, 0.8885483101065843, 'D')]
+    experimentscvt_a = [(2.3484143513774565, 0.66197831433922605, 'xb'),
+                   (4.4159704308093835, 0.95629106432805044, 'A'),
+                   (4.3859284219418138, 0.95272082537711511, 'B'),
+                   (4.4140501717065073, 0.95618744488110419, 'C'),
+                   (4.3631036754140604, 0.95241837790091477, 'D')]
+    experimentscvt_f = [(2.1537096484447167, 0.6995781930970435, 'xb'),
+                   (6.7512116289339366, 0.78717600788851694, 'A'),
+                   (5.1293744611296708, 0.86851763851294195, 'B'),
+                   (6.4950282058784268, 0.78272535831425616, 'C'),
+                   (4.9960513831477238, 0.88338492275051672, 'D')]
     std_obs = 4.7067407809222761
     dia = td.TaylorDiagram(std_obs, fig=fig)
-    for i, (std, corrcoef, name) in enumerate(experiments):
+    for i, (std, corrcoef, name) in enumerate(experimentscvt_a):
         dia.add_sample(std, corrcoef, marker='o', label=name)
     contours = dia.add_contours(levels=8)
     plt.clabel(contours, inline=1, fontsize=10)
@@ -376,6 +392,7 @@ def plot_taylor_diagram():
                [p.get_label() for p in dia.samplePoints],
                numpoints=1, loc='upper right')
     plt.ylabel('Standard Deviation')
+    plt.xlabel('Standard Deviation')
     plt.ylim((0, 8.))
     plt.show()
     return fig
@@ -646,7 +663,7 @@ def plotbmat(bmat):
     cmap = sns.diverging_palette(220, 10, as_cmap=True)
     #mask = np.eye(23, dtype=bool)
     sns.heatmap(bmat, mask=None, xticklabels=keys, yticklabels=keys, ax=ax,
-                cmap=cmap, vmax=.43, square=True, linewidths=.5, cbar=True,
+                cmap=cmap, vmax=.5, square=True, linewidths=.5, cbar=True,
                 cbar_kws={'label': 'Correlation'})
 
     #ax.set_label('Correlation')
@@ -668,7 +685,40 @@ def plotrmat(rmat):
                 linewidths=.5, cbar=True, cbar_kws={'label': 'Correlation'})
     #sns.heatmap(rmat, ax=ax, xticklabels=np.arange(len(rmat)), yticklabels=np.arange(len(rmat)))
     return ax, fig
-    
+
+def plot_infmat(infmat, cmin=-0.3, cmax=0.3):
+    """Plots a R matrix.
+    """
+    sns.set(style="ticks")
+    sns.set_context('poster', font_scale=1.2)
+    fig, ax = plt.subplots(figsize=(11,9))
+    #ax.set_aspect('equal')
+    plt.imshow(infmat, interpolation='nearest', cmap='bwr', vmin=cmin, vmax=cmax, aspect='auto')
+    plt.colorbar()
+    #sns.heatmap(rmat, ax=ax, xticklabels=np.arange(len(rmat)), yticklabels=np.arange(len(rmat)))
+    return ax, fig
+
+
+def plot_kgain(infmat, cmin=-0.3, cmax=0.3):
+    """Plots a R matrix.
+    """
+    sns.set(style="ticks")
+    sns.set_context('poster', font_scale=1.2)
+    fig, ax = plt.subplots(figsize=(11,9))
+    #ax.set_aspect('equal')
+    keys = ['theta_min', 'f_auto', 'f_fol', 'f_roo', 'clspan', 'theta_woo',
+            'theta_roo', 'theta_lit', 'theta_som', 'Theta', 'ceff', 'd_onset',
+            'f_lab', 'cronset', 'd_fall', 'crfall', 'clma', 'clab', 'cf', 'cr',
+            'cw', 'cl', 'cs']
+    plt.imshow(infmat, interpolation='nearest', cmap='bwr', vmin=cmin,
+               vmax=cmax, aspect='auto')
+    plt.colorbar()
+    ax.set_yticks(np.arange(23))
+    ax.set_yticklabels(keys)
+    #sns.heatmap(rmat, ax=ax, xticklabels=np.arange(len(rmat)), yticklabels=np.arange(len(rmat)))
+    return ax, fig
+
+
 def analysischange(xb, xa):
     """Plot error between truth and xa/xb shows as a bar chart.
     """
@@ -690,12 +740,19 @@ def analysischange(xb, xa):
     return ax, fig
     
     
-def plotlinmoderr(dC, start, fin, pvals, dx=0.05, cpool=None, norm_err=0, lins='-'):
+def plotlinmoderr(dC, start, fin, pvals, ax, fig, dx=0.05, cpool=None, norm_err=0, lins='-'):
     """Plots the error for the linearized estimate to the evolution of a carbon
     pool and the nonlinear models evolution of a carbon pool for comparision 
     and to see if the linear model satisfies the tangent linear hypoethesis.
     Takes a carbon pool as a string, a dataClass and a start and finish point.
     """
+    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':1, 'lines.markersize':6})
+    #if ax == 0 & fig == 0:
+    #    fig, ax = plt.subplots(nrows=1, ncols=1,)
+    #else:
+    #    ax = ax
+    #    fig = fig
+    sns.set_style('ticks')
     pooldict={'clab':-6, 'cf':-5, 'cr':-4, 'cw':-3, 'cl':-2, 'cs':-1}
     cx, matlist = m.linmod_list(pvals, dC, start, fin)
     d2pvals = pvals*(1. + dx)
@@ -717,9 +774,9 @@ def plotlinmoderr(dC, start, fin, pvals, dx=0.05, cpool=None, norm_err=0, lins='
         times.append(datum + int(t) * delta)
 
     # Font change
-    font = {'size': 24}
+    #font = {'size': 24}
 
-    matplotlib.rc('font', **font)
+    #matplotlib.rc('font', **font)
 
     if norm_err is True:
         err = np.ones(fin - start)*-9999.
@@ -729,16 +786,18 @@ def plotlinmoderr(dC, start, fin, pvals, dx=0.05, cpool=None, norm_err=0, lins='
             dxn_norm[x] = np.linalg.norm(dxn[x,17:22])
             dxl_norm[x] = np.linalg.norm(dxl[x,17:22])
             err[x] = abs((np.linalg.norm(dxn[x,17:22])/np.linalg.norm(dxl[x,17:22]))-1)*100.
-        plt.plot(times, err, 'k', linestyle=lins, label='$\delta x = %.2f $' % dx)
+        ax.plot(times, err, 'k', linestyle=lins, label='$\delta x = %.2f $' % dx)
         #plt.plot(times, dxn_norm, label='dxn')
         #plt.plot(times, dxl_norm, label='dxl')
         plt.xlabel('Date')
         plt.ylabel('Percentage error in TLM')
         #plt.title('Plot of the TLM error')
     else:
-        plt.plot(dxn[:,pooldict[cpool]],label='dxn '+cpool)
-        plt.plot(dxl[:,pooldict[cpool]],label='dxl '+cpool)
+        ax.plot(dxn[:,pooldict[cpool]],label='dxn '+cpool)
+        ax.plot(dxl[:,pooldict[cpool]],label='dxl '+cpool)
     plt.legend(loc=2)
+    fig.autofmt_xdate()
+    return fig, ax
 
 def cov2cor(X):
     """ Takes a covariance matrix and returns the correlation matrix
