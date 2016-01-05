@@ -351,6 +351,12 @@ class DalecModel():
         cs = p[22]
         return cs
 
+    def d_onset(self, p):
+        """Fn calculates day of leaf on,
+        """
+        d_onset = p[11]
+        return d_onset
+
     def linob(self, ob, pvals):
         """Function returning jacobian of observation with respect to the 
         parameter list. Takes an obs string, a parameters list, a dataClass 

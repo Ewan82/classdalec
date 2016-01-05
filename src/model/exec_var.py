@@ -489,11 +489,11 @@ def evolve_ensemble(d, pmat):
     return modevmat
 
 
-def r_mat_corr(yerroblist, ytimestep, corr=0.3, tau=1., cut_off=4., r_var=0.5):
+def r_mat_corr(yerroblist, ytimestep, corr=0.3, tau=1., cut_off=4., r_std=0.5):
     """ Creates a correlated R matrix.
     """
     r_corr = np.eye(len(ytimestep)) #MAKE SURE ALL VALUES ARE FLOATS FIRST!!!!
-    r_diag = (r_var)*np.eye(len(yerroblist))
+    r_diag = (r_std**2)*np.eye(len(yerroblist))
     for i in xrange(len(ytimestep)):
         for j in xrange(len(ytimestep)):
             if abs(ytimestep[i]-ytimestep[j]) < cut_off:

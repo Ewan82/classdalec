@@ -80,8 +80,8 @@ class TaylorDiagram(object):
 
         # Add reference point and stddev contour
         print "Reference std:", self.refstd
-        l, = self.ax.plot([0], self.refstd, 'k*',
-                          ls='', ms=10, label=label)
+        l, = self.ax.plot([0], self.refstd, 'ko',
+                          ls='', ms=15, label=label)
         t = NP.linspace(0, NP.pi/2)
         r = NP.zeros_like(t) + self.refstd
         self.ax.plot(t,r, 'k--', label='_')

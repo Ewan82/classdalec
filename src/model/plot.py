@@ -69,8 +69,8 @@ def plotobs(ob, pvals, dC, start, fin, lab=0, xax=None, dashed=0,
     oblist = np.ones(fin - start)*-9999.
     for x in xrange(start, fin):
         oblist[x-start] = modobdict[ob](pvallist[x-start],dC,x)
-    if colour==None:
-        if dashed==True:    
+    if colour == None:
+        if dashed == True:
             ax.plot(xax, oblist, '--', label=lab)
         else:
             ax.plot(xax, oblist, label=lab)
@@ -79,6 +79,46 @@ def plotobs(ob, pvals, dC, start, fin, lab=0, xax=None, dashed=0,
             ax.plot(xax, oblist, '--', label=lab, color=colour)
         else:
             ax.plot(xax, oblist, label=lab, color=colour)
+    return ax
+
+
+def plotobs_csum(ob, pvals, dC, start, fin, lab=0, xax=None, dashed=0,
+            colour=None, ax=None):
+    """Plots a specified observation using obs eqn in obs module. Takes an
+    observation string, a dataClass (dC) and a start and finish point.
+    """
+    sns.set_context(rc={'lines.linewidth':1., 'lines.markersize':3.8})
+    if ax == None:
+        fig, ax = plt.subplots( nrows=1, ncols=1, figsize=(20,10))
+    else:
+        ax = ax
+    modobdict = {'gpp': obs.gpp, 'nee': obs.nee, 'rt': obs.rec, 'cf': obs.cf,
+                 'clab': obs.clab, 'cr': obs.cr, 'cw': obs.cw, 'cl': obs.cl,
+                 'cs': obs.cs, 'lf': obs.lf, 'lw': obs.lw, 'lai':obs.lai,
+                 'soilresp': obs.soilresp, 'litresp': obs.litresp,
+                 'rtot': obs.rtot, 'rh': obs.rh}
+    if lab == 0:
+        lab = ob
+    else:
+        lab = lab
+    pvallist = m.mod_list(pvals, dC, start, fin)
+    if xax==None:
+        xax = np.arange(start, fin)
+    else:
+        xax = xax
+    oblist = np.ones(fin - start)*-9999.
+    for x in xrange(start, fin):
+        oblist[x-start] = modobdict[ob](pvallist[x-start],dC,x)
+    if colour==None:
+        if dashed==True:
+            ax.plot(xax, np.cumsum(oblist), '--', label=lab)
+        else:
+            ax.plot(xax, np.cumsum(oblist), label=lab)
+    else:
+        if dashed==True:
+            ax.plot(xax, np.cumsum(oblist), '--', label=lab, color=colour)
+        else:
+            ax.plot(xax, np.cumsum(oblist), label=lab, color=colour)
     return ax
 
 
@@ -106,10 +146,10 @@ def plot4dvarrun(ob, dC, start, fin, xb=None, xa=None, erbars=1, awindl=None,
         times.append(datum + int(t) * delta)
 
     if xb != None:
-        ax2 = plotobs(ob, xb, dC, start, fin, ob+'_b', times, 1, ax=ax, colour='b')
+        ax2 = plotobs(ob, xb, dC, start, fin, ob+'_b', times, 1, ax=ax,)# colour='b')
         ax = ax2
     if xa != None:
-        ax3 = plotobs(ob, xa, dC, start, fin, ob+'_a', times, ax=ax2, colour='g')
+        ax3 = plotobs(ob, xa, dC, start, fin, ob+'_a', times, ax=ax2,)# colour='g')
         ax = ax3
 
     obdict = dC.obdict
@@ -117,7 +157,7 @@ def plot4dvarrun(ob, dC, start, fin, xb=None, xa=None, erbars=1, awindl=None,
     if ob in obdict.keys():
         if erbars==True:
             ax.errorbar(times, obdict[ob], yerr=oberrdict[ob+'_err'], \
-                         fmt='o', label=ob+'_o', color='r')
+                         fmt='o', label=ob+'_o',)# color='r')
         else:
             ax.plot(times, obdict[ob], 'o', label=ob+'_o')
     if obdict_a!=None:
@@ -125,7 +165,7 @@ def plot4dvarrun(ob, dC, start, fin, xb=None, xa=None, erbars=1, awindl=None,
     #ax3.legend()
     plt.xlabel('Year')
     #plt.ylabel(ob.upper()+' (g C m-2)')
-    plt.ylabel('Carbon balance (g C m-2)')
+    plt.ylabel(r'NEE (gCm$^{-2}$day$^{-1}$)')
     #plt.title(ob+' for Alice Holt flux site')
     plt.ylim((-20,15))
     if awindl!=None:
@@ -147,6 +187,75 @@ fig, ax = plt.subplots( nrows=1, ncols=1 )  # create figure & 1 axis
 ax.plot([0,1,2], [10,20,3])
 fig.savefig('path/to/save/image/to.png')   # save the figure to file
 plt.close(fig)    # close the figure"""
+
+
+def plot_cumsum(ob, dC, start, fin, pvals, axx=None, labell=None):
+    """Plots a model predicted observation value for two initial states (xb,xa)
+    and also the actual observations taken of the physical quantity. Takes a ob
+    string, two initial states (xb,xa), a dataClass and a start and finish
+    time step.
+    """
+    sns.set_style('ticks')
+    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':1., 'lines.markersize':3.8})
+    if axx == None:
+        fig, ax = plt.subplots(nrows=1, ncols=1,) #figsize=(20,10))
+    else:
+        ax, fig = axx
+    xlist = np.arange(start, fin)
+    # We know the datum and delta from reading the file manually
+    datum = dt.datetime(int(dC.year[0]), 1, 1)
+    delta = dt.timedelta(hours=24)
+
+    # Convert the time values to datetime objects
+    times = []
+    for t in xlist:
+        times.append(datum + int(t) * delta)
+
+    ax = plotobs_csum(ob, pvals, dC, start, fin, labell, times, ax=ax,)
+
+    #ax3.legend()
+    plt.xlabel('Year')
+    #plt.ylabel(ob.upper()+' (g C m-2)')
+    plt.ylabel(r'Cumulative NEE (gCm$^{-2}$)')
+    plt.legend()
+    #plt.title(ob+' for Alice Holt flux site')
+    return ax, fig
+
+
+def plot_csum(ob, dC, start, fin, pvals, axx=None, labell=None, dashed=0, colorr=None):
+    """Plots a model predicted observation value for two initial states (xb,xa)
+    and also the actual observations taken of the physical quantity. Takes a ob
+    string, two initial states (xb,xa), a dataClass and a start and finish
+    time step.
+    """
+    sns.set_style('ticks')
+    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':1., 'lines.markersize':3.8})
+    if axx == None:
+        fig, ax = plt.subplots(nrows=1, ncols=1,) #figsize=(20,10))
+    else:
+        ax, fig = axx
+    xlist = np.arange(start, fin)
+    # We know the datum and delta from reading the file manually
+    datum = dt.datetime(int(dC.year[0]), 1, 1)
+    delta = dt.timedelta(hours=24)
+
+    # Convert the time values to datetime objects
+    times = []
+    for t in xlist:
+        times.append(datum + int(t) * delta)
+
+    if colorr == None:
+        ax = plotobs(ob, pvals, dC, start, fin, labell, times, dashed, ax=ax)
+    else:
+        ax = plotobs(ob, pvals, dC, start, fin, labell, times, dashed, ax=ax, colour=colorr)
+
+    #ax3.legend()
+    plt.xlabel('Year')
+    #plt.ylabel(ob.upper()+' (g C m-2)')
+    plt.ylabel(r'NEE (gCm$^{-2}$)')
+    plt.legend()
+    #plt.title(ob+' for Alice Holt flux site')
+    return ax, fig
 
 
 def oblist(ob, pvals, dC, start, fin):
@@ -192,7 +301,7 @@ def plotbroken(ob, xb, xa, dC, start, fin, yr1=1, yr2=1, awindl=None):
     obdictsplit = np.hstack(np.array([obdict[0:365*yr1+1], obdict[-365*yr2-1:]]))
     oberrdictsplit = np.hstack(np.array([oberrdict[0:365*yr1+1], oberrdict[-365*yr2-1:]]))
 
-    fig,(ax,ax2) = plt.subplots(1, 2, sharey=True)
+    fig,(ax,ax2) = plt.subplots(1, 2, sharey=True, figsize=(15, 5))
 
     # plot the same data on both axes
     ax.plot(timessplit, xbobssplit, '--')
@@ -279,8 +388,7 @@ def plotspasomp(ob, dC, start, fin, xa=None, awindl=None, erbars=1, spa=1):
         plt.text(times[awindl+20], 9, 'Forecast')
     
     plt.show()
-    
-    
+
     
 def plotscatterobs(ob, pvals, dC, awindl, bfa='a'):
     """Plots scatter plot of obs vs model predicted values. Takes an initial
@@ -312,8 +420,8 @@ def plotscatterobs(ob, pvals, dC, awindl, bfa='a'):
         yhx = np.mean(y[splitval:]-hx[splitval:])                                            
     else:
         raise Exception('Please check function input for bfa variable')
-    plt.xlabel(ob.upper()+' observations (g C m-2)')
-    plt.ylabel(ob.upper()+' model (g C m-2)')
+    plt.xlabel(ob.upper()+r' observations (gCm$^{-2}$day$^{-1}$)')
+    plt.ylabel(ob.upper()+' model (gCm$^{-2}$day$^{-1}$)')
     #plt.title(bfa+'_error=%f, mean(y-hx)=%f' %(error,yhx))
     print bfa+'_error=%f, mean(y-hx)=%f' %(error,yhx)
     plt.xlim((-20,10))
@@ -358,10 +466,11 @@ def da_std_corrcoef_obs(ob, pvals, dC, awindl, bfa='a'):
     rmse = np.sqrt(np.sum((obs-mod_obs)**2) / len(obs))
     return {'std_mod_obs': std_mod_obs, 'std_obs': std_obs, 'rms': rms, 'rmse': rmse, 'corr_coef': corr_coef}
 
+
 def plot_taylor_diagram():
-    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':1.4, 'lines.markersize':9})
+    #sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':1.4, 'lines.markersize':9})
     fig = plt.figure()
-    sns.set_style('ticks')
+    #sns.set_style('ticks')
     experiments = [(2.3484143513774565, 0.66197831433922605, 'xb'),
                    (6.7512375011313743, 0.78718349020688749, 'A'),
                    (5.1295310098679368, 0.8684810131720303, 'B'),
@@ -372,21 +481,22 @@ def plot_taylor_diagram():
                    (5.0906177054726136, 0.8747492423149803, 'B'),
                    (6.2653252067993268, 0.80802198474804199, 'C'),
                    (4.9113481383243682, 0.8885483101065843, 'D')]
-    experimentscvt_a = [(2.3484143513774565, 0.66197831433922605, 'xb'),
-                   (4.4159704308093835, 0.95629106432805044, 'A'),
-                   (4.3859284219418138, 0.95272082537711511, 'B'),
-                   (4.4140501717065073, 0.95618744488110419, 'C'),
-                   (4.3631036754140604, 0.95241837790091477, 'D')]
-    experimentscvt_f = [(2.1537096484447167, 0.6995781930970435, 'xb'),
-                   (6.7512116289339366, 0.78717600788851694, 'A'),
-                   (5.1293744611296708, 0.86851763851294195, 'B'),
-                   (6.4950282058784268, 0.78272535831425616, 'C'),
-                   (4.9960513831477238, 0.88338492275051672, 'D')]
+    experimentscvt_a = [(2.3484143513774565, 0.66197831433922605, r'$\mathbf{x}^b$', 'd', 10),
+                   (4.4159704308093835, 0.95629106432805044, 'A', 'v', 10),
+                   (4.3859284219418138, 0.95272082537711511, 'B', 's', 10),
+                   (4.4140501717065073, 0.95618744488110419, 'C', '*', 16),
+                   (4.3631036754140604, 0.95241837790091477, 'D', '^', 10)]
+    experimentscvt_f = [(2.1537096484447167, 0.6995781930970435, r'$\mathbf{x}^b$', 'd', 10),
+                   (6.7512116289339366, 0.78717600788851694, 'A', 'v', 10),
+                   (5.1293744611296708, 0.86851763851294195, 'B', 's', 10),
+                   (6.4950282058784268, 0.78272535831425616, 'C', '*', 16),
+                   (4.9960513831477238, 0.88338492275051672, 'D', '^', 10)]
     std_obs = 4.7067407809222761
-    dia = td.TaylorDiagram(std_obs, fig=fig)
-    for i, (std, corrcoef, name) in enumerate(experimentscvt_a):
-        dia.add_sample(std, corrcoef, marker='o', label=name)
-    contours = dia.add_contours(levels=8)
+    dia = td.TaylorDiagram(std_obs, fig=fig, rect=111, label='observations')
+    for i, (std, corrcoef, name, mark, mss) in enumerate(experimentscvt_a):
+        dia.add_sample(std, corrcoef, label=name, marker=mark, ms=mss, mew=1, markerfacecolor="None",
+         markeredgecolor='black', markeredgewidth=5, color='white')
+    contours = dia.add_contours(levels=8, colors='0.5')
     plt.clabel(contours, inline=1, fontsize=10)
     fig.legend(dia.samplePoints,
                [p.get_label() for p in dia.samplePoints],
@@ -617,11 +727,11 @@ def plot_analysis_inc(xb, xa):
 def plot_a_inc_all(xb, xadiag, xaedc, xarcor, xaedcrcor):
     """Plot error between truth and xa/xb shows as a bar chart.
     """
-    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':1, 'lines.markersize':6})
-    fig, ax = plt.subplots(nrows=1, ncols=1,)#figsize=(10,10))
+    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':1, 'lines.markersize':10})
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(15,5))
     sns.set_style('ticks')
     n = 23
-    width = 0.21
+    width = 0.22
     ind = np.arange(n)
     #fig = plt.figure()
     #ax = fig.add_subplot(111)
@@ -636,10 +746,10 @@ def plot_a_inc_all(xb, xadiag, xaedc, xarcor, xaedcrcor):
     ax.set_ylabel('Normalised analysis increment')
     #ax.set_title('% error in parameter values for xa and xb')
     ax.set_xticks(ind+width*2)
-    keys = ['theta_min', 'f_auto', 'f_fol', 'f_roo', 'clspan', 'theta_woo',
-            'theta_roo', 'theta_lit', 'theta_som', 'Theta', 'ceff', 'd_onset',
-            'f_lab', 'cronset', 'd_fall', 'crfall', 'clma', 'clab', 'cf', 'cr',
-            'cw', 'cl', 'cs']
+    keys = [r'$\theta_{min}$', r'$f_{auto}$', r'$f_{fol}$', r'$f_{roo}$', r'$c_{lspan}$', r'$\theta_{woo}$',
+            r'$\theta_{roo}$', r'$\theta_{lit}$', r'$\theta_{som}$', r'$\Theta$', r'$c_{eff}$', r'$d_{onset}$',
+            r'$f_{lab}$', r'$c_{ronset}$', r'$d_{fall}$', r'$c_{rfall}$', r'$c_{lma}$', r'$C_{lab}$', r'$C_f$', r'$C_r$',
+            r'$C_w$', r'$C_l$', r'$C_s$']
     ax.set_xticklabels(keys, rotation=90)
     ax.legend()
     return ax, fig
@@ -652,17 +762,17 @@ def plotbmat(bmat):
     sns.set_context('poster', font_scale=1.2)
     fig, ax = plt.subplots(figsize=(11,9))
     ax.set_aspect('equal')
-    keys = ['theta_min', 'f_auto', 'f_fol', 'f_roo', 'clspan', 'theta_woo',
-            'theta_roo', 'theta_lit', 'theta_som', 'Theta', 'ceff', 'd_onset',
-            'f_lab', 'cronset', 'd_fall', 'crfall', 'clma', 'clab', 'cf', 'cr',
-            'cw', 'cl', 'cs']
+    keys = [r'$\theta_{min}$', r'$f_{auto}$', r'$f_{fol}$', r'$f_{roo}$', r'$c_{lspan}$', r'$\theta_{woo}$',
+            r'$\theta_{roo}$', r'$\theta_{lit}$', r'$\theta_{som}$', r'$\Theta$', r'$c_{eff}$', r'$d_{onset}$',
+            r'$f_{lab}$', r'$c_{ronset}$', r'$d_{fall}$', r'$c_{rfall}$', r'$c_{lma}$', r'$C_{lab}$', r'$C_f$',
+            r'$C_r$', r'$C_w$', r'$C_l$', r'$C_s$']
     ax.set_xticks(np.arange(23))
     ax.set_xticklabels(keys, rotation=90)
     ax.set_yticks(np.arange(23))
     ax.set_yticklabels(keys)
     cmap = sns.diverging_palette(220, 10, as_cmap=True)
-    #mask = np.eye(23, dtype=bool)
-    sns.heatmap(bmat, mask=None, xticklabels=keys, yticklabels=keys, ax=ax,
+    mask = np.eye(23, dtype=bool)
+    sns.heatmap(bmat, mask=mask, xticklabels=keys, yticklabels=keys, ax=ax,
                 cmap=cmap, vmax=.5, square=True, linewidths=.5, cbar=True,
                 cbar_kws={'label': 'Correlation'})
 
@@ -740,7 +850,7 @@ def analysischange(xb, xa):
     return ax, fig
     
     
-def plotlinmoderr(dC, start, fin, pvals, ax, fig, dx=0.05, cpool=None, norm_err=0, lins='-'):
+def plotlinmoderr(dC, start, fin, pvals, ax, fig, dx=0.05, gamma=1, cpool=None, norm_err=0, lins='-'):
     """Plots the error for the linearized estimate to the evolution of a carbon
     pool and the nonlinear models evolution of a carbon pool for comparision 
     and to see if the linear model satisfies the tangent linear hypoethesis.
@@ -755,13 +865,15 @@ def plotlinmoderr(dC, start, fin, pvals, ax, fig, dx=0.05, cpool=None, norm_err=
     sns.set_style('ticks')
     pooldict={'clab':-6, 'cf':-5, 'cr':-4, 'cw':-3, 'cl':-2, 'cs':-1}
     cx, matlist = m.linmod_list(pvals, dC, start, fin)
-    d2pvals = pvals*(1. + dx)
+    d2pvals = pvals*(1. + gamma*dx)
     cxdx = m.mod_list(d2pvals, dC, start, fin)
-    d3pvals = pvals*dx
+    d3pvals = pvals*gamma*dx
 
     dxl = m.linmod_evolvefac(d3pvals, matlist, dC, start, fin)
     
     dxn = cxdx-cx
+
+    D = cxdx - cx - dxl
 
     xlist = np.arange(start, fin)
     # We know the datum and delta from reading the file manually
@@ -782,11 +894,14 @@ def plotlinmoderr(dC, start, fin, pvals, ax, fig, dx=0.05, cpool=None, norm_err=
         err = np.ones(fin - start)*-9999.
         dxn_norm = np.ones(fin - start)*-9999.
         dxl_norm = np.ones(fin - start)*-9999.
+        D_norm = np.ones(fin - start)*-9999.
         for x in xrange(fin - start):
             dxn_norm[x] = np.linalg.norm(dxn[x,17:22])
             dxl_norm[x] = np.linalg.norm(dxl[x,17:22])
-            err[x] = abs((np.linalg.norm(dxn[x,17:22])/np.linalg.norm(dxl[x,17:22]))-1)*100.
-        ax.plot(times, err, 'k', linestyle=lins, label='$\delta x = %.2f $' % dx)
+            D_norm[x] = np.linalg.norm(D[x,17:22])
+            #err[x] = abs((np.linalg.norm(dxn[x,17:22])/np.linalg.norm(dxl[x,17:22]))-1)*100.
+            err[x] = (np.linalg.norm(D[x,17:22])/np.linalg.norm(dxl[x,17:22]))*100.
+        ax.plot(times, err, 'k', linestyle=lins, label='$\gamma = %.2f $' % gamma)
         #plt.plot(times, dxn_norm, label='dxn')
         #plt.plot(times, dxl_norm, label='dxl')
         plt.xlabel('Date')

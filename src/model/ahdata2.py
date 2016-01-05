@@ -17,7 +17,9 @@ class DalecData():
         # Extract the data
         self.k = None
         self.obs_str = obstr
-        self.data = ml.csv2rec("../../aliceholtdata/ahdat99_13.csv",
+        #self.data = ml.csv2rec("../../aliceholtdata/ahdat99_13.csv",
+        #                       missing='nan')
+        self.data = ml.csv2rec("../../aliceholtdata/ahdatbudburst99_13.csv",
                                missing='nan')
         if lenrun is not None:
             self.lenrun = lenrun
@@ -259,6 +261,7 @@ class DalecData():
         self.sigo_soilresp = 0.6
         self.sigo_rtot = 0.6
         self.sigo_rh = 0.6
+        self.sigo_d_onset = 2.0
         
         self.errdict = {'clab': self.sigo_clab, 'cf': self.sigo_cf,
                         'cw': self.sigo_cw, 'cl': self.sigo_cl, 'cr': self.sigo_cr,
@@ -267,7 +270,8 @@ class DalecData():
                         'litresp': self.sigo_litresp,
                         'soilresp': self.sigo_soilresp,
                         'rtot': self.sigo_rtot,
-                        'rh': self.sigo_rh}
+                        'rh': self.sigo_rh,
+                        'd_onset': self.sigo_d_onset}
         
         if self.obs_str is not None and self.mnth_lst is None:
             self.obdict, self.oberrdict = self.assimilation_obs(self.obs_str)
@@ -298,7 +302,7 @@ class DalecData():
     def assimilation_obs(self, obs_str):
         possibleobs = ['gpp', 'lf', 'lw', 'rt', 'nee', 'cf', 'cl',
                        'cr', 'cw', 'cs', 'lai', 'clab', 'litresp', 'soilresp',
-                       'rtot', 'rh', 'rabg']
+                       'rtot', 'rh', 'rabg', 'd_onset']
         obslist = re.findall(r'[^,;\s]+', obs_str)
         obs_dict = {}
         obs_err_dict = {}
@@ -316,7 +320,7 @@ class DalecData():
     def time_assimilation_obs(self, obs_str, mnth_lst):
         possibleobs = ['gpp', 'lf', 'lw', 'rt', 'nee', 'cf', 'cl',
                        'cr', 'cw', 'cs', 'lai', 'clab', 'litresp', 'soilresp',
-                       'rtot', 'rh', 'rabg']
+                       'rtot', 'rh', 'rabg', 'd_onset']
         obslist = re.findall(r'[^,;\s]+', obs_str)
         obs_dict = {}
         obs_err_dict = {}
