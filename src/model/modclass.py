@@ -27,7 +27,7 @@ class DalecModel():
                           'cw': self.cw, 'cl': self.cl, 'cs': self.cs, 
                           'lf': self.lf, 'lw': self.lw, 'lai': self.lai,
                           'litresp': self.litresp, 'soilresp': self.soilresp,
-                          'rtot': self.rtot, 'rh': self.rh}
+                          'rtot': self.rtot, 'rh': self.rh, 'd_onset': self.d_onset}
         self.startrun = strtrun
         self.endrun = self.lenrun  
         self.yoblist, self.yerroblist, self.ytimestep = self.obscost()
@@ -940,7 +940,7 @@ class DalecModel():
         self.startrun = 0
         self.endrun = lenwind
         for x in xrange(numbwind):
-            self.yoblist, self.yerroblist = self.obscost()
+            self.yoblist, self.yerroblist, ytimstep = self.obscost()
             self.rmatrix = self.rmat(self.yerroblist)
             xa.append(self.findmintnc(xb[x]))
             xb.append(self.mod_list(xa[x][0])[self.endrun-self.startrun])
@@ -952,6 +952,25 @@ class DalecModel():
         conditions = {'pvals': pvals, 'lenwind': lenwind, 'numbwind': numbwind,
                       'lenrun': lenrun}
         return conditions, xb, xa
+
+    def yearly_cycle4dvar(self, pvals):
+        year_lst = np.unique(self.dC.year)
+        xb = [pvals]
+        xa= []
+        for year in enumerate(year_lst):
+            year_idx = np.where(self.dC.year == year[1])[0]
+            self.startrun = year_idx[0]
+            self.endrun = year_idx[-1]
+            self.yoblist, self.yerroblist, ytimestep = self.obscost()
+            self.rmatrix = self.rmat(self.yerroblist)
+            xa.append(self.findmintnc_cvt(pvals, f_tol=1e-1))
+            self.endrun += 1
+            xb.append(self.mod_list(xa[year[0]][1])[-1])
+
+        self.startrun = 0
+        self.endrun = self.lenrun
+        return xb, xa
+
 
 
 # ------------------------------------------------------------------------------
