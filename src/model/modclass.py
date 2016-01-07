@@ -247,7 +247,13 @@ class DalecModel():
         for t in xrange(0, timestep):
             mat = np.dot(matlist[t+1], mat)
         return mat
-        
+
+    def evolve_mat(self, mat, matlist):
+        evolve_mat = mat
+        for m in matlist:
+            evolve_mat = np.dot(np.dot(m, evolve_mat), m.T)
+        return evolve_mat
+
 
 # ------------------------------------------------------------------------------
 # Observation functions
@@ -954,6 +960,12 @@ class DalecModel():
         return conditions, xb, xa
 
     def yearly_cycle4dvar(self, pvals):
+        """
+        Performs cycle DA with windows of year length
+        :param pvals: Initial background vector for first assim. window
+        :return: list of all xb vectors, list of all xa vectors and minimisation
+        output.
+        """
         year_lst = np.unique(self.dC.year)
         xb = [pvals]
         xa= []
@@ -963,14 +975,24 @@ class DalecModel():
             self.endrun = year_idx[-1]
             self.yoblist, self.yerroblist, ytimestep = self.obscost()
             self.rmatrix = self.rmat(self.yerroblist)
-            xa.append(self.findmintnc_cvt(pvals, f_tol=1e-1))
+            xa.append(self.findmintnc_cvt(pvals, f_tol=1e1))
             self.endrun += 1
-            xb.append(self.mod_list(xa[year[0]][1])[-1])
+            pvallst, matlist = self.linmod_list(xa[year[0]][1])
+            xb.append(pvallst[-1])
+            acovmat = self.acovmat(xa[year[0]][1])
+            ev_acovmat = self.evolve_mat(acovmat, matlist)
+            self.diag_b = np.diag(np.diag(ev_acovmat))
+            self.b_tilda = np.dot(np.dot(np.linalg.inv(np.sqrt(self.diag_b)),ev_acovmat),
+                                  np.linalg.inv(np.sqrt(self.diag_b)))
+            print xa[year[0]][1]
+            #Change B too, use corr B to start with then evolve A with M
+            #for newB. Figure how to creat corrR with multiple data streams.
 
         self.startrun = 0
         self.endrun = self.lenrun
+        self.diag_b = np.diag(np.diag(self.dC.B))
+        self.b_tilda = np.dot(np.dot(np.linalg.inv(np.sqrt(self.diag_b)),self.dC.B),np.linalg.inv(np.sqrt(self.diag_b)))
         return xb, xa
-
 
 
 # ------------------------------------------------------------------------------
