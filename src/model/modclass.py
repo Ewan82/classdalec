@@ -975,7 +975,7 @@ class DalecModel():
             self.endrun = year_idx[-1]
             self.yoblist, self.yerroblist, ytimestep = self.obscost()
             self.rmatrix = self.rmat(self.yerroblist)
-            xa.append(self.findmintnc_cvt(pvals, f_tol=1e1))
+            xa.append(self.findmintnc_cvt(pvals, f_tol=1e-1))
             acovmat = self.acovmat(xa[year[0]][1])
             self.endrun += 1
             pvallst, matlist = self.linmod_list(xa[year[0]][1])
