@@ -976,10 +976,10 @@ class DalecModel():
             self.yoblist, self.yerroblist, ytimestep = self.obscost()
             self.rmatrix = self.rmat(self.yerroblist)
             xa.append(self.findmintnc_cvt(pvals, f_tol=1e1))
+            acovmat = self.acovmat(xa[year[0]][1])
             self.endrun += 1
             pvallst, matlist = self.linmod_list(xa[year[0]][1])
             xb.append(pvallst[-1])
-            acovmat = self.acovmat(xa[year[0]][1])
             ev_acovmat = self.evolve_mat(acovmat, matlist)
             self.diag_b = np.diag(np.diag(ev_acovmat))
             self.b_tilda = np.dot(np.dot(np.linalg.inv(np.sqrt(self.diag_b)),ev_acovmat),
