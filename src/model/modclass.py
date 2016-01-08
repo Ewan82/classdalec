@@ -968,7 +968,7 @@ class DalecModel():
         """
         year_lst = np.unique(self.dC.year)
         xb = [pvals]
-        xa= []
+        xa = []
         for year in enumerate(year_lst):
             year_idx = np.where(self.dC.year == year[1])[0]
             self.startrun = year_idx[0]
@@ -986,7 +986,7 @@ class DalecModel():
                                   np.linalg.inv(np.sqrt(self.diag_b)))
             print xa[year[0]][1]
             #Change B too, use corr B to start with then evolve A with M
-            #for newB. Figure how to creat corrR with multiple data streams.
+            #for newB. Figure how to create corrR with multiple data streams.
 
         self.startrun = 0
         self.endrun = self.lenrun
