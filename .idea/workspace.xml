@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="837283c5-404a-4f65-ab79-716c1adfdf9d" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/ahdata2.py" afterPath="$PROJECT_DIR$/src/model/ahdata2.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/modclass.py" afterPath="$PROJECT_DIR$/src/model/modclass.py" />
     </list>
     <ignored path="classdalec.iws" />
@@ -31,8 +32,8 @@
       <file leaf-file-name="modclass.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/model/modclass.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.83047616">
-              <caret line="991" column="0" selection-start-line="991" selection-start-column="0" selection-end-line="991" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.6685714">
+              <caret line="986" column="47" selection-start-line="986" selection-start-column="47" selection-end-line="986" selection-end-column="47" />
               <folding>
                 <element signature="e#96#114#0" expanded="true" />
               </folding>
@@ -56,7 +57,7 @@
         <entry file="file://$PROJECT_DIR$/src/model/ahdata2.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="73" column="89" selection-start-line="73" selection-start-column="89" selection-end-line="73" selection-end-column="89" />
+              <caret line="263" column="29" selection-start-line="263" selection-start-column="29" selection-end-line="263" selection-end-column="29" />
               <folding />
             </state>
           </provider>
@@ -146,8 +147,8 @@
         <option value="$PROJECT_DIR$/aliceholtdata/ahdatbudburst99_13.csv" />
         <option value="$PROJECT_DIR$/src/model/egubudburst.py" />
         <option value="$PROJECT_DIR$/src/model/exec_var.py" />
-        <option value="$PROJECT_DIR$/src/model/ahdata2.py" />
         <option value="$PROJECT_DIR$/src/model/modclass.py" />
+        <option value="$PROJECT_DIR$/src/model/ahdata2.py" />
       </list>
     </option>
   </component>
@@ -1011,15 +1012,15 @@
     <entry file="file://$PROJECT_DIR$/src/model/ahdata2.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="73" column="89" selection-start-line="73" selection-start-column="89" selection-end-line="73" selection-end-column="89" />
+          <caret line="263" column="29" selection-start-line="263" selection-start-column="29" selection-end-line="263" selection-end-column="29" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/model/modclass.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.83047616">
-          <caret line="991" column="0" selection-start-line="991" selection-start-column="0" selection-end-line="991" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.6685714">
+          <caret line="986" column="47" selection-start-line="986" selection-start-column="47" selection-end-line="986" selection-end-column="47" />
           <folding>
             <element signature="e#96#114#0" expanded="true" />
           </folding>

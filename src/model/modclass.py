@@ -982,7 +982,9 @@ class DalecModel():
             xb.append(pvallst[-1])
             ev_acovmat = self.evolve_mat(acovmat, matlist)
             ev_acovmat[11,11] = self.dC.B[11,11]
+            ev_acovmat[13,13] = self.dC.B[13,13]
             ev_acovmat[14,14] = self.dC.B[14,14]
+            ev_acovmat[15,15] = self.dC.B[15,15]
             self.diag_b = np.diag(np.diag(ev_acovmat))
             self.b_tilda = np.dot(np.dot(np.linalg.inv(np.sqrt(self.diag_b)),ev_acovmat),
                                   np.linalg.inv(np.sqrt(self.diag_b)))
