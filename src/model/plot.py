@@ -10,9 +10,13 @@ import datetime as dt
 import taylordiagram as td
 import matplotlib.dates as mdates
 import matplotlib.mlab as mlab
+import matplotlib.gridspec as gridspec
 import matplotlib
 import seaborn as sns
 
+# ------------------------------------------------------------------------------
+# Plot observation time series
+# ------------------------------------------------------------------------------
 
 def plotgpp(cf, dC, start, fin):
     """Plots gpp using acm equations given a cf value, a dataClass and a start
@@ -389,6 +393,11 @@ def plotspasomp(ob, dC, start, fin, xa=None, awindl=None, erbars=1, spa=1):
     
     plt.show()
 
+
+# ------------------------------------------------------------------------------
+# PLot scatter observations
+# ------------------------------------------------------------------------------
+
     
 def plotscatterobs(ob, pvals, dC, awindl, bfa='a'):
     """Plots scatter plot of obs vs model predicted values. Takes an initial
@@ -427,6 +436,11 @@ def plotscatterobs(ob, pvals, dC, awindl, bfa='a'):
     plt.xlim((-20,10))
     plt.ylim((-20,15))
     return ax, fig #error, y[0:splitval]-hx[0:splitval]
+
+
+# ------------------------------------------------------------------------------
+# Taylor diagram
+# ------------------------------------------------------------------------------
 
 
 def da_std_corrcoef_obs(ob, pvals, dC, awindl, bfa='a'):
@@ -506,6 +520,11 @@ def plot_taylor_diagram():
     plt.ylim((0, 8.))
     plt.show()
     return fig
+
+
+# ------------------------------------------------------------------------------
+# Cycled 4dvar plots
+# ------------------------------------------------------------------------------
 
 def plotcycled4dvar(ob, conditions, xb, xa, dC, erbars=1, truth=None):
     """Plots a cycled 4DVar run given an observation string (obs), a set of
@@ -588,7 +607,12 @@ def plotsumcycled4dvar(ob, conditions, xb, xa, dC, truth=None):
     plt.ylabel(ob+' cumulative sum')
     plt.title(ob+' for cycled 4DVar run')
     plt.legend()
-    plt.show()     
+    plt.show()
+
+
+# ------------------------------------------------------------------------------
+# Plot twin experiments
+# ------------------------------------------------------------------------------
     
     
 def plottwin(ob, truth, xb, xa, dC, start, fin, erbars=1, obdict=None,
@@ -755,6 +779,64 @@ def plot_a_inc_all(xb, xadiag, xaedc, xarcor, xaedcrcor):
     return ax, fig
 
 
+def plot_gaussian_dist(mu, sigma, bounds, truth=None, axx=None, case=None):
+    """
+    Plots a Gausian
+    :param mu: mean
+    :param sigma: standard deviation
+    :param bounds: paramter range
+    :param truth: optional truth value
+    :param axx: optional axes
+    :return: plot
+    """
+    points = np.linspace(bounds[0], bounds[1], 100)
+
+    if axx==None:
+        if type(mu) is list:
+            for m in len(mu):
+                plt.plot(points, mlab.normpdf(points, mu[m], sigma[m]))
+        else:
+            plt.plot(points, mlab.normpdf(points, mu, sigma))
+        plt.axvline(truth, linestyle='--')
+    else:
+        if type(mu) is list:
+            for m in len(mu):
+                axx.plot(points, mlab.normpdf(points, mu[m], sigma[m]))
+        else:
+            axx.plot(points, mlab.normpdf(points, mu, sigma))
+        axx.axvline(truth, linestyle='--')
+        return axx
+
+
+def plot_many_guassian(mulst, siglst, bndlst, truth=None):
+    matplotlib.rcParams.update({'figure.autolayout': True})
+    sns.set_context('paper', rc={'figure.autolayout': True})
+    sns.set_style('ticks')
+    # define the figure size and grid layout properties
+    figsize = (15, 10)
+    cols = 5
+    gs = gridspec.GridSpec(len(mulst) // cols + 1, cols)
+
+    # plot each markevery case for linear x and y scales
+    fig1 = plt.figure(num=1, figsize=figsize)
+    ax = []
+    keys = [r'$\theta_{min}$', r'$f_{auto}$', r'$f_{fol}$', r'$f_{roo}$', r'$c_{lspan}$', r'$\theta_{woo}$',
+            r'$\theta_{roo}$', r'$\theta_{lit}$', r'$\theta_{som}$', r'$\Theta$', r'$c_{eff}$', r'$d_{onset}$',
+            r'$f_{lab}$', r'$c_{ronset}$', r'$d_{fall}$', r'$c_{rfall}$', r'$c_{lma}$', r'$C_{lab}$', r'$C_f$', r'$C_r$',
+            r'$C_w$', r'$C_l$', r'$C_s$']
+    for i, case in enumerate(keys):
+        row = (i // cols)
+        col = i % cols
+        ax.append(fig1.add_subplot(gs[row, col]))
+        ax[-1].set_title(case)
+        plot_gaussian_dist(mulst[i], siglst[i], bndlst[i], axx=ax[-1], case=mulst)
+
+
+# ------------------------------------------------------------------------------
+# Plot error cov matrices
+# ------------------------------------------------------------------------------
+
+
 def plotbmat(bmat):
     """Plots a B matrix.
     """
@@ -795,6 +877,11 @@ def plotrmat(rmat):
                 linewidths=.5, cbar=True, cbar_kws={'label': 'Correlation'})
     #sns.heatmap(rmat, ax=ax, xticklabels=np.arange(len(rmat)), yticklabels=np.arange(len(rmat)))
     return ax, fig
+
+
+# ------------------------------------------------------------------------------
+# Infor content measures
+# ------------------------------------------------------------------------------
 
 def plot_infmat(infmat, cmin=-0.3, cmax=0.3):
     """Plots a R matrix.
@@ -848,6 +935,11 @@ def analysischange(xb, xa):
             'cw', 'cl', 'cs']
     ax.set_yticklabels(keys)
     return ax, fig
+
+
+# ------------------------------------------------------------------------------
+# Plot error
+# ------------------------------------------------------------------------------
     
     
 def plotlinmoderr(dC, start, fin, pvals, ax, fig, dx=0.05, gamma=1, cpool=None, norm_err=0, lins='-'):
@@ -913,6 +1005,12 @@ def plotlinmoderr(dC, start, fin, pvals, ax, fig, dx=0.05, gamma=1, cpool=None, 
     plt.legend(loc=2)
     fig.autofmt_xdate()
     return fig, ax
+
+
+# ------------------------------------------------------------------------------
+# Non-plotting fns
+# ------------------------------------------------------------------------------
+
 
 def cov2cor(X):
     """ Takes a covariance matrix and returns the correlation matrix

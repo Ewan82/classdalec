@@ -335,15 +335,15 @@ def pvals_test_edc(d, pvals):
             if (np.mean(mod_list[-365:-1,x]) / np.mean(mod_list[0:365,x]) < 1+0.1*((d.endyr-d.startyr-1)/10)) == False:
                 return False
 
-            #cpoolyr1 = np.sum(mod_list[0:365, x])
-            #cpoolyr2 = np.sum(mod_list[366:365*2, x])
-            #cpoolyr1_offset = np.sum(mod_list[1:366, x])
-            #cpoolyr2_offset = np.sum(mod_list[367:365*2+1, x])
-            #delta_c0 = (cpoolyr2 - cpoolyr1) / 365
-            #delta_c1 = (cpoolyr2_offset - cpoolyr1_offset) / 365
-            #c_decay = np.log(delta_c1 / delta_c0) #exponential decay constraint
-            #if (c_decay > (-np.log(2) / (365.25*3))) == False:
-            #    return False
+            cpoolyr1 = np.sum(mod_list[0:365, x])
+            cpoolyr2 = np.sum(mod_list[366:365*2, x])
+            cpoolyr1_offset = np.sum(mod_list[1:366, x])
+            cpoolyr2_offset = np.sum(mod_list[367:365*2+1, x])
+            delta_c0 = (cpoolyr2 - cpoolyr1) / 365
+            delta_c1 = (cpoolyr2_offset - cpoolyr1_offset) / 365
+            c_decay = np.log(delta_c1 / delta_c0) #exponential decay constraint
+            if (c_decay > (-np.log(2) / (365.25*3))) == False:
+                return False
 
         else:
             return True
@@ -418,6 +418,7 @@ def create_ensemble_trunc_edc(d, mean='edin', stdev='edin'):
         if pvals_test_edc(d, pvals) == True:
             param_ensemble.append(pvals)
             print '%i' %len(param_ensemble)
+            print pvals
         else:
             failed_ensemble.append(pvals)
             continue

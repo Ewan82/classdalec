@@ -244,6 +244,8 @@ class DalecData():
                                         3.59002726e+01,   2.19315727e+02,   7.14323513e+03,
                                         5.45013287e+02,   1.27646316e+03])
 
+        self.test_stdev = [0.5*(x[1]-x[0]) for x in self.bnds]
+
         self.B = self.makeb(self.edinburghstdev)
         # MAKE NEW B, THIS IS WRONG!
 

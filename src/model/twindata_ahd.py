@@ -336,9 +336,9 @@ class dalecData( ):
         else:
             self.er = self.smallvars
 
-        self.errdict = {'clab': self.er[0], 'cf': self.er[1],\
-                        'cw': self.er[2],'cl': self.er[3],'cr': self.er[4],\
-                        'cs': self.er[5], 'nee': self.er[6],\
+        self.errdict = {'clab': self.er[0], 'cf': self.er[1],
+                        'cw': self.er[2],'cl': self.er[3],'cr': self.er[4],
+                        'cs': self.er[5], 'nee': self.er[6],
                         'lf': self.er[7], 'lw': self.er[8], 'gpp': self.er[9],
                         'rt': self.er[10], 'lai': self.er[11],
                         'soilresp': self.er[12], 'litresp': self.er[13]}
