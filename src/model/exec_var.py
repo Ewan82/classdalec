@@ -342,11 +342,14 @@ def pvals_test_edc(d, pvals):
             delta_c0 = (cpoolyr2 - cpoolyr1) / 365
             delta_c1 = (cpoolyr2_offset - cpoolyr1_offset) / 365
             c_decay = np.log(delta_c1 / delta_c0) #exponential decay constraint
+            print c_decay > -np.log(2) / (365.25*3)
             if (c_decay > (-np.log(2) / (365.25*3))) == False:
                 return False
+            else:
+                return True
 
-        else:
-            return True
+        #else:
+        #    return True
     else:
         return False
 
