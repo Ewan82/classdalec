@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="837283c5-404a-4f65-ab79-716c1adfdf9d" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/exec_var.py" afterPath="$PROJECT_DIR$/src/model/exec_var.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/ahdata2.py" afterPath="$PROJECT_DIR$/src/model/ahdata2.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/plot.py" afterPath="$PROJECT_DIR$/src/model/plot.py" />
     </list>
     <ignored path="classdalec.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -50,11 +52,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ahdata2.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="ahdata2.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/model/ahdata2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="251" column="11" selection-start-line="251" selection-start-column="11" selection-end-line="251" selection-end-column="11" />
+            <state vertical-scroll-proportion="0.55258125">
+              <caret line="245" column="8" selection-start-line="245" selection-start-column="8" selection-end-line="245" selection-end-column="8" />
               <folding />
             </state>
           </provider>
@@ -64,7 +66,7 @@
         <entry file="file://$PROJECT_DIR$/src/model/plot.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="827" column="25" selection-start-line="827" selection-start-column="25" selection-end-line="827" selection-end-column="25" />
+              <caret line="817" column="12" selection-start-line="817" selection-start-column="12" selection-end-line="817" selection-end-column="12" />
               <folding>
                 <element signature="e#46#64#0" expanded="true" />
               </folding>
@@ -72,11 +74,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="exec_var.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="exec_var.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/model/exec_var.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-1.5678777">
-              <caret line="348" column="27" selection-start-line="348" selection-start-column="27" selection-end-line="348" selection-end-column="27" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="307" column="30" selection-start-line="307" selection-start-column="30" selection-end-line="307" selection-end-column="30" />
               <folding />
             </state>
           </provider>
@@ -112,10 +114,10 @@
         <option value="$PROJECT_DIR$/aliceholtdata/ahdatbudburst99_13.csv" />
         <option value="$PROJECT_DIR$/src/model/egubudburst.py" />
         <option value="$PROJECT_DIR$/src/model/modclass.py" />
-        <option value="$PROJECT_DIR$/src/model/plot.py" />
         <option value="$PROJECT_DIR$/src/model/twindata_ahd.py" />
-        <option value="$PROJECT_DIR$/src/model/ahdata2.py" />
         <option value="$PROJECT_DIR$/src/model/exec_var.py" />
+        <option value="$PROJECT_DIR$/src/model/plot.py" />
+        <option value="$PROJECT_DIR$/src/model/ahdata2.py" />
       </list>
     </option>
   </component>
@@ -955,16 +957,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/model/plot.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="827" column="25" selection-start-line="827" selection-start-column="25" selection-end-line="827" selection-end-column="25" />
-          <folding>
-            <element signature="e#46#64#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/model/twindata_ahd.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -973,18 +965,28 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/model/ahdata2.py">
+    <entry file="file://$PROJECT_DIR$/src/model/exec_var.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="251" column="11" selection-start-line="251" selection-start-column="11" selection-end-line="251" selection-end-column="11" />
+          <caret line="307" column="30" selection-start-line="307" selection-start-column="30" selection-end-line="307" selection-end-column="30" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/model/exec_var.py">
+    <entry file="file://$PROJECT_DIR$/src/model/plot.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-1.5678777">
-          <caret line="348" column="27" selection-start-line="348" selection-start-column="27" selection-end-line="348" selection-end-column="27" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="817" column="12" selection-start-line="817" selection-start-column="12" selection-end-line="817" selection-end-column="12" />
+          <folding>
+            <element signature="e#46#64#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/model/ahdata2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.55258125">
+          <caret line="245" column="8" selection-start-line="245" selection-start-column="8" selection-end-line="245" selection-end-column="8" />
           <folding />
         </state>
       </provider>

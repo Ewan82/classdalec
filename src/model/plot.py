@@ -779,7 +779,7 @@ def plot_a_inc_all(xb, xadiag, xaedc, xarcor, xaedcrcor):
     return ax, fig
 
 
-def plot_gaussian_dist(mu, sigma, bounds, truth=None, axx=None, case=None):
+def plot_gaussian_dist(mu, sigma, bounds, xt=None, axx=None):
     """
     Plots a Gausian
     :param mu: mean
@@ -797,20 +797,21 @@ def plot_gaussian_dist(mu, sigma, bounds, truth=None, axx=None, case=None):
                 plt.plot(points, mlab.normpdf(points, mu[m], sigma[m]))
         else:
             plt.plot(points, mlab.normpdf(points, mu, sigma))
-        plt.axvline(truth, linestyle='--')
+        plt.axvline(xt, linestyle='--')
     else:
         if type(mu) is list:
             for m in len(mu):
                 axx.plot(points, mlab.normpdf(points, mu[m], sigma[m]))
         else:
             axx.plot(points, mlab.normpdf(points, mu, sigma))
-        axx.axvline(truth, linestyle='--')
+        axx.axvline(xt, linestyle='--')
         return axx
 
 
-def plot_many_guassian(mulst, siglst, bndlst, truth=None):
+def plot_many_guassian(mulst, siglst, bndlst, mulst2=None, siglst2=None,
+                       truth=None):
     matplotlib.rcParams.update({'figure.autolayout': True})
-    sns.set_context('paper', rc={'figure.autolayout': True})
+    sns.set_context('paper')
     sns.set_style('ticks')
     # define the figure size and grid layout properties
     figsize = (15, 10)
@@ -829,7 +830,13 @@ def plot_many_guassian(mulst, siglst, bndlst, truth=None):
         col = i % cols
         ax.append(fig1.add_subplot(gs[row, col]))
         ax[-1].set_title(case)
-        plot_gaussian_dist(mulst[i], siglst[i], bndlst[i], axx=ax[-1], case=mulst)
+        if truth is not None:
+            plot_gaussian_dist(mulst[i], siglst[i], bndlst[i], axx=ax[-1], xt=truth[i])
+        else:
+            plot_gaussian_dist(mulst[i], siglst[i], bndlst[i], axx=ax[-1])
+        ax[-1].set_xlim((bndlst[i][0], bndlst[i][1]))
+        if mulst2 is not None:
+            plot_gaussian_dist(mulst2[i], siglst2[i], bndlst[i], axx=ax[-1])
 
 
 # ------------------------------------------------------------------------------
