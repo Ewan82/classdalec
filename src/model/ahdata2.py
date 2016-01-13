@@ -243,7 +243,7 @@ class DalecData():
                                         2.25938092e+01,   6.41030587e+01,   6.62621885e+01,
                                         3.59002726e+01,   2.19315727e+02,   7.14323513e+03,
                                         5.45013287e+02,   1.27646316e+03])
-        
+
         # For twin exps
         self.test_stdev = [0.5*(x[1]-x[0]) for x in self.bnds]
         self.test_xb = [x[0]+0.5*(x[1]-x[0]) for x in self.bnds]

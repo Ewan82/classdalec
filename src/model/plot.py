@@ -797,7 +797,7 @@ def plot_gaussian_dist(mu, sigma, bounds, xt=None, axx=None):
                 plt.plot(points, mlab.normpdf(points, mu[m], sigma[m]))
         else:
             plt.plot(points, mlab.normpdf(points, mu, sigma))
-        plt.axvline(xt, linestyle='--')
+        plt.axvline(xt, linestyle='--', linewidth=50, ms=10)
     else:
         if type(mu) is list:
             for m in len(mu):
