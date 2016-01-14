@@ -789,7 +789,7 @@ def plot_gaussian_dist(mu, sigma, bounds, xt=None, axx=None):
     :param axx: optional axes
     :return: plot
     """
-    points = np.linspace(bounds[0], bounds[1], 100)
+    points = np.linspace(bounds[0], bounds[1], 10000)
 
     if axx==None:
         if type(mu) is list:

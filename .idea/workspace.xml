@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="837283c5-404a-4f65-ab79-716c1adfdf9d" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/ahdata2.py" afterPath="$PROJECT_DIR$/src/model/ahdata2.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/plot.py" afterPath="$PROJECT_DIR$/src/model/plot.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/twindata_ahd.py" afterPath="$PROJECT_DIR$/src/model/twindata_ahd.py" />
     </list>
     <ignored path="classdalec.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -52,10 +50,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="twindata_ahd.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="twindata_ahd.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/model/twindata_ahd.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="4.225621">
+            <state vertical-scroll-proportion="0.0">
               <caret line="455" column="46" selection-start-line="455" selection-start-column="46" selection-end-line="455" selection-end-column="46" />
               <folding />
             </state>
@@ -72,11 +70,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="plot.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="plot.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/model/plot.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="798" column="9" selection-start-line="798" selection-start-column="9" selection-end-line="798" selection-end-column="9" />
+            <state vertical-scroll-proportion="0.21988527">
+              <caret line="791" column="52" selection-start-line="791" selection-start-column="52" selection-end-line="791" selection-end-column="52" />
               <folding>
                 <element signature="e#46#64#0" expanded="true" />
               </folding>
@@ -126,8 +124,8 @@
         <option value="$PROJECT_DIR$/src/model/modclass.py" />
         <option value="$PROJECT_DIR$/src/model/exec_var.py" />
         <option value="$PROJECT_DIR$/src/model/ahdata2.py" />
-        <option value="$PROJECT_DIR$/src/model/plot.py" />
         <option value="$PROJECT_DIR$/src/model/twindata_ahd.py" />
+        <option value="$PROJECT_DIR$/src/model/plot.py" />
       </list>
     </option>
   </component>
@@ -968,20 +966,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/model/plot.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="798" column="9" selection-start-line="798" selection-start-column="9" selection-end-line="798" selection-end-column="9" />
-          <folding>
-            <element signature="e#46#64#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/model/observations.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/model/twindata_ahd.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="455" column="46" selection-start-line="455" selection-start-column="46" selection-end-line="455" selection-end-column="46" />
           <folding />
         </state>
       </provider>
@@ -994,11 +990,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/model/twindata_ahd.py">
+    <entry file="file://$PROJECT_DIR$/src/model/plot.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="4.225621">
-          <caret line="455" column="46" selection-start-line="455" selection-start-column="46" selection-end-line="455" selection-end-column="46" />
-          <folding />
+        <state vertical-scroll-proportion="0.21988527">
+          <caret line="791" column="52" selection-start-line="791" selection-start-column="52" selection-end-line="791" selection-end-column="52" />
+          <folding>
+            <element signature="e#46#64#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
