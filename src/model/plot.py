@@ -6,6 +6,8 @@ import model as m
 import fourdvar as fdv
 import observations as obs
 import copy as cp
+import modclass as mc
+import twindata_ahd as twd
 import datetime as dt
 import taylordiagram as td
 import matplotlib.dates as mdates
@@ -885,10 +887,52 @@ def plotrmat(rmat):
     #sns.heatmap(rmat, ax=ax, xticklabels=np.arange(len(rmat)), yticklabels=np.arange(len(rmat)))
     return ax, fig
 
+# ------------------------------------------------------------------------------
+# Observability
+# ------------------------------------------------------------------------------
+
+
+def plot_bar_hmat_rank(obslist, freqlist, len_win=200, pvals=None, strt_run=0):
+    n = len(obslist)
+    sns.set_context('paper', font_scale=1.5, rc={'lines.linewidth': 1, 'lines.markersize': 6})
+    width = 0.35
+    ind = np.arange(n)
+    fig = plt.figure(figsize=(6,8))
+    ax = fig.add_subplot(111)
+    hmat_lst = [obs_rank(obslist[x], freqlist[x], len_win=len_win, pvals=pvals, strt_run=strt_run)
+              for x in range(len(obslist))]
+    values = [np.linalg.matrix_rank(x) for x in hmat_lst]
+    ax.bar(ind, values, width, color='g')
+    ax.set_ylabel(r'Rank of $\hat{\bf{H}}$')
+    ax.set_xlabel('Observations')
+    # ax.set_title('Observability')
+    ax.set_xticks(ind)
+    ax.set_yticks(np.arange(24))
+    # keys = ['15 NEE', '20 NEE', '50 NEE', '50 NEE, 4 LAI', '50 NEE, 4 G_Resp', '50 NEE, 4 Cw']
+    keys = ['10 NEE', '23 NEE', '45 NEE', '70 NEE', '200 NEE', '365 NEE']
+    ax.set_xticklabels(keys, rotation=45)
+    return ax, fig, hmat_lst
+
+
+def plot_cond(hmlist):
+    sns.set_context('paper', font_scale=1.5, rc={'lines.linewidth': 1, 'lines.markersize': 6})
+    cond = [np.linalg.cond(x) for x in hmlist]
+    print cond
+    fig = plt.figure(figsize=(6,8))
+    ax = fig.add_subplot(111)
+    ax.semilogy(cond, marker='x', mew=1, ms=8)
+    ax.set_ylabel('Condition number')
+    ax.set_xlabel('Observations')
+    # keys = ['15 NEE', '20 NEE', '50 NEE', '50 NEE, 4 LAI', '50 NEE, 4 G_Resp', '50 NEE, 4 Cw']
+    keys = ['10 NEE', '23 NEE', '45 NEE', '70 NEE', '200 NEE', '365 NEE']
+    ax.set_xticks(np.arange(len(keys)))
+    ax.set_xticklabels(keys, rotation=45)
+    return ax, fig
 
 # ------------------------------------------------------------------------------
-# Infor content measures
+# Information content measures
 # ------------------------------------------------------------------------------
+
 
 def plot_infmat(infmat, cmin=-0.3, cmax=0.3):
     """Plots a R matrix.
@@ -1030,4 +1074,16 @@ def cov2cor(X):
     DInv = np.linalg.inv(D)
     R = np.dot(np.dot(DInv, X), DInv)
     return R
+
+def obs_rank(obs_str, freq_lst, len_win=200, pvals=None, strt_run=0):
+    d = twd.dalecData(len_win, obs_str, freq_lst, startrun=strt_run)
+    m = mc.DalecModel(d)
+    if pvals == None:
+        pvallist, matlist = m.linmod_list(d.edinburghmean)
+    else:
+        pvallist, matlist = m.linmod_list(pvals)
+    hmat = m.cvt_hmat(pvallist, matlist)
+    # hmat = m.hmat(pvallist, matlist)[1]
+    return hmat # np.linalg.matrix_rank(hmat)
+
 

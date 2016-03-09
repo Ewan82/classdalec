@@ -40,8 +40,16 @@ def litresp(pvals, dC, x):
 def soilresp(pvals, dC, x):
     """Function calculates soil respiration (soilresp).
     """
-    soilresp = pvals[8]*pvals[22]*m.temp_term(pvals[9], dC, x)
+    soilresp = pvals[8]*pvals[22]*m.temp_term(pvals[9], dC, x) + \
+               (1./3.)*pvals[1]*m.acm(pvals[18], pvals[16], pvals[10], dC, x)
     return soilresp
+
+
+def groundresp(pvals, dC, x):
+    groundresp = pvals[7]*pvals[21]*m.temp_term(pvals[9], dC, x) + \
+                 pvals[8]*pvals[22]*m.temp_term(pvals[9], dC, x) + \
+                 (1./3.)*pvals[1]*m.acm(pvals[18], pvals[16], pvals[10], dC, x)
+    return groundresp
     
     
 def rh(pvals, dC, x):
@@ -120,6 +128,12 @@ def cs(pvals, dC, x):
     """
     cs = pvals[22]
     return cs
+
+def d_onset(pvals, dC, x):
+    """Fn calulates d_onset.
+    """
+    d_onset = pvals[11]
+    return d_onset
     
 #REDO with a list of obs as optional input!! Then ad can do rest. 
 #import inspect, inspect.getargspec
@@ -131,7 +145,7 @@ def linob(ob, pvals, dC, x):
     modobdict = {'gpp': gpp, 'nee': nee, 'rt': rec, 'cf': cf, 'clab': clab, 
                  'cr': cr, 'cw': cw, 'cl': cl, 'cs': cs, 'lf': lf, 'lw': lw, 
                  'lai':lai, 'soilresp': soilresp, 'litresp': litresp,
-                 'rtot': rtot, 'rh': rh}
+                 'rtot': rtot, 'rh': rh, 'd_onset': d_onset}
     dpvals = ad.adnumber(pvals)
     output = modobdict[ob](dpvals, dC, x)
     return np.array(ad.jacobian(output, dpvals))

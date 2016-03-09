@@ -27,7 +27,8 @@ class DalecModel():
                           'cw': self.cw, 'cl': self.cl, 'cs': self.cs, 
                           'lf': self.lf, 'lw': self.lw, 'lai': self.lai,
                           'litresp': self.litresp, 'soilresp': self.soilresp,
-                          'rtot': self.rtot, 'rh': self.rh, 'd_onset': self.d_onset}
+                          'rtot': self.rtot, 'rh': self.rh, 'd_onset': self.d_onset,
+                          'groundresp': self.groundresp}
         self.startrun = strtrun
         self.endrun = self.lenrun  
         self.yoblist, self.yerroblist, self.ytimestep = self.obscost()
@@ -288,8 +289,17 @@ class DalecModel():
     def soilresp(self, p):
         """Function calculates soil respiration (soilresp). (heterotrophic)
         """
-        soilresp = p[8]*p[22]*self.temp_term(p[9])
+        soilresp = p[8]*p[22]*self.temp_term(p[9]) + \
+                   (1./3.)*p[1]*self.acm(p[18], p[16], p[10])
         return soilresp
+
+    def groundresp(self, p):
+        """Function calculates ground respiration from soil chamber measurements
+        """
+        groundresp = p[7]*p[21]*self.temp_term(p[9]) + \
+                     p[8]*p[22]*self.temp_term(p[9]) + \
+                     (1./3.)*p[1]*self.acm(p[18], p[16], p[10])
+        return groundresp
 
     def rh(self, p):
         """Fn calculates rh (soilresp+litrep).
@@ -501,7 +511,9 @@ class DalecModel():
     def gradcost2(self, pvals):
         """Gradient of 4DVAR cost fn to be passed to optimization routine.
         Takes an initial state (pvals), an obs dictionary, an obs error
-        dictionary, a dataClass and a start and finish time step.
+        dictionary, a dataClass and a start and finish time step. Using Lagrange
+        multipliers to increase speed, method updated to allow for temporally
+        correlated R matrix. Uses method of Lagrange multipliers!
         """
         pvallist, matlist = self.linmod_list(pvals)
         hx, hhat = self.hhat(pvallist)
@@ -526,8 +538,9 @@ class DalecModel():
 
     def hhat(self, pvallist):
         """Returns a list of observation values as predicted by DALEC (hx) and
-        a linearzied observation error covariance matrix (hmat). Takes a list
-        of model values (pvallist), a observation dictionary, a list of
+        a stacked set of linearzied observation operators (hmat) for use in gradcost2
+        fn calculating the gradient of the cost fn using the method of Lagrange multipliers.
+        Takes a list of model values (pvallist), a observation dictionary, a list of
         linearized models (matlist) and a dataClass (dC).
         """
         hx = np.array([])
@@ -739,6 +752,36 @@ class DalecModel():
         gradcost = - obcost + modcost
         return gradcost
 
+    def gradcost2_cvt(self, zvals):
+        """Gradient of 4DVAR cost fn to be passed to optimization routine.
+        Takes an initial state (pvals), an obs dictionary, an obs error
+        dictionary, a dataClass and a start and finish time step. Using Lagrange
+        multipliers to increase speed, method updated to allow for temporally
+        correlated R matrix. Uses method of Lagrange multipliers!
+        """
+        pvals = self.zvals2pvals(zvals)
+        pvallist, matlist = self.linmod_list(pvals)
+        hx, hhat = self.hhat(pvallist)
+        r_yhx = np.dot(np.linalg.inv(self.rmatrix), (self.yoblist-hx).T)
+        idx1 = len(self.yoblist) - sum(self.obs_time_step[self.lenrun-1:])
+        idx2 = len(self.yoblist) - sum(self.obs_time_step[self.lenrun-1+1:])
+        obcost = np.dot(hhat[idx1:idx2].T, r_yhx[idx1:idx2])
+        for i in xrange(self.lenrun-2, -1, -1):
+            if self.obs_time_step[i] != 0:
+                idx1 = len(self.yoblist) - sum(self.obs_time_step[i:])
+                idx2 = len(self.yoblist) - sum(self.obs_time_step[i+1:])
+                obcost = np.dot(matlist[i].T, obcost) + np.dot(hhat[idx1:idx2].T, r_yhx[idx1:idx2])
+            else:
+                obcost = np.dot(matlist[i].T, obcost)
+        obcost = np.dot(np.sqrt(self.diag_b).T, obcost)
+
+        if self.modcoston is True:
+            modcost = np.dot(np.linalg.inv(self.b_tilda), zvals.T)
+        else:
+            modcost = 0
+        gradcost = - obcost + modcost
+        return gradcost
+
     def pvals2zvals(self, pvals):
         """Convert x_0 state to z_0 state for CVT with DALEC.
         """
@@ -777,9 +820,20 @@ class DalecModel():
         else:
             bnds = bnds
         findmin = spop.fmin_tnc(self.cost_cvt, zvals,
-                                fprime=self.gradcost_cvt, bounds=bnds,
+                                fprime=self.gradcost2_cvt, bounds=bnds,
                                 disp=dispp, fmin=mini, maxfun=maxits, ftol=f_tol)
         return findmin
+
+    def cvt_hmat(self, pvallist, matlist):
+        """
+        Calculates the normalised \hat{H} matrix for the CVT case
+        :param pvallist: list of model evolved parameter values
+        :param matlist: list of linearised models
+        :return: normalised \hat{H}
+        """
+        hx, hmat = self.hmat(pvallist, matlist)
+        obs_mat = np.dot(np.dot(np.linalg.inv(np.sqrt(self.rmatrix)), hmat), np.sqrt(self.diag_b))
+        return obs_mat
 
 # ------------------------------------------------------------------------------
 # Minimization Routines.

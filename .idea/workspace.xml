@@ -2,7 +2,61 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="837283c5-404a-4f65-ab79-716c1adfdf9d" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aliceholtdata/ahdat1999.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aliceholtdata/ahdat2000.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aliceholtdata/ahdat2001.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aliceholtdata/ahdat2002.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aliceholtdata/ahdat2003.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aliceholtdata/ahdat2004.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aliceholtdata/ahdat2005.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aliceholtdata/ahdat2006.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aliceholtdata/ahdat2007.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aliceholtdata/ahdat2008.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aliceholtdata/ahdat2009.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aliceholtdata/ahdat2010.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aliceholtdata/ahdat2011.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aliceholtdata/ahdat2012.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aliceholtdata/ahdat2013.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aliceholtdata/ahdat9905.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aliceholtdata/ahdata.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aliceholtdata/ahdata.nc" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aliceholtdata/ahdata2.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aliceholtdata/ahdata2.nc" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aliceholtdata/ahdata3.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aliceholtdata/aliceholt2012.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aliceholtdata/aliceholt2013.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aliceholtdata/ericspadat.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/aliceholtdata/soilrootresp.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/alice_holt_parameters.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/b_edc.p" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/b_edc_cor.p" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/b_edc_modev.p" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/b_edc_modev_cor.p" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/b_edin.p" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/b_edin_cor.p" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/b_uc.p" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/b_uc_cor.p" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/b_uc_modev1yr.p" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/b_uc_modev1yr_cor.p" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/bdiag.p" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/cycledfile.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/edc_param_ensem.p" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/param_arr.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/pmat_99_09_edc.p" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/r_corr_cor0.3_tau24_cutoff24_var0.5.p" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/r_corr_cor0.3_tau4_cutoff4_var0.5.p" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/r_corr_cor0.3_tau4_cutoff4_var0.8.p" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/r_corr_cor0.3_tau6_cutoff10_var0.5.p" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/r_corr_cor0.6_tau4_cutoff4_var0.5.p" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/taylordiag.eps" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/test.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/model/test.txt" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/ahdata2.py" afterPath="$PROJECT_DIR$/src/model/ahdata2.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/modclass.py" afterPath="$PROJECT_DIR$/src/model/modclass.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/observations.py" afterPath="$PROJECT_DIR$/src/model/observations.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/plot.py" afterPath="$PROJECT_DIR$/src/model/plot.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/twindata_ahd.py" afterPath="$PROJECT_DIR$/src/model/twindata_ahd.py" />
     </list>
     <ignored path="classdalec.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -32,7 +86,7 @@
         <entry file="file://$PROJECT_DIR$/src/model/modclass.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="40" column="0" selection-start-line="40" selection-start-column="0" selection-end-line="42" selection-end-column="80" />
+              <caret line="831" column="35" selection-start-line="831" selection-start-column="35" selection-end-line="831" selection-end-column="35" />
               <folding>
                 <element signature="e#96#114#0" expanded="true" />
               </folding>
@@ -44,7 +98,7 @@
         <entry file="file://$PROJECT_DIR$/src/model/ahdata2.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="251" column="36" selection-start-line="251" selection-start-column="36" selection-end-line="251" selection-end-column="36" />
+              <caret line="192" column="10" selection-start-line="192" selection-start-column="10" selection-end-line="192" selection-end-column="10" />
               <folding />
             </state>
           </provider>
@@ -54,7 +108,7 @@
         <entry file="file://$PROJECT_DIR$/src/model/twindata_ahd.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="455" column="46" selection-start-line="455" selection-start-column="46" selection-end-line="455" selection-end-column="46" />
+              <caret line="360" column="47" selection-start-line="360" selection-start-column="47" selection-end-line="360" selection-end-column="47" />
               <folding />
             </state>
           </provider>
@@ -64,7 +118,7 @@
         <entry file="file://$PROJECT_DIR$/src/model/observations.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <caret line="51" column="21" selection-start-line="51" selection-start-column="21" selection-end-line="51" selection-end-column="21" />
               <folding />
             </state>
           </provider>
@@ -73,11 +127,31 @@
       <file leaf-file-name="plot.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/model/plot.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.21988527">
-              <caret line="791" column="52" selection-start-line="791" selection-start-column="52" selection-end-line="791" selection-end-column="52" />
+            <state vertical-scroll-proportion="2.7708333">
+              <caret line="1085" column="6" selection-start-line="1085" selection-start-column="6" selection-end-line="1085" selection-end-column="6" />
               <folding>
                 <element signature="e#46#64#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="testclassvar.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/model/testclassvar.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="152" column="95" selection-start-line="152" selection-start-column="0" selection-end-line="152" selection-end-column="95" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="aliceholtdata.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/aliceholtdata/aliceholtdata.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="173" column="25" selection-start-line="173" selection-start-column="25" selection-end-line="173" selection-end-column="25" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -121,10 +195,11 @@
         <option value="$PROJECT_DIR$/src/model/taylordiagram.py" />
         <option value="$PROJECT_DIR$/aliceholtdata/ahdatbudburst99_13.csv" />
         <option value="$PROJECT_DIR$/src/model/egubudburst.py" />
-        <option value="$PROJECT_DIR$/src/model/modclass.py" />
         <option value="$PROJECT_DIR$/src/model/exec_var.py" />
         <option value="$PROJECT_DIR$/src/model/ahdata2.py" />
+        <option value="$PROJECT_DIR$/src/model/observations.py" />
         <option value="$PROJECT_DIR$/src/model/twindata_ahd.py" />
+        <option value="$PROJECT_DIR$/src/model/modclass.py" />
         <option value="$PROJECT_DIR$/src/model/plot.py" />
       </list>
     </option>
@@ -135,8 +210,8 @@
   </component>
   <component name="ProjectFrameBounds">
     <option name="y" value="23" />
-    <option name="width" value="1440" />
-    <option name="height" value="797" />
+    <option name="width" value="1280" />
+    <option name="height" value="707" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -163,7 +238,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -262,11 +336,12 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scratches" />
       <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../ah_data" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../SICDALEC" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="full.screen.before.presentation.mode" value="false" />
     <property name="options.lastSelected" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
@@ -295,6 +370,7 @@
       <recent name="$PROJECT_DIR$/src/model" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/aliceholtdata" />
       <recent name="$PROJECT_DIR$/src/model" />
       <recent name="$PROJECT_DIR$/src/testmod" />
     </key>
@@ -517,11 +593,11 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1440" height="797" extended-state="0" />
+    <frame x="0" y="23" width="1280" height="707" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25581396" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24829468" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" x="23" y="311" width="1400" height="183" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.28832406" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.28460342" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" x="23" y="311" width="1400" height="183" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3281471" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -600,6 +676,56 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/model/ahdata2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="328" column="68" selection-start-line="328" selection-start-column="68" selection-end-line="328" selection-end-column="68" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/model/twindata_ahd.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="399" column="0" selection-start-line="399" selection-start-column="0" selection-end-line="399" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/model/observations.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="51" column="21" selection-start-line="51" selection-start-column="21" selection-end-line="51" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/model/plot.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#46#64#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/aliceholtdata/aliceholtdata.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="173" column="25" selection-start-line="173" selection-start-column="25" selection-end-line="173" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/model/exec_var.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="307" column="30" selection-start-line="307" selection-start-column="30" selection-end-line="307" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/model/testpickle.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -781,13 +907,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/aliceholtdata/ahdat1999.csv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -802,20 +921,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/aliceholtdata/ahdata3.csv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/model/cycledfile.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/model/oregondata.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.79107505">
@@ -823,48 +928,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/model/alice_holt_parameters.csv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/testmod/testmodel.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/model/daynight.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="3" column="12" selection-start-line="3" selection-start-column="12" selection-end-line="3" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/testmod/testvar.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="2" column="0" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
-          <folding>
-            <element signature="e#55#73#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/model/param_arr.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="9" column="65" selection-start-line="9" selection-start-column="65" selection-end-line="9" selection-end-column="65" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/model/modclass2.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-8.630057">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -889,13 +956,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/model/twindata_ogd.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.032629557">
-          <caret line="221" column="33" selection-start-line="221" selection-start-column="33" selection-end-line="221" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/model/taylordiagram.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -910,34 +970,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/aliceholtdata/aliceholtdata.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.624498">
-          <caret line="173" column="25" selection-start-line="173" selection-start-column="25" selection-end-line="173" selection-end-column="25" />
-          <folding>
-            <element signature="e#0#30#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/model/testclassvar.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="153" column="22" selection-start-line="153" selection-start-column="22" selection-end-line="153" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/aliceholtdata/ahdat99_13.csv">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.6826004">
           <caret line="21" column="23" selection-start-line="21" selection-start-column="23" selection-end-line="21" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/aliceholtdata/soilrootresp.csv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -948,13 +984,59 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/model/twindata_ogd.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="221" column="33" selection-start-line="221" selection-start-column="33" selection-end-line="221" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/model/modclass2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/model/modclass.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="40" column="0" selection-start-line="40" selection-start-column="0" selection-end-line="42" selection-end-column="80" />
+          <caret line="831" column="35" selection-start-line="831" selection-start-column="35" selection-end-line="831" selection-end-column="35" />
           <folding>
             <element signature="e#96#114#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/model/ahdata2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="192" column="10" selection-start-line="192" selection-start-column="10" selection-end-line="192" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/model/twindata_ahd.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="360" column="47" selection-start-line="360" selection-start-column="47" selection-end-line="360" selection-end-column="47" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/model/observations.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="51" column="21" selection-start-line="51" selection-start-column="21" selection-end-line="51" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/aliceholtdata/aliceholtdata.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="173" column="25" selection-start-line="173" selection-start-column="25" selection-end-line="173" selection-end-column="25" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -966,34 +1048,34 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/model/observations.py">
+    <entry file="file://$PROJECT_DIR$/src/testmod/testmodel.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
+        <state vertical-scroll-proportion="-2.4521072">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/model/twindata_ahd.py">
+    <entry file="file://$PROJECT_DIR$/src/testmod/testvar.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="455" column="46" selection-start-line="455" selection-start-column="46" selection-end-line="455" selection-end-column="46" />
+        <state vertical-scroll-proportion="-1.605364">
+          <caret line="2" column="0" selection-start-line="2" selection-start-column="0" selection-end-line="2" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/model/ahdata2.py">
+    <entry file="file://$PROJECT_DIR$/src/model/testclassvar.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="251" column="36" selection-start-line="251" selection-start-column="36" selection-end-line="251" selection-end-column="36" />
+          <caret line="152" column="95" selection-start-line="152" selection-start-column="0" selection-end-line="152" selection-end-column="95" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/model/plot.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.21988527">
-          <caret line="791" column="52" selection-start-line="791" selection-start-column="52" selection-end-line="791" selection-end-column="52" />
+        <state vertical-scroll-proportion="2.7708333">
+          <caret line="1085" column="6" selection-start-line="1085" selection-start-column="6" selection-end-line="1085" selection-end-column="6" />
           <folding>
             <element signature="e#46#64#0" expanded="true" />
           </folding>

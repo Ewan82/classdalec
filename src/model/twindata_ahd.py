@@ -344,20 +344,29 @@ class dalecData( ):
 
         self.xb = self.edinburghmean
 
-        #Model values
+        # Model values
         self.pvallist = mod.mod_list(self.x_truth, self.d, 0, k*self.lenrun-1)
 
         self.test_stdev = np.array([0.5*(x[1]-x[0]) for x in self.bnds])
         self.test_xb = np.array([x[0]+0.5*(x[1]-x[0]) for x in self.bnds])
-
-        self.B = self.makeb(self.test_stdev)
+        self.edinburghstdev = np.array([2.03001590e-03,   1.16829160e-01,   1.11585876e-01,
+                                        2.98860194e-01,   1.16141739e-01,   1.36472702e-04,
+                                        2.92998472e-03,   3.11712858e-03,   1.18105073e-04,
+                                        1.62308654e-02,   2.04219069e+01,   6.25696097e+00,
+                                        1.14535431e-01,   1.40482247e+01,   3.72380005e+01,
+                                        2.25938092e+01,   6.41030587e+01,   6.62621885e+01,
+                                        3.59002726e+01,   2.19315727e+02,   7.14323513e+03,
+                                        5.45013287e+02,   1.27646316e+03])
+        # self.B = self.makeb(self.test_stdev)
+        self.B = self.makeb(self.edinburghstdev)
         # MAKE NEW B, THIS IS WRONG!
 
         #'Observartion variances for carbon pools and NEE'
         self.vars = np.array([self.clab*0.1, self.cf*0.1,
                               self.cw*0.1, self.cr*0.1,
                               self.cl*0.1, self.cs*0.1, 0.5, 0.2,
-                              0.2, 0.2, 0.4, 0.12, 0.5, 0.5])
+                              0.2, 0.2, 0.4, 0.12, 0.5, 0.5,
+                              5., 0.5])
         self.smallvars = self.vars*1e-3
 
         if errs == 'normal':
@@ -370,13 +379,15 @@ class dalecData( ):
                         'cs': self.er[5], 'nee': self.er[6],
                         'lf': self.er[7], 'lw': self.er[8], 'gpp': self.er[9],
                         'rt': self.er[10], 'lai': self.er[11],
-                        'soilresp': self.er[12], 'litresp': self.er[13]}
+                        'soilresp': self.er[12], 'litresp': self.er[13],
+                        'd_onset': self.er[14], 'groundresp': self.er[15]}
 
         self.modobdict = {'gpp': obs.gpp, 'nee': obs.nee, 'rt': obs.rec,
                           'cf': obs.cf, 'clab': obs.clab, 'cr': obs.cr,
                           'cw': obs.cw, 'cl': obs.cl, 'cs': obs.cs,
                           'lf': obs.lf, 'lw': obs.lw, 'lai': obs.lai,
-                          'soilresp': obs.soilresp, 'litresp': obs.litresp}
+                          'soilresp': obs.soilresp, 'litresp': obs.litresp,
+                          'd_onset': obs.d_onset, 'groundresp': obs.groundresp}
 
         if self.obs_str!=None and errors==1:
             self.obdict, self.oberrdict = self.rand_err_assim_obs(self.obs_str,
@@ -391,7 +402,8 @@ class dalecData( ):
         """Creates dictionary of synthetic obs given a string of observations.
         """
         possibleobs = ['gpp', 'lf', 'lw', 'rt', 'nee', 'cf', 'cl', \
-                       'cr', 'cw', 'cs', 'lai', 'clab', 'soilresp', 'litresp']
+                       'cr', 'cw', 'cs', 'lai', 'clab', 'soilresp', 'litresp', 'd_onset',
+                       'groundresp']
         Obslist = re.findall(r'[^,;\s]+', obs_str)
 
         for ob in Obslist:
@@ -423,7 +435,8 @@ class dalecData( ):
         where obs are to be taken and the number of obs in that range.
         """
         possibleobs = ['gpp', 'lf', 'lw', 'rt', 'nee', 'cf', 'cl', \
-                       'cr', 'cw', 'cs', 'lai', 'clab', 'soilresp', 'litresp']
+                       'cr', 'cw', 'cs', 'lai', 'clab', 'soilresp', 'litresp',
+                       'd_onset', 'groundresp']
         Obslist = re.findall(r'[^,;\s]+', obs_str)
 
         for ob in Obslist:

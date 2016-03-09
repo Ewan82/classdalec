@@ -266,6 +266,7 @@ class DalecData():
         self.sigo_rtot = 0.6
         self.sigo_rh = 0.6
         self.sigo_d_onset = 4.0
+        self.sigo_groundresp = 0.5
         
         self.errdict = {'clab': self.sigo_clab, 'cf': self.sigo_cf,
                         'cw': self.sigo_cw, 'cl': self.sigo_cl, 'cr': self.sigo_cr,
@@ -275,7 +276,8 @@ class DalecData():
                         'soilresp': self.sigo_soilresp,
                         'rtot': self.sigo_rtot,
                         'rh': self.sigo_rh,
-                        'd_onset': self.sigo_d_onset}
+                        'd_onset': self.sigo_d_onset,
+                        'groundresp': self.sigo_groundresp}
         
         if self.obs_str is not None and self.mnth_lst is None:
             self.obdict, self.oberrdict = self.assimilation_obs(self.obs_str)
@@ -306,7 +308,7 @@ class DalecData():
     def assimilation_obs(self, obs_str):
         possibleobs = ['gpp', 'lf', 'lw', 'rt', 'nee', 'cf', 'cl',
                        'cr', 'cw', 'cs', 'lai', 'clab', 'litresp', 'soilresp',
-                       'rtot', 'rh', 'rabg', 'd_onset']
+                       'rtot', 'rh', 'rabg', 'd_onset', 'groundresp']
         obslist = re.findall(r'[^,;\s]+', obs_str)
         obs_dict = {}
         obs_err_dict = {}
@@ -324,7 +326,7 @@ class DalecData():
     def time_assimilation_obs(self, obs_str, mnth_lst):
         possibleobs = ['gpp', 'lf', 'lw', 'rt', 'nee', 'cf', 'cl',
                        'cr', 'cw', 'cs', 'lai', 'clab', 'litresp', 'soilresp',
-                       'rtot', 'rh', 'rabg', 'd_onset']
+                       'rtot', 'rh', 'rabg', 'd_onset', 'groundresp']
         obslist = re.findall(r'[^,;\s]+', obs_str)
         obs_dict = {}
         obs_err_dict = {}
