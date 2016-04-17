@@ -705,6 +705,14 @@ class DalecModel():
         xa = pvals + np.dot(k_mat, (self.yoblist - hx))
         return xa
 
+    def sic(self, pvals):
+        acovmat = self.acovmat(pvals)
+        return 0.5*np.log(np.linalg.det(self.dC.B)/np.linalg.det(acovmat))
+
+    def dfs(self, pvals):
+        acovmat = self.acovmat(pvals)
+        return 23 - np.matrix.trace(np.dot(np.linalg.inv(self.dC.B), acovmat))
+
 # ------------------------------------------------------------------------------
 # CVT and implied B.
 # ------------------------------------------------------------------------------
@@ -834,6 +842,15 @@ class DalecModel():
         hx, hmat = self.hmat(pvallist, matlist)
         obs_mat = np.dot(np.dot(np.linalg.inv(np.sqrt(self.rmatrix)), hmat), np.sqrt(self.diag_b))
         return obs_mat
+
+    def cvt_a_covmat(self, pvals):
+        """Calculates approximation to analysis error covariance matrix
+        A = (B^(-1) + H^(T) * R^(-1) * H)^(-1).
+        """
+        pvallist, matlist = self.linmod_list(pvals)
+        hx, hmatrix = self.hmat(pvallist, matlist)
+        return np.linalg.inv(np.linalg.inv(self.dC.B) + np.dot(hmatrix.T,
+                        np.dot(np.linalg.inv(self.rmatrix), hmatrix)))
 
 # ------------------------------------------------------------------------------
 # Minimization Routines.
@@ -1034,7 +1051,8 @@ class DalecModel():
             self.endrun += 1
             pvallst, matlist = self.linmod_list(xa[year[0]][1])
             xb.append(pvallst[-1])
-            ev_acovmat = self.evolve_mat(acovmat, matlist)
+            ev_acovmat = 1.2 * self.evolve_mat(acovmat, matlist)
+            # ev_acovmat = self.dC.B
             ev_acovmat[11,11] = self.dC.B[11,11]
             ev_acovmat[13,13] = self.dC.B[13,13]
             ev_acovmat[14,14] = self.dC.B[14,14]

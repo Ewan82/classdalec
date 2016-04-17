@@ -109,4 +109,4 @@ def plot_bud_burst(dC, p_lst, bburst_inc_lst):
     plt.xlabel('Date')
     plt.ylabel('Cumulative NEE (g C m-2)')
     plt.show()
-    return fig, ax
+    return obs_bburst, times, fig, ax

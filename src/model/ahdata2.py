@@ -265,7 +265,7 @@ class DalecData():
         self.sigo_soilresp = 0.6
         self.sigo_rtot = 0.6
         self.sigo_rh = 0.6
-        self.sigo_d_onset = 4.0
+        self.sigo_d_onset = 14.0
         self.sigo_groundresp = 0.5
         
         self.errdict = {'clab': self.sigo_clab, 'cf': self.sigo_cf,

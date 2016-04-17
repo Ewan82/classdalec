@@ -142,6 +142,7 @@ def plot4dvarrun(ob, dC, start, fin, xb=None, xa=None, erbars=1, awindl=None,
     sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':1., 'lines.markersize':3.8})
     fig, ax = plt.subplots(nrows=1, ncols=1,) #figsize=(20,10))
     xlist = np.arange(start, fin)
+    palette = sns.color_palette("colorblind", 11)
     # We know the datum and delta from reading the file manually
     datum = dt.datetime(int(dC.year[0]), 1, 1)
     delta = dt.timedelta(hours=24)
@@ -152,18 +153,18 @@ def plot4dvarrun(ob, dC, start, fin, xb=None, xa=None, erbars=1, awindl=None,
         times.append(datum + int(t) * delta)
 
     if xb != None:
-        ax2 = plotobs(ob, xb, dC, start, fin, ob+'_b', times, 1, ax=ax,)# colour='b')
+        ax2 = plotobs(ob, xb, dC, start, fin, ob+'_b', times, 1, ax=ax, colour=palette[0])
         ax = ax2
     if xa != None:
-        ax3 = plotobs(ob, xa, dC, start, fin, ob+'_a', times, ax=ax2,)# colour='g')
+        ax3 = plotobs(ob, xa, dC, start, fin, ob+'_a', times, ax=ax2, colour=palette[1])
         ax = ax3
 
     obdict = dC.obdict
     oberrdict = dC.oberrdict
     if ob in obdict.keys():
         if erbars==True:
-            ax.errorbar(times, obdict[ob], yerr=oberrdict[ob+'_err'], \
-                         fmt='o', label=ob+'_o',)# color='r')
+            ax.errorbar(times, obdict[ob], yerr=oberrdict[ob+'_err'],
+                         fmt='o', label=ob+'_o', color=palette[2])
         else:
             ax.plot(times, obdict[ob], 'o', label=ob+'_o')
     if obdict_a!=None:
@@ -171,7 +172,7 @@ def plot4dvarrun(ob, dC, start, fin, xb=None, xa=None, erbars=1, awindl=None,
     #ax3.legend()
     plt.xlabel('Year')
     #plt.ylabel(ob.upper()+' (g C m-2)')
-    plt.ylabel(r'NEE (gCm$^{-2}$day$^{-1}$)')
+    plt.ylabel(r'NEE (g C m$^{-2}$ day$^{-1}$)')
     #plt.title(ob+' for Alice Holt flux site')
     plt.ylim((-20,15))
     if awindl!=None:
@@ -288,6 +289,7 @@ def plotbroken(ob, xb, xa, dC, start, fin, yr1=1, yr2=1, awindl=None):
     sns.set_style('ticks')
     sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':0.8, 'lines.markersize':4.0})
     xlist = np.arange(start, fin)
+    palette = sns.color_palette("colorblind", 11)
     # We know the datum and delta from reading the file manually
     datum = dt.datetime(int(dC.year[0]), 1, 1)
     delta = dt.timedelta(hours=24)
@@ -307,17 +309,17 @@ def plotbroken(ob, xb, xa, dC, start, fin, yr1=1, yr2=1, awindl=None):
     obdictsplit = np.hstack(np.array([obdict[0:365*yr1+1], obdict[-365*yr2-1:]]))
     oberrdictsplit = np.hstack(np.array([oberrdict[0:365*yr1+1], oberrdict[-365*yr2-1:]]))
 
-    fig,(ax,ax2) = plt.subplots(1, 2, sharey=True, figsize=(15, 5))
+    fig,(ax,ax2) = plt.subplots(1, 2, sharey=True, figsize=(12, 8))
 
     # plot the same data on both axes
-    ax.plot(timessplit, xbobssplit, '--')
-    ax2.plot(timessplit, xbobssplit, '--')
-    ax.plot(timessplit, xaobssplit)
-    ax2.plot(timessplit, xaobssplit)
+    ax.plot(timessplit, xbobssplit, '--', color=palette[0])
+    ax2.plot(timessplit, xbobssplit, '--', color=palette[0])
+    ax.plot(timessplit, xaobssplit, color=palette[1])
+    ax2.plot(timessplit, xaobssplit, color=palette[1])
     ax.errorbar(timessplit, obdictsplit, yerr=oberrdictsplit,
-                fmt='o', label=ob+'_o')
+                fmt='o', label=ob+'_o', color=palette[2])
     ax2.errorbar(timessplit, obdictsplit, yerr=oberrdictsplit,
-                 fmt='o', label=ob+'_o')
+                 fmt='o', label=ob+'_o', color=palette[2])
     if awindl!=None:
         ax.axvline(x=times[awindl],color='k',ls='dashed')
         ax2.axvline(x=times[awindl],color='k',ls='dashed')
@@ -407,9 +409,10 @@ def plotscatterobs(ob, pvals, dC, awindl, bfa='a'):
     specified in dC), assimilation window length and whether a comparison of 
     background 'b', forecast 'f' or analysis 'a' is desired.
     """
-    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':1, 'lines.markersize':6})
-    fig, ax = plt.subplots(nrows=1, ncols=1,)#figsize=(10,10))
+    sns.set_context('talk', font_scale=2.6, rc={'lines.linewidth':1, 'lines.markersize':6})
+    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(10,10))
     sns.set_style('ticks')
+    palette = sns.color_palette("colorblind", 11)
     pvallist = m.mod_list(pvals, dC, 0, len(dC.I))
     y, yerr = fdv.obscost(dC.obdict, dC.oberrdict) 
     hx = fdv.hxcost(pvallist, dC.obdict, dC)
@@ -418,24 +421,24 @@ def plotscatterobs(ob, pvals, dC, awindl, bfa='a'):
         if np.isnan(dC.obdict[ob][x])!=True:
             splitval += 1
     oneone=np.arange(int(min(min(y),min(hx)))-1, int(max(max(y),max(hx)))+1)
-    plt.plot(oneone, oneone)
+    plt.plot(oneone, oneone, color=palette[0])
     if bfa=='b' or bfa=='a':
-        ax.plot(y[0:splitval], hx[0:splitval], 'o')
+        ax.plot(y[0:splitval], hx[0:splitval], 'o', color=palette[1])
         error = np.sqrt(np.sum((y[0:splitval]-hx[0:splitval])**2)/\
                                                             len(y[0:splitval]))
         yhx = np.mean(y[0:splitval]-hx[0:splitval])
     elif bfa=='f':
-        ax.plot(y[splitval:], hx[splitval:], 'o')
+        ax.plot(y[splitval:], hx[splitval:], 'o', color=palette[1])
         error = np.sqrt(np.sum((y[splitval:]-hx[splitval:])**2)/\
                                                             len(y[splitval:]))
         yhx = np.mean(y[splitval:]-hx[splitval:])                                            
     else:
         raise Exception('Please check function input for bfa variable')
-    plt.xlabel(ob.upper()+r' observations (gCm$^{-2}$day$^{-1}$)')
-    plt.ylabel(ob.upper()+' model (gCm$^{-2}$day$^{-1}$)')
+    plt.xlabel(ob.upper()+r' observations (g C m$^{-2}$ day$^{-1}$)')
+    plt.ylabel(ob.upper()+' model (g C m$^{-2}$ day$^{-1}$)')
     #plt.title(bfa+'_error=%f, mean(y-hx)=%f' %(error,yhx))
     print bfa+'_error=%f, mean(y-hx)=%f' %(error,yhx)
-    plt.xlim((-20,10))
+    plt.xlim((-20,15))
     plt.ylim((-20,15))
     return ax, fig #error, y[0:splitval]-hx[0:splitval]
 
@@ -482,6 +485,20 @@ def da_std_corrcoef_obs(ob, pvals, dC, awindl, bfa='a'):
     rmse = np.sqrt(np.sum((obs-mod_obs)**2) / len(obs))
     return {'std_mod_obs': std_mod_obs, 'std_obs': std_obs, 'rms': rms, 'rmse': rmse, 'corr_coef': corr_coef}
 
+def std_corr(mod_obs, obs):
+    std_mod_obs = np.std(mod_obs)
+    mod_obs_bar = np.mean(mod_obs)
+    std_obs = np.std(obs)
+    obs_bar = np.mean(obs)
+    rms = np.sqrt(np.sum([((mod_obs[x]-mod_obs_bar)-(obs[x]-obs_bar))**2 for x in xrange(len(obs))])/len(obs))
+    corr_coef = (np.sum([((mod_obs[x]-mod_obs_bar)*(obs[x]-obs_bar)) for x in xrange(len(obs))])/len(obs))\
+                /(std_mod_obs*std_obs)
+    rmse = np.sqrt(np.sum((obs-mod_obs)**2) / len(obs))
+    ss_tot = np.sum([(ob-obs_bar)**2 for ob in obs])
+    ss_res = np.sum([(obs[x]-mod_obs[x])**2 for x in xrange(len(obs))])
+    r_sq = 1. - ss_res/ss_tot
+    return {'std_mod_obs': std_mod_obs, 'std_obs': std_obs, 'rms': rms, 'rmse': rmse, 'corr_coef': corr_coef,
+            'r_sq': r_sq}
 
 def plot_taylor_diagram():
     #sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':1.4, 'lines.markersize':9})

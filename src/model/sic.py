@@ -3,6 +3,8 @@ import datetime as dt
 import matplotlib.pyplot as plt
 import model as m
 import observations as obs
+import twindata_ahd as twd
+import modclass as mc
 
 
 def sic(dC, ob, pvals, x):
@@ -48,6 +50,23 @@ def plotsiclist(dC, ob, pvals, start, fin):
     
     plt.plot(times, siclit*obsat, 'x', markeredgewidth=1.75, 
              markeredgecolor='c')
+
+
+def ic_obs(ob_str, no_obs, lenwind, pvals):
+    """
+    Calculates DFS and SIC given:
+    :param ob_str: string of observations comma separated
+    :param no_obs: list of no. of each ob
+    :param lenwind: length of window for obs to be distributed in
+    :param pvals: parameter values to linearise about
+    :return: SIC, DFS
+    """
+    d = twd.dalecData(lenwind, ob_str, no_obs)
+    d.B = d.makeb(d.test_stdev)
+    m = mc.DalecModel(d)
+    sic = m.sic(pvals)
+    dfs = m.dfs(pvals)
+    return sic, dfs
              
         
     

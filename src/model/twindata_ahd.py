@@ -362,7 +362,12 @@ class dalecData( ):
         # MAKE NEW B, THIS IS WRONG!
 
         #'Observartion variances for carbon pools and NEE'
-        self.vars = np.array([self.clab*0.1, self.cf*0.1,
+        self.vars = np.array([self.test_xb[17]*0.1, self.test_xb[18]*0.1,
+                              self.test_xb[19]*0.1, self.test_xb[20]*0.1,
+                              self.test_xb[21]*0.1, self.test_xb[22]*0.1, 0.5, 0.9,
+                              0.9, 0.8, 0.8, 2.12, 0.5, 0.5,
+                              5., 0.5])
+        self.vars2 = np.array([self.clab*0.1, self.cf*0.1,
                               self.cw*0.1, self.cr*0.1,
                               self.cl*0.1, self.cs*0.1, 0.5, 0.2,
                               0.2, 0.2, 0.4, 0.12, 0.5, 0.5,
