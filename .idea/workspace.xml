@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="837283c5-404a-4f65-ab79-716c1adfdf9d" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/ahdata2.py" afterPath="$PROJECT_DIR$/src/model/ahdata2.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/modclass.py" afterPath="$PROJECT_DIR$/src/model/modclass.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/plot.py" afterPath="$PROJECT_DIR$/src/model/plot.py" />
     </list>
     <ignored path="classdalec.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -34,8 +31,8 @@
       <file leaf-file-name="modclass.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/model/modclass.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.6091954">
-              <caret line="765" column="23" selection-start-line="765" selection-start-column="23" selection-end-line="765" selection-end-column="23" />
+            <state vertical-scroll-proportion="0.41379312">
+              <caret line="970" column="49" selection-start-line="970" selection-start-column="49" selection-end-line="970" selection-end-column="49" />
               <folding>
                 <element signature="e#96#114#0" expanded="true" />
               </folding>
@@ -66,8 +63,8 @@
       <file leaf-file-name="plot.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/model/plot.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-1.074074">
-              <caret line="833" column="13" selection-start-line="833" selection-start-column="9" selection-end-line="833" selection-end-column="13" />
+            <state vertical-scroll-proportion="-6.111111">
+              <caret line="140" column="13" selection-start-line="140" selection-start-column="8" selection-end-line="140" selection-end-column="13" />
               <folding>
                 <element signature="e#46#64#0" expanded="true" />
               </folding>
@@ -952,14 +949,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/model/exec_var.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="288" column="27" selection-start-line="288" selection-start-column="27" selection-end-line="288" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/model/egubudburst.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -970,11 +959,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/model/plot.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-1.074074">
-          <caret line="833" column="13" selection-start-line="833" selection-start-column="9" selection-end-line="833" selection-end-column="13" />
+        <state vertical-scroll-proportion="-6.111111">
+          <caret line="140" column="13" selection-start-line="140" selection-start-column="8" selection-end-line="140" selection-end-column="13" />
           <folding>
             <element signature="e#46#64#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/model/exec_var.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="288" column="27" selection-start-line="288" selection-start-column="27" selection-end-line="288" selection-end-column="27" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -988,8 +985,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/model/modclass.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6091954">
-          <caret line="765" column="23" selection-start-line="765" selection-start-column="23" selection-end-line="765" selection-end-column="23" />
+        <state vertical-scroll-proportion="0.41379312">
+          <caret line="970" column="49" selection-start-line="970" selection-start-column="49" selection-end-line="970" selection-end-column="49" />
           <folding>
             <element signature="e#96#114#0" expanded="true" />
           </folding>

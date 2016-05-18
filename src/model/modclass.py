@@ -968,7 +968,7 @@ class DalecModel():
         """
         self.xb = pvals
         if bnds == 'strict':
-            bnds = self.zvalbnds(self.dC.bnds)
+            bnds = self.zvalbnds(self.dC.bnds_tst)
         else:
             bnds = bnds
         zvals = self.pvals2zvals(pvals)
