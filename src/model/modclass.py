@@ -730,6 +730,10 @@ class DalecModel():
         hx = self.hxcost(pvallist)
         return np.dot(np.dot((self.yoblist-hx), np.linalg.inv(self.rmatrix)), (self.yoblist-hx).T)
 
+    def bndcost_cvt(self, zvals):
+        pvals = self.zvals2pvals(zvals)
+        return np.dot(np.dot((pvals-self.dC.mid_bnds), np.linalg.inv(self.dC.bnd_cov)), (pvals-self.dC.mid_bnds).T)
+
     def cost_cvt(self, zvals):
         """4DVAR cost function to be minimized. Takes an initial state (pvals),
         an observation dictionary, observation error dictionary, a dataClass
@@ -740,7 +744,7 @@ class DalecModel():
             mod_cost = self.modcost_cvt(zvals)
         else:
             mod_cost = 0
-        cost = 0.5*ob_cost + 0.5*mod_cost
+        cost = 0.5*ob_cost + 0.5*mod_cost + 0.5*self.bndcost_cvt(zvals)
         return cost
 
     def gradcost_cvt(self, zvals):
@@ -757,7 +761,8 @@ class DalecModel():
             modcost = np.dot(np.linalg.inv(self.b_tilda), zvals.T)
         else:
             modcost = 0
-        gradcost = - obcost + modcost
+        bnd_cost = np.dot(np.linalg.inv(self.dC.bnd_cov), (pvals-self.dC.mid_bnds).T)
+        gradcost = - obcost + modcost +bnd_cost
         return gradcost
 
     def gradcost2_cvt(self, zvals):

@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import model as m
 import fourdvar as fdv
 import observations as obs
+import scipy as sp
+import scipy.stats
 import copy as cp
 import modclass as mc
 import twindata_ahd as twd
@@ -49,11 +51,12 @@ def plotphi(onoff, dC, start, fin):
     
     
 def plotobs(ob, pvals, dC, start, fin, lab=0, xax=None, dashed=0, 
-            colour=None, ax=None):
+            colour=None, ax=None, nee_std=None):
     """Plots a specified observation using obs eqn in obs module. Takes an
     observation string, a dataClass (dC) and a start and finish point.
     """
-    sns.set_context(rc={'lines.linewidth':1., 'lines.markersize':3.8})
+    sns.set_context(rc={'lines.linewidth':.8, 'lines.markersize':6})
+    palette = sns.color_palette("Greys")
     if ax == None:
         fig, ax = plt.subplots( nrows=1, ncols=1, figsize=(20,10))
     else:
@@ -74,7 +77,7 @@ def plotobs(ob, pvals, dC, start, fin, lab=0, xax=None, dashed=0,
         xax = xax
     oblist = np.ones(fin - start)*-9999.
     for x in xrange(start, fin):
-        oblist[x-start] = modobdict[ob](pvallist[x-start],dC,x)
+        oblist[x-start] = modobdict[ob](pvallist[x-start], dC, x)
     if colour == None:
         if dashed == True:
             ax.plot(xax, oblist, '--', label=lab)
@@ -82,9 +85,16 @@ def plotobs(ob, pvals, dC, start, fin, lab=0, xax=None, dashed=0,
             ax.plot(xax, oblist, label=lab)
     else:
         if dashed==True:    
-            ax.plot(xax, oblist, '--', label=lab, color=colour)
+            ax.plot(xax, oblist, '--', label=lab, color=colour, alpha=1)
         else:
-            ax.plot(xax, oblist, label=lab, color=colour)
+            ax.plot(xax, oblist, label=lab, color=colour, alpha=1)
+            if nee_std is not None:
+                ax.fill_between(xax, oblist-3*nee_std, oblist+3*nee_std, facecolor=palette[2],
+                                alpha=0.7, linewidth=0.0)
+    #ax.xaxis.set_major_locator(mdates.YearLocator())
+    #ax.xaxis.set_minor_locator(mdates.YearLocator())
+    #myFmt = mdates.DateFormatter('%Y')  # format x-axis time to display just month
+    #ax.xaxis.set_major_formatter(myFmt)
     return ax
 
 
@@ -129,7 +139,7 @@ def plotobs_csum(ob, pvals, dC, start, fin, lab=0, xax=None, dashed=0,
 
 
 def plot4dvarrun(ob, dC, start, fin, xb=None, xa=None, erbars=1, awindl=None,
-                 obdict_a=None):
+                 obdict_a=None, nee_std=None):
     """Plots a model predicted observation value for two initial states (xb,xa)
     and also the actual observations taken of the physical quantity. Takes a ob
     string, two initial states (xb,xa), a dataClass and a start and finish 
@@ -139,7 +149,7 @@ def plot4dvarrun(ob, dC, start, fin, xb=None, xa=None, erbars=1, awindl=None,
     #hourLocator   = mdates.HourLocator()
     #dateFmt = mdates.DateFormatter('%Y')
     sns.set_style('ticks')
-    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':1., 'lines.markersize':3.8})
+    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':.8, 'lines.markersize':3.8})
     fig, ax = plt.subplots(nrows=1, ncols=1,) #figsize=(20,10))
     xlist = np.arange(start, fin)
     palette = sns.color_palette("colorblind", 11)
@@ -153,10 +163,12 @@ def plot4dvarrun(ob, dC, start, fin, xb=None, xa=None, erbars=1, awindl=None,
         times.append(datum + int(t) * delta)
 
     if xb != None:
-        ax2 = plotobs(ob, xb, dC, start, fin, ob+'_b', times, 1, ax=ax, colour=palette[0])
+        ax2 = plotobs(ob, xb, dC, start, fin, ob+'_b', times, 1, ax=ax,
+                      colour=palette[0], nee_std=nee_std)
         ax = ax2
     if xa != None:
-        ax3 = plotobs(ob, xa, dC, start, fin, ob+'_a', times, ax=ax2, colour=palette[1])
+        ax3 = plotobs(ob, xa, dC, start, fin, ob+'_a', times, ax=ax,
+                      colour=palette[1], nee_std=nee_std)
         ax = ax3
 
     obdict = dC.obdict
@@ -164,7 +176,7 @@ def plot4dvarrun(ob, dC, start, fin, xb=None, xa=None, erbars=1, awindl=None,
     if ob in obdict.keys():
         if erbars==True:
             ax.errorbar(times, obdict[ob], yerr=oberrdict[ob+'_err'],
-                         fmt='o', label=ob+'_o', color=palette[2])
+                         fmt='o', label=ob+'_o', color=palette[2], alpha=0.7)
         else:
             ax.plot(times, obdict[ob], 'o', label=ob+'_o')
     if obdict_a!=None:
@@ -173,6 +185,7 @@ def plot4dvarrun(ob, dC, start, fin, xb=None, xa=None, erbars=1, awindl=None,
     plt.xlabel('Year')
     #plt.ylabel(ob.upper()+' (g C m-2)')
     plt.ylabel(r'NEE (g C m$^{-2}$ day$^{-1}$)')
+    #plt.ylabel(r'Forest CO$_{2}$ Balance (g C m$^{-2}$ day$^{-1}$)')
     #plt.title(ob+' for Alice Holt flux site')
     plt.ylim((-20,15))
     if awindl!=None:
@@ -280,16 +293,17 @@ def oblist(ob, pvals, dC, start, fin):
     return oblist
 
 
-def plotbroken(ob, xb, xa, dC, start, fin, yr1=1, yr2=1, awindl=None):
+def plotbroken(ob, xb, xa, dC, start, fin, yr1=1, yr2=1, awindl=None, nee_std=None):
     """Plots a model predicted observation value for two initial states (xb,xa)
     and also the actual observations taken of the physical quantity. Takes a ob
     string, two initial states (xb,xa), a dataClass and a start and finish
     time step.
     """
     sns.set_style('ticks')
-    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':0.8, 'lines.markersize':4.0})
+    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':.8, 'lines.markersize':6.0})
     xlist = np.arange(start, fin)
     palette = sns.color_palette("colorblind", 11)
+    palette2 = sns.color_palette("Greys")
     # We know the datum and delta from reading the file manually
     datum = dt.datetime(int(dC.year[0]), 1, 1)
     delta = dt.timedelta(hours=24)
@@ -301,11 +315,17 @@ def plotbroken(ob, xb, xa, dC, start, fin, yr1=1, yr2=1, awindl=None):
 
     xbobs = oblist(ob, xb, dC, start, fin)
     xaobs = oblist(ob, xa, dC, start, fin)
+    if nee_std != None:
+        xaobs_stdp = xaobs+3*nee_std
+        xaobs_stdm = xaobs-3*nee_std
     obdict = dC.obdict[ob]
     oberrdict = dC.oberrdict[ob+'_err']
     timessplit = np.hstack(np.array([times[0:365*yr1+1], times[-365*yr2-1:]]))
     xbobssplit = np.hstack(np.array([xbobs[0:365*yr1+1], xbobs[-365*yr2-1:]]))
     xaobssplit = np.hstack(np.array([xaobs[0:365*yr1+1], xaobs[-365*yr2-1:]]))
+    if nee_std != None:
+        xastdsplitp = np.hstack(np.array([xaobs_stdp[0:365*yr1+1], xaobs_stdp[-365*yr2-1:]]))
+        xaobssplitm = np.hstack(np.array([xaobs_stdm[0:365*yr1+1], xaobs_stdm[-365*yr2-1:]]))
     obdictsplit = np.hstack(np.array([obdict[0:365*yr1+1], obdict[-365*yr2-1:]]))
     oberrdictsplit = np.hstack(np.array([oberrdict[0:365*yr1+1], oberrdict[-365*yr2-1:]]))
 
@@ -316,10 +336,16 @@ def plotbroken(ob, xb, xa, dC, start, fin, yr1=1, yr2=1, awindl=None):
     ax2.plot(timessplit, xbobssplit, '--', color=palette[0])
     ax.plot(timessplit, xaobssplit, color=palette[1])
     ax2.plot(timessplit, xaobssplit, color=palette[1])
+    ax.set_ylabel(ob.upper()+r' (g C m$^{-2}$ day$^{-1}$)')
+    if nee_std != None:
+        ax.fill_between(timessplit, xaobssplitm, xastdsplitp, facecolor=palette2[1],
+                        alpha=0.7, linewidth=0.0)
+        ax2.fill_between(timessplit, xaobssplitm, xastdsplitp, facecolor=palette2[1],
+                        alpha=0.7, linewidth=0.0)
     ax.errorbar(timessplit, obdictsplit, yerr=oberrdictsplit,
-                fmt='o', label=ob+'_o', color=palette[2])
+                fmt='o', label=ob+'_o', color=palette[2], alpha=0.7)
     ax2.errorbar(timessplit, obdictsplit, yerr=oberrdictsplit,
-                 fmt='o', label=ob+'_o', color=palette[2])
+                 fmt='o', label=ob+'_o', color=palette[2], alpha=0.7)
     if awindl!=None:
         ax.axvline(x=times[awindl],color='k',ls='dashed')
         ax2.axvline(x=times[awindl],color='k',ls='dashed')
@@ -333,7 +359,8 @@ def plotbroken(ob, xb, xa, dC, start, fin, yr1=1, yr2=1, awindl=None):
     ax2.spines['left'].set_visible(False)
     ax.yaxis.tick_left()
     ax.tick_params(labeltop='off') # don't put tick labels at the top
-    ax2.yaxis.tick_right()
+    # ax2.yaxis.tick_left()
+    ax2.tick_params(which='both', left='off')
 
     # Make the spacing between the two axes a bit smaller
     plt.subplots_adjust(wspace=0.15)
@@ -352,8 +379,14 @@ def plotbroken(ob, xb, xa, dC, start, fin, yr1=1, yr2=1, awindl=None):
     ax.xaxis.set_minor_locator(mdates.YearLocator())
     ax2.xaxis.set_major_locator(mdates.YearLocator())
     ax2.xaxis.set_minor_locator(mdates.YearLocator())
-    #fig.autofmt_xdate()
+    myFmt = mdates.DateFormatter('%Y')  # format x-axis time to display just month
+    ax.xaxis.set_major_formatter(myFmt)
+    ax2.xaxis.set_major_formatter(myFmt)
+    # fig.autofmt_xdate()
     plt.ylim((-20,15))
+    ax.set_ylabel(ob.upper()+r' (g C m$^{-2}$ day$^{-1}$)')
+    ax.set_xlabel('Year')
+    ax.xaxis.set_label_coords(0.5, -0.04, transform=fig.transFigure)
     return (ax, ax2), fig
     
     
@@ -409,7 +442,7 @@ def plotscatterobs(ob, pvals, dC, awindl, bfa='a'):
     specified in dC), assimilation window length and whether a comparison of 
     background 'b', forecast 'f' or analysis 'a' is desired.
     """
-    sns.set_context('talk', font_scale=2.6, rc={'lines.linewidth':1, 'lines.markersize':6})
+    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':1., 'lines.markersize':6.})
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(10,10))
     sns.set_style('ticks')
     palette = sns.color_palette("colorblind", 11)
@@ -1073,6 +1106,164 @@ def plotlinmoderr(dC, start, fin, pvals, ax, fig, dx=0.05, gamma=1, cpool=None, 
     plt.legend(loc=2)
     fig.autofmt_xdate()
     return fig, ax
+
+# ------------------------------------------------------------------------------
+# 4D-Var paper plots after review
+# ------------------------------------------------------------------------------
+
+
+def model_dat_resid(dC, pvals, skip_yrs=1):
+    """
+    Calculates the mean model data difference of a forecast of nee over some time period
+    :param dC: data class for DALEC2
+    :param pvals: starting parameter set
+    :param skip_yrs: how many years to skip when calculating mean
+    :return: mean model data difference
+    """
+    nee_lst = oblist('nee', pvals, dC, 0, len(dC.I))
+    yhx = [nee_lst[365*x:365*x+365]-dC.obdict['nee'][365*x:365*x+365] for x in xrange(dC.endyr-dC.startyr)]
+    mean_yhx = np.nanmean(yhx[skip_yrs:], axis=0)
+    return mean_yhx
+
+
+def model_dat_spline(mean_yhx):
+    """
+    Fits a spline to the model data difference calculated in model_dat_resid fn.
+    :param mean_yhx: output from model_dat_resid fn
+    :return: spline fitted through data
+    """
+    meanyhx = cp.deepcopy(mean_yhx)
+    w = np.isnan(meanyhx)
+    meanyhx[w] = 0
+    spl = sp.interpolate.UnivariateSpline(np.arange(365), meanyhx, w=~w, s=450)
+    return spl(np.arange(365))
+
+
+def model_dat_resid_plt(mean_yhx, line='o', yr=1999, figax=None):
+    """
+    Plots model data residual averaged over many yrs
+    :param mean_yhx: mean model data residual
+    :param yr: year to plot for
+    :param figax: figure and ax to include
+    :return: fig, ax of plot
+    """
+    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':2.0, 'lines.markersize':6.0})
+    palette = sns.color_palette("colorblind", 11)
+    if figax is None:
+        fig, ax = plt.subplots(nrows=1, ncols=1)
+    else:
+        fig, ax = figax
+    sns.set_style('ticks')
+    xlist = np.arange(0, 365)
+    datum = dt.datetime(int(yr), 1, 1)
+    delta = dt.timedelta(hours=24)
+    # Convert the time values to datetime objects
+    times = []
+    for t in xlist:
+        times.append(datum + int(t) * delta)
+    for m_yhx in enumerate(mean_yhx):
+        ax.plot(times, m_yhx[1], line, color=palette[m_yhx[0]+1])
+    ax.set_ylabel(r'model-data residual (g C m$^{-2}$ day$^{-1}$)')
+    ax.set_xlabel('Date')
+    # ax.axhline(0, color='k', linestyle='--')
+    myFmt = mdates.DateFormatter('%b')  # format x-axis time to display just month
+    ax.xaxis.set_major_formatter(myFmt)
+    plt.ylim((-15,10))
+    return fig, ax
+
+
+def test_bnds(dC, pvals):
+    """
+    Test if a parameter set falls within given bounds.
+    :param dC: DALEC2 data class
+    :param pvals: parameter set to test
+    :return: True or False (Pass or Fail)
+    """
+    tst = 0
+    for bnd in enumerate(dC.bnds_tst):
+        if bnd[1][0] <= pvals[bnd[0]] <= bnd[1][1]:
+            tst += 1
+        else:
+            continue
+    if tst == 23:
+        return True
+    else:
+        return False
+
+
+def create_ensemble(dC, covmat, pvals):
+    ensemble = []
+    while len(ensemble) < 500:
+        rand = np.random.multivariate_normal(pvals, covmat, 100)
+        for xa in rand:
+            if test_bnds(dC, xa) == True and pvals_test_uc(dC, xa) == True:
+                ensemble.append(xa)
+            else:
+                continue
+    return ensemble
+
+
+def nee_ensemble(dC, ensemble):
+    nee_ens = np.ones((len(ensemble), len(dC.I)))
+    for pvals in enumerate(ensemble):
+        nee_ens[pvals[0]] = oblist('nee', pvals[1], dC, 0, len(dC.I))
+    return nee_ens
+
+
+def nee_cumsum_ensemble(dC, ensemble):
+    nee_ens = np.ones((len(ensemble), len(dC.I)))
+    nee_cumsum = [np.cumsum(oblist('nee', ensemble[x], dC, 0, len(dC.I))) for x in xrange(len(ensemble))]
+    for x in xrange(len(ensemble)):
+        nee_ens[x] = nee_cumsum[x]
+    return nee_ens
+
+
+def nee_mean_std(nee_ens):
+    nee_mean = np.nanmean(nee_ens, axis=0)
+    nee_std = np.nanstd(nee_ens, axis=0)
+    return nee_mean, nee_std
+
+
+def mean_confidence_interval(data, confidence=0.95):
+    a = 1.0*np.array(data)
+    n = len(a)
+    m, se = np.mean(a, axis=0), scipy.stats.sem(a, axis=0)
+    h = se * scipy.stats.t.ppf((1+confidence)/2., n-1,)
+    return m, m-h, m+h, h
+
+
+def pvals_test_uc(dC, pvals):
+    """ Test if pvals pass constraints.
+    """
+    #calculate carbon fluxes
+    f_auto = pvals[1]
+    f_fol = (1-f_auto)*pvals[2]
+    f_lab = (1-f_auto-f_fol)*pvals[12]
+    f_roo = (1-f_auto-f_fol-f_lab)*pvals[3]
+    f_woo = (1 - f_auto - f_fol - f_lab - f_roo)
+
+    #universal constraint tests
+    uc = [10*pvals[16] > pvals[18],
+          pvals[8] < pvals[7],
+          pvals[0] > pvals[8],
+          pvals[5] < 1/(365.25*pvals[4]),
+          pvals[6] > pvals[8]*np.exp(pvals[9]*dC.t_mean[0]),
+          0.2*f_roo < (f_fol+f_lab) < 5*f_roo,
+          pvals[14]-pvals[11]>45]
+    if all(uc) == True:
+        return True
+    else:
+        return False
+
+
+def remove_nan_vals(nee_ens):
+    nan_arr = np.unique(np.where(np.isnan(nee_ens) == True)[0])
+    nee_arr = np.delete(nee_ens, nan_arr, 0)
+    return nee_arr
+
+
+def nee_ens_plt(dC, nee_ens):
+    return '0oo'
 
 
 # ------------------------------------------------------------------------------
