@@ -744,7 +744,7 @@ class DalecModel():
             mod_cost = self.modcost_cvt(zvals)
         else:
             mod_cost = 0
-        cost = 0.5*ob_cost + 0.5*mod_cost + 0.5*self.bndcost_cvt(zvals)
+        cost = 0.5*ob_cost + 0.5*mod_cost  # + 0.5*self.bndcost_cvt(zvals)
         return cost
 
     def gradcost_cvt(self, zvals):
@@ -761,8 +761,8 @@ class DalecModel():
             modcost = np.dot(np.linalg.inv(self.b_tilda), zvals.T)
         else:
             modcost = 0
-        bnd_cost = np.dot(np.linalg.inv(self.dC.bnd_cov), (pvals-self.dC.mid_bnds).T)
-        gradcost = - obcost + modcost +bnd_cost
+        # bnd_cost = np.dot(np.linalg.inv(self.dC.bnd_cov), (pvals-self.dC.mid_bnds).T)
+        gradcost = - obcost + modcost  # + bnd_cost
         return gradcost
 
     def gradcost2_cvt(self, zvals):
@@ -829,7 +829,7 @@ class DalecModel():
         self.xb = pvals
         zvals = self.pvals2zvals(pvals)
         if bnds == 'strict':
-            bnds = self.zvalbnds(self.dC.bnds2)
+            bnds = self.zvalbnds(self.dC.bnds_tst)
         else:
             bnds = bnds
         findmin = spop.fmin_tnc(self.cost_cvt, zvals,
