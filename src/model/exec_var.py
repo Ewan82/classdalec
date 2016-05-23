@@ -6,7 +6,10 @@ import scipy.stats as stats
 import sympy as smp
 import matplotlib.pyplot as plt
 import plot as p
-
+import joblib as jl
+import random as rand
+import multiprocessing as mp
+import dill
 
 exp_list = [('bdiag', 'None'), ('b_edc', 'None'), ('bdiag', 'r_corr_cor0.3_tau4_cutoff4_var0.5'),
             ('b_edc', 'r_corr_cor0.3_tau4_cutoff4_var0.5'), ('bdiag', 'r_corr_cor0.3_tau4_cutoff4_var0.8'),
@@ -519,3 +522,66 @@ def r_mat_soar(yerroblist, ytimestep, tau=.4, cut_off=4., r_var=0.5):
                               np.exp(-(abs(float(ytimestep[i])-float(ytimestep[j])))/float(tau))
     r = np.dot(np.dot((np.sqrt(r_diag)),r_corr),np.sqrt(r_diag))
     return r_corr, r
+
+
+def var_ens(size_ens=10):
+    d = ahd2.DalecData(startyr=1999, endyr=2000, obstr='nee')
+    d.B = pickle.load(open('misc/b_edc.p', 'r'))
+    m = mc.DalecModel(d)
+    edc_ens = pickle.load(open('misc/edc_param_ensem.p', 'r'))
+    param_ens = rand.sample(edc_ens, size_ens)
+    #num_cores = mp.cpu_count()
+    #output = jl.Parallel(n_jobs=num_cores, backend='threading')(jl.delayed(m.findmintnc_cvt)(pval) for pval in param_ens)
+    pool = mp.Pool()
+    output = pool.map(m.findmintnc_cvt, param_ens)
+    return output
+
+
+def var_ens3(size_ens=10):
+    d = ahd2.DalecData(startyr=1999, endyr=2000, obstr='nee')
+    d.B = pickle.load(open('misc/b_edc.p', 'r'))
+    m = mc.DalecModel(d)
+    edc_ens = pickle.load(open('misc/edc_param_ensem.p', 'r'))
+    param_ens = rand.sample(edc_ens, size_ens)
+    output = [m.findmintnc_cvt(pvals) for pvals in param_ens]
+    f = open('misc/var_ens_out', 'w')
+    pickle.dump(output, f)
+    f.close()
+    return output
+
+
+def var_ens2(size_ens=10):
+    output = mp.Queue()
+    d = ahd2.DalecData(startyr=1999, endyr=2000, obstr='nee')
+    d.B = pickle.load(open('misc/b_edc.p', 'r'))
+    m = mc.DalecModel(d)
+    def find_xb(pvals):
+        xb = m.findmintnc_cvt(pvals, output)
+        output.put(xb)
+    edc_ens = pickle.load(open('misc/edc_param_ensem.p', 'r'))
+    param_ens = rand.sample(edc_ens, size_ens)
+    processes = [mp.Process(target=find_xb, args=(pvals, output)) for pvals in param_ens]
+    for p in processes:
+        p.start()
+    for p in processes:
+        p.join()
+    results = [output.get() for p in processes]
+    return results
+
+
+def _pickle_method(method):
+    func_name = method.im_func.__name__
+    obj = method.im_self
+    cls = method.im_class
+    return _unpickle_method, (func_name, obj, cls)
+
+
+def _unpickle_method(func_name, obj, cls):
+    for cls in cls.mro():
+        try:
+            func = cls.__dict__[func_name]
+        except KeyError:
+            pass
+        else:
+            break
+    return func.__get__(obj, cls)

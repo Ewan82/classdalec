@@ -4,9 +4,14 @@ dalecv2 model.
 import numpy as np
 import scipy.optimize as spop
 import scipy.linalg as spl
+import pickle
 import matplotlib.mlab as mlab
 import algopy
 import emcee
+import sklearn.externals.joblib as jl
+import random as rand
+import multiprocessing
+import dill
 
 
 class DalecModel():
@@ -1008,6 +1013,13 @@ class DalecModel():
         xalist = [assim_results[x][0] for x in xrange(self.nume)]
       
         return ensempvals, xalist, assim_results
+
+    def var_ens(self, size_ens=10):
+        edc_ens = pickle.load(open('misc/edc_param_ensem.p', 'r'))
+        param_ens = rand.sample(edc_ens, size_ens)
+        num_cores = multiprocessing.cpu_count()
+        output = jl.Parallel(n_jobs=num_cores)(jl.delayed(self.findmintnc_cvt)(self, pval) for pval in param_ens)
+        return output
         
 
 # ------------------------------------------------------------------------------
