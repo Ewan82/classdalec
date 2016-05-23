@@ -11,7 +11,6 @@ import emcee
 import joblib as jl
 import random as rand
 import multiprocessing
-import dill
 
 
 class DalecModel():
