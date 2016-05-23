@@ -8,7 +8,7 @@ import pickle
 import matplotlib.mlab as mlab
 import algopy
 import emcee
-import sklearn.externals.joblib as jl
+import joblib as jl
 import random as rand
 import multiprocessing
 import dill
