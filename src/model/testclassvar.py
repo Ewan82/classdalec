@@ -20,7 +20,7 @@ def test_linmod(gamma=1e1):
 
     dxl = np.linalg.norm(np.dot(m.mfac(matlist, 730), pvals3.T))
 
-    dxn = np.linalg.norm(cxdx-cx)
+    dxn = np.linalg.norm(cxdx-cx-dxl)
     return dxl / dxn
 
 def plt_linmod_er():

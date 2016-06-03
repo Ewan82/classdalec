@@ -824,8 +824,8 @@ def plot_a_inc_all(xb, xadiag, xaedc, xarcor, xaedcrcor):
     ax.set_xticks(ind+width*2)
     keys = [r'$\theta_{min}$', r'$f_{auto}$', r'$f_{fol}$', r'$f_{roo}$', r'$c_{lspan}$', r'$\theta_{woo}$',
             r'$\theta_{roo}$', r'$\theta_{lit}$', r'$\theta_{som}$', r'$\Theta$', r'$c_{eff}$', r'$d_{onset}$',
-            r'$f_{lab}$', r'$c_{ronset}$', r'$d_{fall}$', r'$c_{rfall}$', r'$c_{lma}$', r'$C_{lab}$', r'$C_f$', r'$C_r$',
-            r'$C_w$', r'$C_l$', r'$C_s$']
+            r'$f_{lab}$', r'$c_{ronset}$', r'$d_{fall}$', r'$c_{rfall}$', r'$c_{lma}$', r'$C_{lab}$', r'$C_{fol}$',
+            r'$C_{roo}$', r'$C_{woo}$', r'$C_{lit}$', r'$C_{som}$']
     ax.set_xticklabels(keys, rotation=90)
     ax.legend()
     return ax, fig
@@ -905,16 +905,16 @@ def plotbmat(bmat):
     ax.set_aspect('equal')
     keys = [r'$\theta_{min}$', r'$f_{auto}$', r'$f_{fol}$', r'$f_{roo}$', r'$c_{lspan}$', r'$\theta_{woo}$',
             r'$\theta_{roo}$', r'$\theta_{lit}$', r'$\theta_{som}$', r'$\Theta$', r'$c_{eff}$', r'$d_{onset}$',
-            r'$f_{lab}$', r'$c_{ronset}$', r'$d_{fall}$', r'$c_{rfall}$', r'$c_{lma}$', r'$C_{lab}$', r'$C_f$',
-            r'$C_r$', r'$C_w$', r'$C_l$', r'$C_s$']
+            r'$f_{lab}$', r'$c_{ronset}$', r'$d_{fall}$', r'$c_{rfall}$', r'$c_{lma}$', r'$C_{lab}$', r'$C_{fol}$',
+            r'$C_{roo}$', r'$C_{woo}$', r'$C_{lit}$', r'$C_{som}$']
     ax.set_xticks(np.arange(23))
     ax.set_xticklabels(keys, rotation=90)
     ax.set_yticks(np.arange(23))
     ax.set_yticklabels(keys)
     cmap = sns.diverging_palette(220, 10, as_cmap=True)
     mask = np.eye(23, dtype=bool)
-    sns.heatmap(bmat, mask=mask, xticklabels=keys, yticklabels=keys, ax=ax,
-                cmap=cmap, vmax=.5, square=True, linewidths=.5, cbar=True,
+    sns.heatmap(bmat, xticklabels=keys, yticklabels=keys, ax=ax,
+                cmap=cmap, vmax=.6, square=True, linewidths=.5, cbar=True,
                 cbar_kws={'label': 'Correlation'})
 
     #ax.set_label('Correlation')
