@@ -524,6 +524,31 @@ def r_mat_soar(yerroblist, ytimestep, tau=.4, cut_off=4., r_var=0.5):
 
 
 def var_ens(size_ens=10):
+    edc_ens = pickle.load(open('misc/edc_param_ensem.p', 'r'))
+    param_ens = rand.sample(edc_ens, size_ens)
+    output = [run_4dvar_desroziers(pvals) for pvals in param_ens]
+    f = open('misc/var_ens_out2', 'w')
+    pickle.dump(output, f)
+    f.close()
+    return output
+
+
+def perturb_obs(ob_arr, ob_err_arr):
+    for ob in enumerate(ob_arr):
+        ob_arr[ob[0]] = ob[1] + np.random.normal(0, ob_err_arr[ob[0]])
+    return ob_arr
+
+
+def run_4dvar_desroziers(pvals):
+    d = ahd2.DalecData(startyr=1999, endyr=2000, obstr='nee')
+    d.B = pickle.load(open('misc/b_edc.p', 'r'))
+    m = mc.DalecModel(d)
+    m.yoblist = perturb_obs(m.yoblist, m.yerroblist)
+    out = m.findmintnc_cvt(pvals)
+    return m.yoblist, pvals, out
+
+
+def var_ens3(size_ens=10):
     d = ahd2.DalecData(startyr=1999, endyr=2000, obstr='nee')
     d.B = pickle.load(open('misc/b_edc.p', 'r'))
     m = mc.DalecModel(d)
@@ -533,19 +558,6 @@ def var_ens(size_ens=10):
     #output = jl.Parallel(n_jobs=num_cores, backend='threading')(jl.delayed(m.findmintnc_cvt)(pval) for pval in param_ens)
     pool = mp.Pool()
     output = pool.map(m.findmintnc_cvt, param_ens)
-    return output
-
-
-def var_ens3(size_ens=10):
-    d = ahd2.DalecData(startyr=1999, endyr=2000, obstr='nee')
-    d.B = pickle.load(open('misc/b_edc.p', 'r'))
-    m = mc.DalecModel(d)
-    edc_ens = pickle.load(open('misc/edc_param_ensem.p', 'r'))
-    param_ens = rand.sample(edc_ens, size_ens)
-    output = [m.findmintnc_cvt(pvals) for pvals in param_ens]
-    f = open('misc/var_ens_out', 'w')
-    pickle.dump(output, f)
-    f.close()
     return output
 
 
