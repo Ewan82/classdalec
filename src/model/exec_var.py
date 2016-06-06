@@ -519,7 +519,7 @@ def r_mat_soar(yerroblist, ytimestep, tau=.4, cut_off=4., r_var=0.5):
             if abs(ytimestep[i]-ytimestep[j]) < cut_off:
                 r_corr[i,j] = (1+(abs(float(ytimestep[i])-float(ytimestep[j]))/float(tau)))* \
                               np.exp(-(abs(float(ytimestep[i])-float(ytimestep[j])))/float(tau))
-    r = np.dot(np.dot((np.sqrt(r_diag)),r_corr),np.sqrt(r_diag))
+    r = np.dot(np.dot((np.sqrt(r_diag)), r_corr), np.sqrt(r_diag))
     return r_corr, r
 
 
