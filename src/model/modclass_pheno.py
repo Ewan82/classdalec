@@ -129,7 +129,9 @@ class DalecModel():
         :param d_onset: guess to initial years day of bud-burst
         :return: arr of day of bud-burst for each year
         """
+        # Calculate cumulative temp for bud burst
         t_bb = np.sum(self.dC.t_mean[0:d_onset])
+
         daybb_arr = np.ones(len(self.dC.year))
         for y in np.unique(self.dC.year):
             year_ind = np.where(self.dC.year == y)[0]

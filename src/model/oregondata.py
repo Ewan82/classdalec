@@ -18,7 +18,7 @@ class dalecData( ):
        
         #Extract the data
         self.homepath = os.path.expanduser("~")
-        self.f = open(self.homepath+"/projects/classdalec/oregondata/dalec_drivers.txt",\
+        self.f = open("../../oregondata/dalec_drivers.txt",\
                       "r")
         self.allLines = self.f.readlines()
         self.data = np.array([[-9999.]*9 for i in range(self.lenrun)])
@@ -27,7 +27,8 @@ class dalecData( ):
             n = n + 1
             allVars = self.allLines[x].split()
             for i in xrange(0, 9):
-                self.data[n,i] = float(allVars[i])
+                self.data[n, i] = float(allVars[i])
+
         
         #'I.C. for carbon pools gCm-2'
         self.clab = 41.8

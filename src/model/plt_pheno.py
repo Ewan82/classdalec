@@ -6,6 +6,25 @@ import seaborn as sns
 import matplotlib.dates as mdates
 
 
+def plotphi(pvals, dC, start, fin):
+    """Plots phi using phi equations given a string "fall" or "onset", a
+    dataClass and a start and finish point. Nice check to see dynamics.
+    """
+    m = mcp.DalecModel(dC)
+    m.daybb_arr = m.day_bb(pvals[11])
+    xlist = np.arange(start, fin, 1)
+    phion = np.ones(fin - start)*-9999.
+    phioff = np.ones(fin - start)*-9999.
+    for x in xrange(start, fin):
+        m.x = x
+        phion[x-start] = m.phi_onset(m.daybb_arr[x], pvals[13])
+        phioff[x-start] = m.phi_fall(pvals[14], pvals[15], pvals[4])
+    m.x -= fin
+    plt.plot(xlist, phion)
+    plt.plot(xlist, phioff)
+    plt.show()
+
+
 def oblist(ob, dC, pvals):
     m = mcp.DalecModel(dC)
     mod_list = m.mod_list(pvals)

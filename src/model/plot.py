@@ -35,7 +35,7 @@ def plotgpp(cf, dC, start, fin):
     plt.show()
     
     
-def plotphi(onoff, dC, start, fin):
+def plotphi(onoff, pvals, dC, start, fin):
     """Plots phi using phi equations given a string "fall" or "onset", a 
     dataClass and a start and finish point. Nice check to see dynamics.
     """
@@ -43,11 +43,26 @@ def plotphi(onoff, dC, start, fin):
     phi = np.ones(fin - start)*-9999.
     for x in xrange(start, fin):
         if onoff == 'onset':
-            phi[x-start] = m.phi_onset(dC.p12, dC.p14, dC, x)
+            phi[x-start] = m.phi_onset(pvals[11], pvals[13], dC, x)
         elif onoff == 'fall':
-            phi[x-start] = m.phi_fall(dC.p15, dC.p16, dC.p5, dC, x)
+            phi[x-start] = m.phi_fall(pvals[14], pvals[15], pvals[4], dC, x)
     plt.plot(xlist, phi)
-    plt.show()    
+    plt.show()
+
+
+def plotphi2(pvals, dC, start, fin):
+    """Plots phi using phi equations given a string "fall" or "onset", a
+    dataClass and a start and finish point. Nice check to see dynamics.
+    """
+    xlist = np.arange(start, fin, 1)
+    phion = np.ones(fin - start)*-9999.
+    phioff = np.ones(fin - start)*-9999.
+    for x in xrange(start, fin):
+        phion[x-start] = m.phi_onset(pvals[11], pvals[13], dC, x)
+        phioff[x-start] = m.phi_fall(pvals[14], pvals[15], pvals[4], dC, x)
+    plt.plot(xlist, phion)
+    plt.plot(xlist, phioff)
+    plt.show()
     
     
 def plotobs(ob, pvals, dC, start, fin, lab=0, xax=None, dashed=0, 
@@ -1277,10 +1292,10 @@ def cov2cor(X):
     :return: Correlation matrix
     """
     D = np.zeros_like(X)
-    d = np.sqrt(np.diag(X))
+    d = np.sqrt(np.diag(abs(X)))
     np.fill_diagonal(D, d)
     DInv = np.linalg.inv(D)
-    R = np.dot(np.dot(DInv, X), DInv)
+    R = np.dot(np.dot(DInv, abs(X)), DInv)
     return R
 
 def obs_rank(obs_str, freq_lst, len_win=200, pvals=None, strt_run=0):

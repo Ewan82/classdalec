@@ -29,7 +29,7 @@ class dalecData( ):
         
         #Extract the data
         self.homepath = os.path.expanduser("~")
-        self.f = open(self.homepath+"/projects/classdalec/oregondata/dalec_drivers.txt",\
+        self.f = open("../../oregondata/dalec_drivers.txt",\
                       "r")
         self.allLines = self.f.readlines()
         self.data = np.array([[-9999.]*9 for i in range(self.lenrun)])

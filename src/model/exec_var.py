@@ -4,6 +4,7 @@ import numpy as np
 import pickle
 import scipy.stats as stats
 import sympy as smp
+import scipy as sp
 import matplotlib.pyplot as plt
 import plot as p
 import joblib as jl
@@ -546,6 +547,33 @@ def run_4dvar_desroziers(pvals):
     m.yoblist = perturb_obs(m.yoblist, m.yerroblist)
     out = m.findmintnc_cvt(pvals)
     return m.yoblist, pvals, out
+
+
+def localise_mat(mat, no_diag=3):
+    if no_diag % 2 == 0:
+        raise ValueError('no_diag must be odd number')
+    k_diags = np.arange(-(no_diag - (no_diag+1)/2), -(no_diag-(no_diag+1)/2) + no_diag, 1)
+    loc_mat = sp.sparse.diags([1]*no_diag, k_diags, (mat.shape[0], mat.shape[0]))
+    return mat * loc_mat.toarray()
+
+
+def r_estimate(yoblist, pvals, out):
+    d = ahd2.DalecData(startyr=1999, endyr=2000, obstr='nee')
+    d.B = pickle.load(open('misc/b_edc.p', 'r'))
+    m = mc.DalecModel(d)
+    m.yoblist = yoblist
+    pvallistxb = m.mod_list(pvals)
+    pvallistxa = m.mod_list(out[1])
+    yhxb = m.yoblist - m.hxcost(pvallistxb)
+    yhxa = m.yoblist - m.hxcost(pvallistxa)
+    r_estimate = np.dot(np.matrix(yhxa).T, np.matrix(yhxb))
+    return r_estimate
+
+
+def r_desroziers(output):
+    r_list = [r_estimate(out[0], out[1], out[2][1]) for out in output]
+    r_desroziers = np.mean(r_list, axis=0)
+    return r_desroziers
 
 
 def var_ens3(size_ens=10):
