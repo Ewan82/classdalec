@@ -2,12 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="837283c5-404a-4f65-ab79-716c1adfdf9d" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/exec_var.py" afterPath="$PROJECT_DIR$/src/model/exec_var.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/modclass_pheno.py" afterPath="$PROJECT_DIR$/src/model/modclass_pheno.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/oregondata.py" afterPath="$PROJECT_DIR$/src/model/oregondata.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/plot.py" afterPath="$PROJECT_DIR$/src/model/plot.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/plt_pheno.py" afterPath="$PROJECT_DIR$/src/model/plt_pheno.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/twindata_ahd.py" afterPath="$PROJECT_DIR$/src/model/twindata_ahd.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/model/twindata_ogd.py" afterPath="$PROJECT_DIR$/src/model/twindata_ogd.py" />
     </list>
     <ignored path="classdalec.iws" />
@@ -37,7 +33,7 @@
       <file leaf-file-name="modclass.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/model/modclass.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-9.259259">
+            <state vertical-scroll-proportion="-496.14816">
               <caret line="802" column="51" selection-start-line="802" selection-start-column="51" selection-end-line="802" selection-end-column="51" />
               <folding>
                 <element signature="e#96#114#0" expanded="true" />
@@ -68,11 +64,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="twindata_ahd.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="twindata_ahd.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/model/twindata_ahd.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="374" column="39" selection-start-line="374" selection-start-column="39" selection-end-line="374" selection-end-column="39" />
+            <state vertical-scroll-proportion="0.74904215">
+              <caret line="175" column="102" selection-start-line="175" selection-start-column="102" selection-end-line="175" selection-end-column="102" />
               <folding />
             </state>
           </provider>
@@ -82,7 +78,7 @@
         <entry file="file://$PROJECT_DIR$/src/model/twindata_ogd.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="36" column="38" selection-start-line="36" selection-start-column="38" selection-end-line="36" selection-end-column="38" />
+              <caret line="172" column="102" selection-start-line="172" selection-start-column="102" selection-end-line="172" selection-end-column="102" />
               <folding />
             </state>
           </provider>
@@ -92,7 +88,7 @@
         <entry file="file://$PROJECT_DIR$/src/model/oregondata.py">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
+              <caret line="97" column="102" selection-start-line="97" selection-start-column="102" selection-end-line="97" selection-end-column="102" />
               <folding />
             </state>
           </provider>
@@ -110,11 +106,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ahdata2.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ahdata2.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/model/ahdata2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.5536398">
-              <caret line="21" column="51" selection-start-line="21" selection-start-column="32" selection-end-line="21" selection-end-column="51" />
+            <state vertical-scroll-proportion="-9.259259">
+              <caret line="154" column="0" selection-start-line="154" selection-start-column="0" selection-end-line="157" selection-end-column="102" />
               <folding />
             </state>
           </provider>
@@ -169,7 +165,6 @@
         <option value="$PROJECT_DIR$/src/model/taylordiagram.py" />
         <option value="$PROJECT_DIR$/aliceholtdata/ahdatbudburst99_13.csv" />
         <option value="$PROJECT_DIR$/src/model/observations.py" />
-        <option value="$PROJECT_DIR$/src/model/twindata_ahd.py" />
         <option value="$PROJECT_DIR$/src/model/sic.py" />
         <option value="$PROJECT_DIR$/src/model/egubudburst.py" />
         <option value="$PROJECT_DIR$/src/model/ahdata2.py" />
@@ -179,8 +174,9 @@
         <option value="$PROJECT_DIR$/src/model/modclass_pheno.py" />
         <option value="$PROJECT_DIR$/src/model/plt_pheno.py" />
         <option value="$PROJECT_DIR$/src/model/plot.py" />
-        <option value="$PROJECT_DIR$/src/model/twindata_ogd.py" />
         <option value="$PROJECT_DIR$/src/model/oregondata.py" />
+        <option value="$PROJECT_DIR$/src/model/twindata_ogd.py" />
+        <option value="$PROJECT_DIR$/src/model/twindata_ahd.py" />
       </list>
     </option>
   </component>
@@ -985,16 +981,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/model/modclass.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-9.259259">
-          <caret line="802" column="51" selection-start-line="802" selection-start-column="51" selection-end-line="802" selection-end-column="51" />
-          <folding>
-            <element signature="e#96#114#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/model/modclass_pheno.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -1033,10 +1019,20 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/model/twindata_ahd.py">
+    <entry file="file://$PROJECT_DIR$/src/model/modclass.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="374" column="39" selection-start-line="374" selection-start-column="39" selection-end-line="374" selection-end-column="39" />
+        <state vertical-scroll-proportion="-496.14816">
+          <caret line="802" column="51" selection-start-line="802" selection-start-column="51" selection-end-line="802" selection-end-column="51" />
+          <folding>
+            <element signature="e#96#114#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/model/ahdata2.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-9.259259">
+          <caret line="154" column="0" selection-start-line="154" selection-start-column="0" selection-end-line="157" selection-end-column="102" />
           <folding />
         </state>
       </provider>
@@ -1044,7 +1040,7 @@
     <entry file="file://$PROJECT_DIR$/src/model/oregondata.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="20" column="29" selection-start-line="20" selection-start-column="29" selection-end-line="20" selection-end-column="29" />
+          <caret line="97" column="102" selection-start-line="97" selection-start-column="102" selection-end-line="97" selection-end-column="102" />
           <folding />
         </state>
       </provider>
@@ -1052,15 +1048,15 @@
     <entry file="file://$PROJECT_DIR$/src/model/twindata_ogd.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="36" column="38" selection-start-line="36" selection-start-column="38" selection-end-line="36" selection-end-column="38" />
+          <caret line="172" column="102" selection-start-line="172" selection-start-column="102" selection-end-line="172" selection-end-column="102" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/model/ahdata2.py">
+    <entry file="file://$PROJECT_DIR$/src/model/twindata_ahd.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5536398">
-          <caret line="21" column="51" selection-start-line="21" selection-start-column="32" selection-end-line="21" selection-end-column="51" />
+        <state vertical-scroll-proportion="0.74904215">
+          <caret line="175" column="102" selection-start-line="175" selection-start-column="102" selection-end-line="175" selection-end-column="102" />
           <folding />
         </state>
       </provider>
