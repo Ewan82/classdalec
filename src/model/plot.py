@@ -959,6 +959,7 @@ def plotrmat(rmat):
 
 def plot_bar_hmat_rank(obslist, freqlist, len_win=200, pvals=None, strt_run=0):
     n = len(obslist)
+    sns.set(style="whitegrid")
     sns.set_context('paper', font_scale=1.5, rc={'lines.linewidth': 1, 'lines.markersize': 6})
     width = 0.35
     ind = np.arange(n)
@@ -969,17 +970,19 @@ def plot_bar_hmat_rank(obslist, freqlist, len_win=200, pvals=None, strt_run=0):
     values = [np.linalg.matrix_rank(x) for x in hmat_lst]
     ax.bar(ind, values, width, color='g')
     ax.set_ylabel(r'Rank of $\hat{\bf{H}}$')
-    ax.set_xlabel('Observations')
+    # ax.set_xlabel('Observations')
     # ax.set_title('Observability')
     ax.set_xticks(ind)
     ax.set_yticks(np.arange(24))
     # keys = ['15 NEE', '20 NEE', '50 NEE', '50 NEE, 4 LAI', '50 NEE, 4 G_Resp', '50 NEE, 4 Cw']
-    keys = ['10 NEE', '23 NEE', '45 NEE', '70 NEE', '200 NEE', '365 NEE']
+    keys = ['10 NEE', '15 NEE', '23 NEE']
+    # keys = ['10 NEE', '23 NEE', '45 NEE', '70 NEE', '200 NEE', '365 NEE']
     ax.set_xticklabels(keys, rotation=45)
     return ax, fig, hmat_lst
 
 
 def plot_cond(hmlist):
+    sns.set(style="whitegrid")
     sns.set_context('paper', font_scale=1.5, rc={'lines.linewidth': 1, 'lines.markersize': 6})
     cond = [np.linalg.cond(x) for x in hmlist]
     print cond
@@ -987,9 +990,11 @@ def plot_cond(hmlist):
     ax = fig.add_subplot(111)
     ax.semilogy(cond, marker='x', mew=1, ms=8)
     ax.set_ylabel('Condition number')
-    ax.set_xlabel('Observations')
+    # ax.set_xlabel('Observations')
     # keys = ['15 NEE', '20 NEE', '50 NEE', '50 NEE, 4 LAI', '50 NEE, 4 G_Resp', '50 NEE, 4 Cw']
-    keys = ['10 NEE', '23 NEE', '45 NEE', '70 NEE', '200 NEE', '365 NEE']
+    # keys = ['10 NEE', '23 NEE', '45 NEE', '70 NEE', '200 NEE', '365 NEE']
+    # keys = ['10 NEE', '23 NEE', '45 NEE', '70 NEE', '200 NEE', '365 NEE']
+    keys = ['10 NEE', '23 NEE', '45 NEE']
     ax.set_xticks(np.arange(len(keys)))
     ax.set_xticklabels(keys, rotation=45)
     return ax, fig
@@ -1305,8 +1310,8 @@ def obs_rank(obs_str, freq_lst, len_win=200, pvals=None, strt_run=0):
         pvallist, matlist = m.linmod_list(d.edinburghmean)
     else:
         pvallist, matlist = m.linmod_list(pvals)
-    hmat = m.cvt_hmat(pvallist, matlist)
-    # hmat = m.hmat(pvallist, matlist)[1]
+    # hmat = m.cvt_hmat(pvallist, matlist)
+    hmat = m.hmat(pvallist, matlist)[1]
     return hmat # np.linalg.matrix_rank(hmat)
 
 

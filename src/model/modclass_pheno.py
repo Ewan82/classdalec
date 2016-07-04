@@ -38,7 +38,7 @@ class DalecModel():
         self.yoblist, self.yerroblist, self.ytimestep = self.obscost()
         self.rmatrix = self.rmat(self.yerroblist)
         self.obs_time_step = self.no_obs_at_time()
-        self.daybb_arr = self.day_bb(self.dC.edinburghmean[11])
+        self.daybb_arr = self.day_bb(self.xb)
         self.diag_b = np.diag(np.diag(self.dC.B))
         self.b_tilda = np.dot(np.dot(np.linalg.inv(np.sqrt(self.diag_b)),self.dC.B),np.linalg.inv(np.sqrt(self.diag_b)))
         self.nume = 100
