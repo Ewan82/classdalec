@@ -15,6 +15,7 @@ import taylordiagram as td
 import matplotlib.dates as mdates
 import matplotlib.mlab as mlab
 import matplotlib.gridspec as gridspec
+import pandas as pd
 import matplotlib
 import seaborn as sns
 
@@ -54,15 +55,20 @@ def plotphi2(pvals, dC, start, fin):
     """Plots phi using phi equations given a string "fall" or "onset", a
     dataClass and a start and finish point. Nice check to see dynamics.
     """
+    sns.set_context(rc={'lines.linewidth':.8, 'lines.markersize':6})
     xlist = np.arange(start, fin, 1)
     phion = np.ones(fin - start)*-9999.
     phioff = np.ones(fin - start)*-9999.
+    sns.set_context(rc={'lines.linewidth':.8, 'lines.markersize':6})
+    fig, ax = plt.subplots( nrows=1, ncols=1,)
     for x in xrange(start, fin):
         phion[x-start] = m.phi_onset(pvals[11], pvals[13], dC, x)
         phioff[x-start] = m.phi_fall(pvals[14], pvals[15], pvals[4], dC, x)
-    plt.plot(xlist, phion)
-    plt.plot(xlist, phioff)
-    plt.show()
+    ax.plot(xlist, phion)
+    ax.plot(xlist, phioff)
+    ax.set_xlabel('Day of year')
+    ax.set_ylabel('Rate of C allocation')
+    return ax, fig
     
     
 def plotobs(ob, pvals, dC, start, fin, lab=0, xax=None, dashed=0, 
@@ -549,8 +555,9 @@ def std_corr(mod_obs, obs):
             'r_sq': r_sq}
 
 def plot_taylor_diagram():
-    #sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth':1.4, 'lines.markersize':9})
+    sns.set_context('poster', font_scale=1.85, rc={'lines.linewidth':1.4, 'lines.markersize':18})
     fig = plt.figure()
+    palette = sns.color_palette("colorblind", 11)
     #sns.set_style('ticks')
     experiments = [(2.3484143513774565, 0.66197831433922605, 'xb'),
                    (6.7512375011313743, 0.78718349020688749, 'A'),
@@ -562,20 +569,30 @@ def plot_taylor_diagram():
                    (5.0906177054726136, 0.8747492423149803, 'B'),
                    (6.2653252067993268, 0.80802198474804199, 'C'),
                    (4.9113481383243682, 0.8885483101065843, 'D')]
-    experimentscvt_a = [(2.3484143513774565, 0.66197831433922605, r'$\mathbf{x}^b$', 'd', 10),
-                   (4.4159704308093835, 0.95629106432805044, 'A', 'v', 10),
-                   (4.3859284219418138, 0.95272082537711511, 'B', 's', 10),
-                   (4.4140501717065073, 0.95618744488110419, 'C', '*', 16),
-                   (4.3631036754140604, 0.95241837790091477, 'D', '^', 10)]
-    experimentscvt_f = [(2.1537096484447167, 0.6995781930970435, r'$\mathbf{x}^b$', 'd', 10),
-                   (6.7512116289339366, 0.78717600788851694, 'A', 'v', 10),
-                   (5.1293744611296708, 0.86851763851294195, 'B', 's', 10),
-                   (6.4950282058784268, 0.78272535831425616, 'C', '*', 16),
-                   (4.9960513831477238, 0.88338492275051672, 'D', '^', 10)]
+    experimentscvt_a = [(2.3484143513774565, 0.66197831433922605, r'$\mathbf{x}^b$', 'd', 12, 'None'),
+                   (4.4159704308093835, 0.95629106432805044, 'A', 'v', 12, 'None'),
+                   (4.3859284219418138, 0.95272082537711511, 'B', 's', 12, 'None'),
+                   (4.4140501717065073, 0.95618744488110419, 'C', '*', 16, 'None'),
+                   (4.3631036754140604, 0.95241837790091477, 'D', '^', 12, 'None')]
+    experimentscvt_f = [(2.1537096484447167, 0.6995781930970435, r'$\mathbf{x}^b$', 'd', 12, 'None'),
+                   (6.7512116289339366, 0.78717600788851694, 'A', 'v', 12, 'None'),
+                   (5.1293744611296708, 0.86851763851294195, 'B', 's', 12, 'None'),
+                   (6.4950282058784268, 0.78272535831425616, 'C', '*', 16, 'None'),
+                   (4.9960513831477238, 0.88338492275051672, 'D', '^', 12, 'None')]
+    experimentscvt_a2 = [(2.3484143513774565, 0.66197831433922605, 'prior', 'd', 12, palette[4]),
+                   (4.4159704308093835, 0.95629106432805044, 'A', 'v', 12, 'None'),
+                   (4.3859284219418138, 0.95272082537711511, 'B', 's', 12, 'None'),
+                   (4.4140501717065073, 0.95618744488110419, 'C', '*', 16, 'None'),
+                   (4.3631036754140604, 0.95241837790091477, 'D', '^', 12, 'None')]
+    experimentscvt_f2 = [(2.1537096484447167, 0.6995781930970435, 'prior', 'd', 12, palette[4]),
+                   (6.7512116289339366, 0.78717600788851694, 'A', 'v', 12, palette[0]),
+                   (5.1293744611296708, 0.86851763851294195, 'B', 's', 12, palette[1]),
+                   (6.4950282058784268, 0.78272535831425616, 'C', '*', 16, palette[2]),
+                   (4.9960513831477238, 0.88338492275051672, 'D', '^', 12, palette[3])]
     std_obs = 4.7067407809222761
-    dia = td.TaylorDiagram(std_obs, fig=fig, rect=111, label='observations')
-    for i, (std, corrcoef, name, mark, mss) in enumerate(experimentscvt_a):
-        dia.add_sample(std, corrcoef, label=name, marker=mark, ms=mss, mew=1, markerfacecolor="None",
+    dia = td.TaylorDiagram(std_obs, fig=fig, rect=111, label='obs.')
+    for i, (std, corrcoef, name, mark, mss, pal) in enumerate(experimentscvt_a2):
+        dia.add_sample(std, corrcoef, label=name, marker=mark, ms=mss, mew=1, markerfacecolor=pal,
          markeredgecolor='black', markeredgewidth=5, color='white')
     contours = dia.add_contours(levels=8, colors='0.5')
     plt.clabel(contours, inline=1, fontsize=10)
@@ -1012,9 +1029,56 @@ def plot_infmat(infmat, cmin=-0.3, cmax=0.3):
     fig, ax = plt.subplots(figsize=(11,9))
     #ax.set_aspect('equal')
     plt.imshow(infmat, interpolation='nearest', cmap='bwr', vmin=cmin, vmax=cmax, aspect='auto')
-    plt.colorbar()
+    plt.colorbar(label='Observation influence')
+    ax.set_ylabel('Day of year')
+    ax.set_xlabel('Day of year')
     #sns.heatmap(rmat, ax=ax, xticklabels=np.arange(len(rmat)), yticklabels=np.arange(len(rmat)))
     return ax, fig
+
+
+def plot_infmat_col(infmat, colsum, cmin=-0.3, cmax=0.3):
+    """Plots a R matrix.
+    """
+    sns.set(style="ticks")
+    sns.set_context('poster', font_scale=1.2)
+    fig, (ax1, ax2) = plt.subplots(2,1, sharex=True, sharey=False)
+    im = ax1.imshow(infmat, interpolation='nearest', cmap='bwr', vmin=cmin, vmax=cmax, aspect='auto')
+    ax1.set_xlim(0, 365)
+    ax1.set(aspect='equal', adjustable='box-forced')
+    ax2.plot(np.arange(1, 366,1), colsum)
+    x0,x1 = ax2.get_xlim()
+    y0,y1 = ax2.get_ylim()
+    ax2.set_aspect((x1-x0)/(y1-y0))
+    ax2.set(aspect='equal', adjustable='box-forced')
+    fig.subplots_adjust(right=0.8)
+    cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
+    fig.colorbar(im, cax=cbar_ax)
+    return ax1, ax2, fig
+
+
+def plot_infmat_col2(infmat, colsum, cmin=-0.3, cmax=0.3):
+    """Plots a R matrix.
+    """
+    fig = plt.figure(figsize=(7,9))
+    ax1 = plt.subplot(2, 1, 1)
+    ax1.plot(np.arange(1, 366,1), colsum)
+    ax1.set_xlim(0, 365)
+    x0,x1 = ax1.get_xlim()
+    y0,y1 = ax1.get_ylim()
+    ax1.set_aspect(abs(x1-x0)/abs(y1-y0))
+
+    ax2 = plt.subplot(2, 1, 2, aspect='equal', adjustable='box-forced',)
+    plt.imshow(infmat, interpolation='nearest', cmap='bwr', vmin=cmin, vmax=cmax, aspect='auto')
+    plt.colorbar()
+    x0,x1 = ax2.get_xlim()
+    y0,y1 = ax2.get_ylim()
+    ax2.set_aspect(abs(x1-x0)/abs(y1-y0))
+
+    # add a colorbar to the first plot and immediately make it invisible
+    cb = plt.colorbar(ax=ax1)
+    cb.ax.set_visible(False)
+
+    plt.show()
 
 
 def plot_kgain(infmat, cmin=-0.3, cmax=0.3):
@@ -1055,6 +1119,93 @@ def analysischange(xb, xa):
             'f_lab', 'cronset', 'd_fall', 'crfall', 'clma', 'clab', 'cf', 'cr',
             'cw', 'cl', 'cs']
     ax.set_yticklabels(keys)
+    return ax, fig
+
+
+def plot_one_sic(dC, pvals, ob, yr=2007):
+    sns.set(style="ticks")
+    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth': 1, 'lines.markersize': 6})
+    fig, ax = plt.subplots(nrows=1, ncols=1,)
+    m = mc.DalecModel(dC)
+
+    sic_lst = m.sic_time(pvals, ob)
+    datum = dt.datetime(int(yr), 1, 1)
+    delta = dt.timedelta(hours=24)
+    # Convert the time values to datetime objects
+    times = []
+    for t in range(len(dC.I)):
+        times.append(datum + int(t) * delta)
+    ax.plot(times, sic_lst)
+
+    plt.xlabel('Date')
+    plt.ylabel('Shannon information content')
+    myFmt = mdates.DateFormatter('%b')  # format x-axis time to display just month
+    ax.xaxis.set_major_formatter(myFmt)
+    # plt.title('SIC for a single observation of NEE', fontsize=20)
+    # plt.show()
+    return ax, fig
+
+
+def plot_temp(dC, yr=2007):
+    sns.set(style="ticks")
+    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth': 1, 'lines.markersize': 6})
+    fig, ax = plt.subplots(nrows=1, ncols=1,)
+
+    datum = dt.datetime(int(yr), 1, 1)
+    delta = dt.timedelta(hours=24)
+    # Convert the time values to datetime objects
+    times = []
+    for t in range(len(dC.I)):
+        times.append(datum + int(t) * delta)
+
+    ax.plot(times, dC.t_mean)
+
+    plt.xlabel('Date')
+    plt.ylabel('Mean daily temperature',)
+    # plt.title('Temperature term for three years of data')
+    myFmt = mdates.DateFormatter('%b')  # format x-axis time to display just month
+    ax.xaxis.set_major_formatter(myFmt)
+    # plt.show()
+    return ax, fig
+
+
+def r_matrix_size2(corr):
+    """
+    Creates an err cov mat of size 2 for NEE with time correlation.
+    :param corr: time corr between 0 and 1.
+    :return: r mat
+    """
+    r_std = np.sqrt(0.5)*np.eye(2)
+    c_mat = np.array([[1., corr], [corr, 1.]])
+    return np.dot(r_std, np.dot(c_mat, r_std))
+
+
+def sic_cor_d2(pvals, m, sic_dfs, corr):
+    m.rmatrix = r_matrix_size2(corr)
+    if sic_dfs == 'sic':
+        ret_val = m.cvt_sic(pvals)
+    elif sic_dfs == 'dfs':
+        ret_val = m.cvt_dfs(pvals)
+    return ret_val
+
+
+def plot_ic_corr_nee(dC, pvals, sic_dfs):
+    """
+    Plots the IC for 2 obs of NEE with a changing time correlation.
+    :param dC: dataclass must be for a window of 2 days length with 2 successive obs of NEE
+    :param pvals: augmented state to linearise around
+    :return: plt
+    """
+    sns.set(style="ticks")
+    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth': 1, 'lines.markersize': 6})
+    fig, ax = plt.subplots(nrows=1, ncols=1,)
+    corr = np.linspace(0, 0.9, 9)
+    m = mc.DalecModel(dC)
+    sic_lst = [sic_cor_d2(pvals, m, sic_dfs, c) for c in corr]
+    ax.plot(corr, sic_lst)
+
+    plt.xlabel(r'Correlation $\rho$')
+    plt.ylabel(sic_dfs)
     return ax, fig
 
 

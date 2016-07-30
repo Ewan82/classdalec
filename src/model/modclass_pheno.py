@@ -38,7 +38,7 @@ class DalecModel():
         self.yoblist, self.yerroblist, self.ytimestep = self.obscost()
         self.rmatrix = self.rmat(self.yerroblist)
         self.obs_time_step = self.no_obs_at_time()
-        self.daybb_arr = self.day_bb(self.xb)
+        self.daybb_arr = self.day_bb(self.xb[11])
         self.diag_b = np.diag(np.diag(self.dC.B))
         self.b_tilda = np.dot(np.dot(np.linalg.inv(np.sqrt(self.diag_b)),self.dC.B),np.linalg.inv(np.sqrt(self.diag_b)))
         self.nume = 100
@@ -130,7 +130,7 @@ class DalecModel():
         :return: arr of day of bud-burst for each year
         """
         # Calculate cumulative temp for bud burst
-        t_bb = np.sum(self.dC.t_mean[0:d_onset])
+        t_bb = np.sum(self.dC.t_mean[0:int(d_onset)])
 
         daybb_arr = np.ones(len(self.dC.year))
         for y in np.unique(self.dC.year):

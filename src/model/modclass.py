@@ -644,6 +644,12 @@ class DalecModel():
         return np.linalg.inv(np.linalg.inv(self.dC.B) + np.dot(hmatrix.T,
                         np.dot(np.linalg.inv(self.rmatrix), hmatrix)))
 
+
+# ------------------------------------------------------------------------------
+# Information content.
+# ------------------------------------------------------------------------------
+
+
     def k_gain_mat(self, pvals):
         """ Calculates Kalman gain matrix for info content experiments.
         :param pvals: state vector for assimilation
@@ -665,6 +671,15 @@ class DalecModel():
                               hmatrix.T, np.linalg.inv(self.rmatrix)), hmatrix))
         s_mat = np.dot(np.linalg.inv(self.rmatrix), np.dot(hmatrix, np.dot(
                               a_mat, hmatrix.T)))
+        return s_mat
+
+    def influence_mat_cvt(self, pvals):
+        """Calculates the Influence matrix
+        """
+        pvallist, matlist = self.linmod_list(pvals)
+        hx, hmatrix = self.hmat(pvallist, matlist)
+        k_gain = self.k_gain_mat(pvals)
+        s_mat = np.dot(hmatrix, np.dot(np.linalg.inv(np.sqrt(self.diag_b)), k_gain))
         return s_mat
 
     @staticmethod
@@ -716,6 +731,43 @@ class DalecModel():
     def dfs(self, pvals):
         acovmat = self.acovmat(pvals)
         return 23 - np.matrix.trace(np.dot(np.linalg.inv(self.dC.B), acovmat))
+
+    def single_sic(self, pvals, ob):
+        hmat = self.linob(ob, pvals)
+        rmat = self.dC.errdict[ob]
+        bmat = self.dC.B
+        acovmat = np.linalg.inv(np.linalg.inv(self.dC.B) + np.dot(hmat.T, np.dot((rmat**2)**(-1), hmat)))
+        # acovmat = np.linalg.inv(np.linalg.inv(self.b_tilda) + np.dot(np.sqrt(self.diag_b), np.dot(hmat.T,
+        #                 np.dot(np.dot((rmat**2)**(-1), hmat), np.sqrt(self.diag_b)))))
+        # bmat = self.b_tilda
+        return 0.5*np.log(np.linalg.det(bmat)/np.linalg.det(acovmat))
+
+    def single_dfs(self, pvals, ob):
+        hmat = self.linob(ob, pvals)
+        rmat = self.dC.errdict[ob]
+        acovmat = np.linalg.inv(np.linalg.inv(self.dC.B) + np.dot(hmat.T, np.dot((rmat**2)**(-1), hmat)))
+        return 23 - np.matrix.trace(np.dot(np.linalg.inv(self.dC.B), (acovmat)))
+
+    def sic_time(self, pvals, ob):
+        sic_lst = np.ones(self.endrun-self.startrun)*-9999.
+        mod_list = self.mod_list(pvals)
+        self.x = self.startrun
+        for t in xrange(self.endrun-self.startrun):
+            sic_lst[t] = self.single_sic(mod_list[t], ob)
+            self.x += 1
+        self.x -= self.endrun
+        return sic_lst
+
+    def dfs_time(self, pvals, ob):
+        dfs_lst = np.ones(self.endrun-self.startrun)*-9999.
+        mod_list = self.mod_list(pvals)
+        self.x = self.startrun
+        for t in xrange(self.endrun-self.startrun):
+            dfs_lst[t] = self.single_dfs(mod_list[t], ob)
+            self.x += 1
+        self.x -= self.endrun
+        return dfs_lst
+
 
 # ------------------------------------------------------------------------------
 # CVT and implied B.
@@ -858,8 +910,17 @@ class DalecModel():
         """
         pvallist, matlist = self.linmod_list(pvals)
         hx, hmatrix = self.hmat(pvallist, matlist)
-        return np.linalg.inv(np.linalg.inv(self.dC.B) + np.dot(hmatrix.T,
-                        np.dot(np.linalg.inv(self.rmatrix), hmatrix)))
+        return np.linalg.inv(np.linalg.inv(self.b_tilda) + np.dot(np.sqrt(self.diag_b), np.dot(hmatrix.T,
+                        np.dot(np.dot(np.linalg.inv(self.rmatrix), hmatrix), np.sqrt(self.diag_b)))))
+
+    def cvt_sic(self, pvals):
+        acovmat = self.cvt_a_covmat(pvals)
+        return 0.5*np.log(np.linalg.det(self.b_tilda)/np.linalg.det(acovmat))
+
+    def cvt_dfs(self, pvals):
+        acovmat = self.cvt_a_covmat(pvals)
+        return 23 - np.matrix.trace(np.dot(np.linalg.inv(self.b_tilda), acovmat))
+
 
 # ------------------------------------------------------------------------------
 # Minimization Routines.

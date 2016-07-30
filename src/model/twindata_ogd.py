@@ -229,11 +229,20 @@ class dalecData( ):
         self.sigb_cr = 154.**2 #(self.cr*0.2)**2 #20%
         self.sigb_cl = 8.**2 #(self.cl*0.2)**2 #20%
         self.sigb_cs = 1979.4**2 #(self.cs*0.2)**2 #20% 
-        self.B = (0.5*np.array([self.pvalburn]))**2*np.eye(23)
-        #MAKE NEW B, THIS IS WRONG!
+        # self.B = (0.5*np.array([self.pvalburn]))**2*np.eye(23)
+        # MAKE NEW B, THIS IS WRONG!
+        self.edinburghstdev = np.array([2.03001590e-03,   1.16829160e-01,   1.11585876e-01,
+                                        2.98860194e-01,   1.16141739e-01,   1.36472702e-04,
+                                        2.92998472e-03,   3.11712858e-03,   1.18105073e-04,
+                                        1.62308654e-02,   2.04219069e+01,   6.25696097e+00,
+                                        1.14535431e-01,   1.40482247e+01,   3.72380005e+01,
+                                        2.25938092e+01,   6.41030587e+01,   6.62621885e+01,
+                                        3.59002726e+01,   2.19315727e+02,   7.14323513e+03,
+                                        5.45013287e+02,   1.27646316e+03])
+        self.B = self.makeb(self.edinburghstdev)
   
       
-        #'Observartion variances for carbon pools and NEE'
+        # 'Observartion variances for carbon pools and NEE'
         self.vars = np.array([self.clab*0.1, self.cf*0.1, 
                               self.cw*0.1, self.cr*0.1, 
                               self.cl*0.1, self.cs*0.1, 0.5, 0.2, 
@@ -384,4 +393,10 @@ class dalecData( ):
                 print '%x not in bnds' %x
             x += 1
         return pvals
+
+    def makeb(self, bstnddevs):
+        """Creates diagonal B matrix.
+        """
+        bmat = (bstnddevs)**2*np.eye(23)
+        return bmat
         
