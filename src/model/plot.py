@@ -15,8 +15,8 @@ import taylordiagram as td
 import matplotlib.dates as mdates
 import matplotlib.mlab as mlab
 import matplotlib.gridspec as gridspec
-import pandas as pd
 import matplotlib
+import sympy as smp
 import seaborn as sns
 
 # ------------------------------------------------------------------------------
@@ -68,6 +68,7 @@ def plotphi2(pvals, dC, start, fin):
     ax.plot(xlist, phioff)
     ax.set_xlabel('Day of year')
     ax.set_ylabel('Rate of C allocation')
+    ax.set_xlim(0, 365)
     return ax, fig
     
     
@@ -1022,7 +1023,7 @@ def plot_cond(hmlist):
 
 
 def plot_infmat(infmat, cmin=-0.3, cmax=0.3):
-    """Plots a R matrix.
+    """Plots influence matrix.
     """
     sns.set(style="ticks")
     sns.set_context('poster', font_scale=1.2)
@@ -1037,12 +1038,12 @@ def plot_infmat(infmat, cmin=-0.3, cmax=0.3):
 
 
 def plot_infmat_col(infmat, colsum, cmin=-0.3, cmax=0.3):
-    """Plots a R matrix.
+    """Plots influence matrix and col. sums.
     """
     sns.set(style="ticks")
     sns.set_context('poster', font_scale=1.2)
     fig, (ax1, ax2) = plt.subplots(2,1, sharex=True, sharey=False)
-    im = ax1.imshow(infmat, interpolation='nearest', cmap='bwr', vmin=cmin, vmax=cmax, aspect='auto')
+    im = ax1.imshow(infmat, interpolation='nearest', cmap='bwr', vmin=cmin, vmax=cmax,)
     ax1.set_xlim(0, 365)
     ax1.set(aspect='equal', adjustable='box-forced')
     ax2.plot(np.arange(1, 366,1), colsum)
@@ -1057,28 +1058,33 @@ def plot_infmat_col(infmat, colsum, cmin=-0.3, cmax=0.3):
 
 
 def plot_infmat_col2(infmat, colsum, cmin=-0.3, cmax=0.3):
-    """Plots a R matrix.
+    """Plots influence matrix and col. sums.
     """
-    fig = plt.figure(figsize=(7,9))
-    ax1 = plt.subplot(2, 1, 1)
+    fig = plt.figure(figsize=(10,15))
+    ax1 = plt.subplot(2, 1, 2)
     ax1.plot(np.arange(1, 366,1), colsum)
     ax1.set_xlim(0, 365)
+    ax1.set_ylim(0.5, 4.0)
     x0,x1 = ax1.get_xlim()
     y0,y1 = ax1.get_ylim()
     ax1.set_aspect(abs(x1-x0)/abs(y1-y0))
+    ax1.set_ylabel('Matrix column sum')
 
-    ax2 = plt.subplot(2, 1, 2, aspect='equal', adjustable='box-forced',)
+
+    ax2 = plt.subplot(2, 1, 1, aspect='equal', adjustable='box-forced')
     plt.imshow(infmat, interpolation='nearest', cmap='bwr', vmin=cmin, vmax=cmax, aspect='auto')
-    plt.colorbar()
+    plt.colorbar(label='Observation influence')
     x0,x1 = ax2.get_xlim()
     y0,y1 = ax2.get_ylim()
     ax2.set_aspect(abs(x1-x0)/abs(y1-y0))
+    ax1.set_xlabel('Day of year')
+    ax2.set_ylabel('Day of year')
 
     # add a colorbar to the first plot and immediately make it invisible
-    cb = plt.colorbar(ax=ax1)
+    cb = plt.colorbar(ax=ax1,)
     cb.ax.set_visible(False)
 
-    plt.show()
+    return fig, (ax1, ax2)
 
 
 def plot_kgain(infmat, cmin=-0.3, cmax=0.3):
@@ -1180,8 +1186,31 @@ def r_matrix_size2(corr):
     return np.dot(r_std, np.dot(c_mat, r_std))
 
 
+def r_mat_corr(yerroblist, ytimestep, corr=0.3, tau=1., cut_off=4., r_std=0.5):
+    """ Creates a correlated R matrix.
+    """
+    r_corr = np.eye(len(ytimestep)) #MAKE SURE ALL VALUES ARE FLOATS FIRST!!!!
+    r_diag = (r_std**2)*np.eye(len(yerroblist))
+    for i in xrange(len(ytimestep)):
+        for j in xrange(len(ytimestep)):
+            if abs(ytimestep[i]-ytimestep[j]) < cut_off:
+                r_corr[i,j] = corr*np.exp(-(abs(float(ytimestep[i])-float(ytimestep[j]))**2)/float(tau)**2) \
+                              + (1-corr)*smp.KroneckerDelta(ytimestep[i],ytimestep[j])
+    r = np.dot(np.dot((np.sqrt(r_diag)),r_corr),np.sqrt(r_diag))
+    return r_corr, r
+
+
 def sic_cor_d2(pvals, m, sic_dfs, corr):
     m.rmatrix = r_matrix_size2(corr)
+    if sic_dfs == 'sic':
+        ret_val = m.cvt_sic(pvals)
+    elif sic_dfs == 'dfs':
+        ret_val = m.cvt_dfs(pvals)
+    return ret_val
+
+
+def sic_cor_d2_many(pvals, m, sic_dfs, corr):
+    m.rmatrix = r_mat_corr(m.yerroblist, m.ytimestep, corr, 1.0)[1]
     if sic_dfs == 'sic':
         ret_val = m.cvt_sic(pvals)
     elif sic_dfs == 'dfs':
@@ -1202,6 +1231,26 @@ def plot_ic_corr_nee(dC, pvals, sic_dfs):
     corr = np.linspace(0, 0.9, 9)
     m = mc.DalecModel(dC)
     sic_lst = [sic_cor_d2(pvals, m, sic_dfs, c) for c in corr]
+    ax.plot(corr, sic_lst)
+
+    plt.xlabel(r'Correlation $\rho$')
+    plt.ylabel(sic_dfs)
+    return ax, fig
+
+
+def plot_ic_corr_nee2(dC, pvals, sic_dfs):
+    """
+    Plots the IC for 2 obs of NEE with a changing time correlation.
+    :param dC: dataclass must be for a window of 2 days length with 2 successive obs of NEE
+    :param pvals: augmented state to linearise around
+    :return: plt
+    """
+    sns.set(style="ticks")
+    sns.set_context('poster', font_scale=1.5, rc={'lines.linewidth': 1, 'lines.markersize': 6})
+    fig, ax = plt.subplots(nrows=1, ncols=1,)
+    corr = np.linspace(0, 0.9, 9)
+    m = mc.DalecModel(dC)
+    sic_lst = [sic_cor_d2_many(pvals, m, sic_dfs, c) for c in corr]
     ax.plot(corr, sic_lst)
 
     plt.xlabel(r'Correlation $\rho$')
