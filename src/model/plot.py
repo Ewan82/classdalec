@@ -70,7 +70,36 @@ def plotphi2(pvals, dC, start, fin):
     ax.set_ylabel('Rate of C allocation')
     ax.set_xlim(0, 365)
     return ax, fig
-    
+
+
+def plot_drive_dat(dat, dC, start, fin):
+    """Plots a specified observation using obs eqn in obs module. Takes an
+    observation string, a dataClass (dC) and a start and finish point.
+    """
+    sns.set_context(rc={'lines.linewidth':.8, 'lines.markersize':6})
+    fig, ax = plt.subplots(nrows=1, ncols=1)
+    drive_dict = {'t_mean': dC.t_mean, 't_max': dC.t_max, 't_min': dC.t_min,
+                  'I': dC.I}
+    xlist = np.arange(start, fin)
+    palette = sns.color_palette("colorblind", 11)
+    # We know the datum and delta from reading the file manually
+    datum = dt.datetime(int(dC.year[0]), 1, 1)
+    delta = dt.timedelta(hours=24)
+
+    # Convert the time values to datetime objects
+    times = []
+    for t in xlist:
+        times.append(datum + int(t) * delta)
+
+    ax.plot(times, drive_dict[dat])
+    ax.set_xlabel('Year')
+    ax.set_ylabel(dat)
+    #ax.xaxis.set_major_locator(mdates.YearLocator())
+    #ax.xaxis.set_minor_locator(mdates.YearLocator())
+    #myFmt = mdates.DateFormatter('%Y')  # format x-axis time to display just month
+    #ax.xaxis.set_major_formatter(myFmt)
+    return ax, fig
+
     
 def plotobs(ob, pvals, dC, start, fin, lab=0, xax=None, dashed=0, 
             colour=None, ax=None, nee_std=None):
