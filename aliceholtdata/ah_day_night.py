@@ -67,34 +67,32 @@ def data(filename):
     """
     fluxdata = mlab.csv2rec(filename, missing='N/A') #create recorded array
     
-    #Clip data    
-    fluxdata['co2_flux\xb5molsm2'][fluxdata['co2_flux\xb5molsm2']>=50] = \
-                                                                   float('NaN')
-    fluxdata['co2_flux\xb5molsm2'][fluxdata['co2_flux\xb5molsm2']<=-50] = \
-                                                                   float('NaN')
+    # Clip data
+    fluxdata['co2_flux\xb5molsm2'][fluxdata['co2_flux\xb5molsm2'] >= 70] = float('NaN')
+    fluxdata['co2_flux\xb5molsm2'][fluxdata['co2_flux\xb5molsm2'] <= -70] = float('NaN')
     fluxdata['rgwm2'][fluxdata['rgwm2'] < 0.] = 0.
    
-    lenyear = len(fluxdata)/48
+    len_year = len(fluxdata)/48
     
-    serialdate=fluxdata['date_combined']
-    seconds = (serialdate - 25569) * 86400.0 #converting from excel timestamp
-    seconds2 = np.array([seconds[x*48] for x in xrange(lenyear)])
-    datelist=np.array([datetime.datetime.utcfromtimestamp(abs(d)) for d in\
+    serial_date = fluxdata['date_combined']
+    seconds = (serial_date - 25569) * 86400.0 # converting from excel timestamp
+    seconds2 = np.array([seconds[x*48] for x in xrange(len_year)])
+    date_list = np.array([datetime.datetime.utcfromtimestamp(abs(d)) for d in\
                        seconds2])
 
-    year = np.ones(lenyear)*datelist[0].year
-    day = np.arange(1, lenyear+1)
-    month = np.ones(lenyear)*-9999
-    date = np.ones(lenyear)*-9999 
-    t_mean = np.ones(lenyear)*-9999
-    t_max = np.ones(lenyear)*-9999
-    t_min = np.ones(lenyear)*-9999
-    I = np.ones(lenyear)*-9999
-    nee = np.ones(lenyear)*-9999
+    year = np.ones(len_year)*date_list[0].year
+    day = np.arange(1, len_year+1)
+    month = np.ones(len_year)*-9999
+    date = np.ones(len_year)*-9999
+    t_mean = np.ones(len_year)*-9999
+    t_max = np.ones(len_year)*-9999
+    t_min = np.ones(len_year)*-9999
+    I = np.ones(len_year)*-9999
+    nee = np.ones(len_year)*-9999
     
-    for x in xrange(0, lenyear):
-        month[x] = datelist[x].month
-        date[x] = datelist[x].day
+    for x in xrange(0, len_year):
+        month[x] = date_list[x].month
+        date[x] = date_list[x].day
         t_mean[x] = np.mean(fluxdata['tairdegc'][48*x:48*x+48])
         t_max[x] = np.max(fluxdata['tairdegc'][48*x:48*x+48])
         t_min[x] = np.min(fluxdata['tairdegc'][48*x:48*x+48])
@@ -104,10 +102,10 @@ def data(filename):
         if np.isnan(I[x])==True:
             I[x] = 0.9344*t_mean[x] + 1.0828
         for qc in xrange(48*x, 48*x+48):
-            if np.isnan(fluxdata['co2_flux\xb5molsm2'][qc])==True:
-                fill = fill + 1
+            if np.isnan(fluxdata['co2_flux\xb5molsm2'][qc]) == True:
+                fill += 1
             if fluxdata['qc_co2_flux'][qc] == 2:
-                qcflag = qcflag + 1
+                qcflag += 1
         if fill > 0:
             nee[x] = float('NaN')
         elif qcflag > 1:
@@ -115,7 +113,7 @@ def data(filename):
         else:
             nee[x] = 12.011*1e-6*30*60 * \
                            np.sum(fluxdata['co2_flux\xb5molsm2'][48*x:48*x+48])
-            # umol/s/m^2 to gC/m^2/day
+            #micromol/s/m^2 to gC/m^2/day
     return np.array([year, month, date, day, t_mean, t_max, t_min, I, nee])
 
 
